@@ -559,10 +559,22 @@ h4 {
    🔧 Base Resets & Global Styles
    ============================= */
 * { box-sizing: border-box; }
-body { 
-  font-family: Arial, sans-serif; 
-  padding: 0px;  
-  color: #e8e8e8; 
+body {
+  font-family: Arial, sans-serif;
+  padding: 0px;
+  color: #e8e8e8;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 
@@ -896,6 +908,67 @@ textarea { width: 100%; }
   box-sizing: border-box;
 }
 
+#expressArea .express-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.express-panel-btn {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid var(--G-colour-1-opac-30);
+  background: rgba(0, 0, 0, 0.35);
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.express-panel-btn:hover,
+.express-panel-btn:focus {
+  background: rgba(0, 0, 0, 0.55);
+  border-color: var(--G-colour-1-opac-50);
+  outline: none;
+}
+
+.express-panel-btn:focus-visible {
+  box-shadow: 0 0 0 2px rgba(var(--G-colour-1-RGB), 0.4);
+}
+
+.express-panel-btn .icon-collapse {
+  display: none;
+}
+
+.express-panel-btn.is-active .icon-expand {
+  display: none;
+}
+
+.express-panel-btn.is-active .icon-collapse {
+  display: inline;
+}
+
+.express-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.express-apply {
+  margin-top: 12px;
+}
+
+.express-misc {
+  margin-top: 16px;
+}
+
 #expressArea .row {
   width: 100%;
   display: flex;
@@ -937,6 +1010,49 @@ textarea { width: 100%; }
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+}
+
+body.editor-maximized {
+  height: 100vh;
+  overflow: hidden;
+}
+
+body.editor-maximized #appRoot {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+body.editor-maximized .hide-when-editor-maximized {
+  display: none !important;
+}
+
+body.editor-maximized #expressArea {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+body.editor-maximized #codeEditor {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+body.editor-maximized #expressApplyRow {
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+}
+
+body.editor-maximized #expressApplyRow .apply-row {
+  width: 100%;
+  max-width: 100%;
+  justify-content: center;
+}
+
+body.editor-maximized #toast {
+  display: block;
 }
 
 /* Editor itself */
