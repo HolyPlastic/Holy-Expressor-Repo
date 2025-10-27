@@ -46,6 +46,40 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  const editorMaxBtn = document.getElementById("editorMaximizeBtn");
+  if (editorMaxBtn) {
+    const srLabel = editorMaxBtn.querySelector(".sr-only");
+
+    function applyMaximizeState(isMaximized) {
+      const label = isMaximized ? "Restore editor size" : "Maximize editor";
+      document.body.classList.toggle("editor-maximized", isMaximized);
+      editorMaxBtn.classList.toggle("is-active", isMaximized);
+      editorMaxBtn.setAttribute("aria-pressed", String(isMaximized));
+      editorMaxBtn.setAttribute("aria-label", label);
+      editorMaxBtn.setAttribute("title", label);
+      if (srLabel) srLabel.textContent = label;
+
+      if (window.editor) {
+        try {
+          if (typeof window.editor.requestMeasure === "function") {
+            window.editor.requestMeasure();
+          } else if (window.editor.dom && typeof window.editor.dom.getBoundingClientRect === "function") {
+            window.editor.dom.getBoundingClientRect();
+          }
+        } catch (err) {
+          if (window.HX_LOG_MODE === "verbose") {
+            console.warn("Editor resize refresh failed", err);
+          }
+        }
+      }
+    }
+
+    editorMaxBtn.addEventListener("click", () => {
+      const nextState = !document.body.classList.contains("editor-maximized");
+      applyMaximizeState(nextState);
+    });
+  }
 });
 
   
