@@ -485,7 +485,7 @@ function openSnippetEditUI(snipId) {
   // 🪶 Create Foreground Panel dynamically
   const panel = Holy.UTILS.cy_createForegroundPanel("foregroundSnippetEditor", {
     title: `Edit Snippet – ${snip.name}`,
-    width: "360px",
+
     innerHTML: `
       <div class="snippet-editor-form">
         <label for="fgSnipName">Name</label>
