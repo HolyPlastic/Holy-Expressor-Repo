@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ExtensionManifest
+  Version="7.0"
+  ExtensionBundleId="com.holy.expressor"
+  ExtensionBundleVersion="1.0.0"
+  ExtensionBundleName="Holy Expressor">
+
+  <ExtensionList>
+    <Extension Id="com.holy.expressor.panel" />
+  </ExtensionList>
+
+  <ExecutionEnvironment>
+    <HostList>
+      <Host Name="AEFT" Version="[13.0,99.9]" />
+    </HostList>
+
+    <LocaleList>
+      <Locale Code="All" />
+    </LocaleList>
+
+    <RequiredRuntimeList>
+      <RequiredRuntime Name="CSXS" Version="9.0" />
+    </RequiredRuntimeList>
+  </ExecutionEnvironment>
+
+  <DispatchInfoList>
+    <Extension Id="com.holy.expressor.panel">
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./index.html</MainPath>
+
+          <CEFCommandLine>
+              <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--enable-devtools</Parameter>
+            <Parameter>--remote-debugging-port=6904</Parameter>
+            <Parameter>--allow-file-access</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+            <Parameter>--disable-web-security</Parameter>
+
+          </CEFCommandLine>
+        </Resources>
+
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+
+        <UI>
+          <Type>Panel</Type>
+          <Menu>Holy Expressor</Menu>
+
+          <Geometry>
+            <Size>
+              <Width>400</Width>
+              <Height>580</Height>
+            </Size>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+  </DispatchInfoList>
+</ExtensionManifest>

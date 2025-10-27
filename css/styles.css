@@ -1,0 +1,1841 @@
+
+/*#region 🌐🌐🌐🎨🎨🎨 GLOBAL COLOURS */
+/* =====🎨 GLOBAL COLORS =========== _-_-_-_ 
+var(--G-color-1);
+===================================== _-_-_-_*/
+
+
+:root {
+  --G-color-1: #fc7a39;
+  /*#region style proccessing, color variants=== */
+  --G-color-1-H: 0; /* placeholder – overwritten by JS */
+  --G-color-1-S: 0;
+  --G-color-1-L: 0;
+  --G-colour-1-RGB: 0, 0, 0;
+
+
+--G-color-1-mid: hsl(
+  var(--G-color-1-H),
+  calc(var(--G-color-1-S) * 0.75),
+  calc(var(--G-color-1-L) *2 * 0.08)
+);
+
+
+--G-color-1-mid-2: hsl(
+  /* mid desat*/
+  var(--G-color-1-H),
+  calc(var(--G-color-1-S) * 0.45),
+  calc(var(--G-color-1-L) *2 * 0.18)
+);
+
+--G-color-1-mid-3: hsl(
+  /* mid desat but darker*/
+  var(--G-color-1-H),
+  calc(var(--G-color-1-S) * 0),
+  calc(var(--G-color-1-L) *2 * 0.15)
+);
+
+--G-color-1-mid-4: hsl(
+  /* balance of mid desat 1 and 2*/
+  var(--G-color-1-H),
+  calc(var(--G-color-1-S) * 0.45),
+  calc(var(--G-color-1-L) *2 * 0.18)
+);
+
+
+--G-color-1-dark-bg: hsl(
+  var(--G-color-1-H),
+  calc(var(--G-color-1-S) * 0.9),
+  calc(var(--G-color-1-L) *2 * 0.04)
+);
+
+--G-color-1-deepdark-bg: hsl(
+  var(--G-color-1-H),
+  calc(var(--G-color-1-S) * 1),
+  calc(var(--G-color-1-L) *2 * 0.02)
+);
+
+--G-color-1-lowsatdark-bg: hsl(
+  var(--G-color-1-H),
+  calc(var(--G-color-1-S) * .1),
+  calc(var(--G-color-1-L) *2 * 0.04)
+);
+
+
+
+
+
+--G-color-1-offwhite: hsl(
+  var(--G-color-1-H),
+  calc(var(--G-color-1-S) * 1),
+  calc(var(--G-color-1-L) *2 * 0.8)
+);
+
+--G-color-1-light: hsl(
+  var(--G-color-1-H),
+  calc(var(--G-color-1-S) * 1),
+  calc(var(--G-color-1-L) *2 * 0.8)
+);
+
+--G-color-1-midlight: hsl(
+  var(--G-color-1-H),
+var(--G-color-1-S),
+  calc(var(--G-color-1-L) *2 * 0.3)
+);
+
+
+  
+  --G-colour-1-opac-75: rgba(var(--G-colour-1-RGB), 0.75);
+  --G-colour-1-opac-50: rgba(var(--G-colour-1-RGB), 0.5);
+  --G-colour-1-opac-30: rgba(var(--G-colour-1-RGB), 0.3);
+  --G-colour-1-opac-10: rgba(var(--G-colour-1-RGB), 0.1);
+
+
+  /*#endregion end style processing======== */
+
+  --G-faded-text:rgba(255, 255, 255, 0.151);
+
+}
+
+/*#endregion 🌐🎨 */
+
+/*#region - 🔠 FONT ✒️✒️🆔 */
+/* =============================
+         💬 TEXT Stuff
+   🔠 Utility: Text Sizes
+   ============================= */
+.text-xs { font-size: 8px !important; }
+.text-sm { font-size: 9px !important; color: var(--G-color-1-offwhite);}
+.text-md { font-size: 11px !important; }
+.text-lg { font-size: 13px !important; }
+.text-xl { font-size: 20px !important; }
+
+
+/*#region- FONT LOADS  */
+
+/* V1 – Pixel font metrics override
+   ⚙️ VALIDATOR: Chromium-based CEF supports these; Safari is irrelevant for CEP. */
+@font-face {
+  font-family: "Pixel"; /* default metrics */
+  src: url("../fonts/Pixel.ttf") format("truetype");
+  ascent-override: normal;
+  descent-override: normal;
+  line-gap-override: normal;
+}
+@font-face {
+  font-family: "Pixel-Corrected"; /* corrected metrics */
+  src: url("../fonts/Pixel.ttf") format("truetype");
+  ascent-override: 100%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+}
+
+
+
+@font-face {
+  font-family: "Dosis";
+  src: url("../fonts/Dosis-VariableFont_wght.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/*#region*  ye*/
+
+
+
+@font-face {
+  font-family: "Hooked Up 101";
+  src: url("../fonts/Hooked Up 101.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "TOSTADA";
+  src: url("../fonts/TOSTADA.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "TOSTADA Italic";
+  src: url("../fonts/TOSTADA Italic.ttf") format("truetype");
+  font-weight: normal;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "puree____2";
+  src: url("../fonts/puree____2.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "BPdotsUnicaseSquareBold";
+  src: url("../fonts/BPdotsUnicaseSquareBold.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Montserrat-Regular";
+  src: url("../fonts/Montserrat-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "PLANK__";
+  src: url("../fonts/PLANK__.TTF") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "tycho";
+  src: url("../fonts/tycho___.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- 🆕 Added Fonts --- */
+
+@font-face {
+  font-family: "COURIERO";
+  src: url("../fonts/COURIERO.TTF") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "0927____";
+  src: url("../fonts/0927____.TTF") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "6809 Chargen";
+  src: url("../fonts/6809 Chargen.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Deftone Stylus";
+  src: url("../fonts/Deftone Stylus.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "GlitchGoblin";
+  src: url("../fonts/GlitchGoblin.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "kleenblades_ldr";
+  src: url("../fonts/kleenblades_ldr.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "mionta";
+  src: url("../fonts/mionta.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "nymonak";
+  src: url("../fonts/nymonak.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+
+@font-face {
+  font-family: "V Dub";
+  src: url("../fonts/V Dub.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Zelega Zenega";
+  src: url("../fonts/Zelega Zenega.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Zero Hour";
+  src: url("../fonts/Zero Hour.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+/*#endregion ye*/
+
+/* #endregion */
+
+/*#region - FONT --roots  */
+/* ================================
+   🎨 Global Font Variables
+   ================================ */
+
+:root {
+    --f-pixel: "Pixel", monospace;
+    --f-pixel-c: "Pixel-Corrected", monospace;
+
+/*#region  ye*/
+  --f-hooked: "Hooked Up 101", sans-serif;
+  --f-tost: "TOSTADA", sans-serif;
+  --f-tostitalic: "TOSTADA Italic", sans-serif;
+  --f-puree: "puree____2", sans-serif;
+  --f-dots: "BPdotsUnicaseSquareBold", sans-serif;
+  --f-mont: "Montserrat-Regular", sans-serif;
+  --f-plank: "PLANK__", sans-serif;
+  --f-tycho: "tycho", sans-serif;
+
+  /* 🆕 New Additions */
+  --f-couriero: "COURIERO", monospace;
+  --f-pixboss: "0927____", monospace;
+  --f-6809: "6809 Chargen", monospace;
+  --f-deftone: "Deftone Stylus", cursive;
+  --f-glitch: "GlitchGoblin", sans-serif;
+  --f-kleen: "kleenblades_ldr", sans-serif;
+  --f-mionta: "mionta", sans-serif;
+  --f-nymonak: "nymonak", sans-serif;
+  --f-pixel: "Pixel", monospace;
+  --f-vdub: "V Dub", sans-serif;
+  --f-zelega: "Zelega Zenega", sans-serif;
+  --f-zero: "Zero Hour", sans-serif;
+/*#endregion*/
+}
+/* #endregion */
+
+/*#region - 🧩 Font Utility Classes Pack */
+/* ================================
+    — Direct Reference Version
+   ================================ */
+
+.f18,
+.f18-c {
+  font-weight: normal;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+  font-smooth: never;
+
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  display: inline-block;       /* Make inline‐block so alignment works */
+  vertical-align: middle;      /* baseline / middle alignment of inline box */
+  transform: translateY(0.1em); /* small translate downward: adjust value as needed */
+  line-height: 1;              /* avoid altering extra vertical padding from line‐height */
+}
+
+.f18 {
+  font-family: var(--f-pixel);
+}
+.f18-c { /* font shifted down */
+  font-family: var(--f-pixel-c);
+}
+
+
+
+.f21 {
+  font-family: "Dosis", sans-serif;
+  font-weight: normal;
+ 
+}
+
+.f20 {
+  font-family: "Zero Hour", sans-serif;
+  font-weight: normal;
+ 
+}
+
+
+   /*#region - ye*/
+.f1 {
+  font-family: "V Dub", sans-serif;
+  font-weight: normal;
+}
+
+.f2 {
+  font-family: "Hooked Up 101", sans-serif;
+  font-weight: normal;
+}
+
+.f3 {
+  font-family: "TOSTADA", sans-serif;
+  font-weight: normal;
+}
+
+.f4 {
+  font-family: "TOSTADA Italic", sans-serif;
+  font-weight: normal;
+}
+
+.f5 {
+  font-family: "puree____2", sans-serif;
+  font-weight: normal;
+}
+
+.f6 {
+  font-family: "BPdotsUnicaseSquareBold", sans-serif;
+  font-weight: normal;
+}
+
+.f7 {
+  font-family: "Montserrat-Regular", sans-serif;
+  font-weight: normal;
+}
+
+.f8 {
+  font-family: "PLANK__", sans-serif;
+  font-weight: normal;
+}
+
+.f9 {
+  font-family: "tycho", sans-serif;
+  font-weight: normal;
+}
+
+.f10 {
+  font-family: "COURIERO", monospace;
+  font-weight: normal;
+}
+
+.f11 {
+  font-family: "0927____", monospace;
+  font-weight: normal;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  font-smooth: never;
+}
+
+.f12 {
+  font-family: "6809 Chargen", monospace;
+  font-weight: normal;
+
+}
+
+.f13 {
+  font-family: "Deftone Stylus", cursive;
+  font-weight: normal;
+}
+
+.f14 {
+  font-family: "GlitchGoblin", sans-serif;
+  font-weight: normal;
+}
+
+.f15 {
+  font-family: "kleenblades_ldr", sans-serif;
+  font-weight: normal;
+}
+
+.f16 {
+  font-family: "mionta", sans-serif;
+  font-weight: normal;
+}
+
+.f17 {
+  font-family: "nymonak", sans-serif;
+  font-weight: normal;
+}
+.f19 {
+  font-family: "Zelega Zenega", sans-serif;
+  font-weight: normal;
+}
+
+
+/* ===defunkt font utils?==========================
+   🔤 Utility: Fonts
+   ============================= 
+.font-sans { font-family: Arial, sans-serif !important; }
+.font-mono { font-family: ui-monospace, Menlo, Consolas, monospace !important; }
+.font-alt  { font-family: "BPdotsUnicaseSquareBold", sans-serif !important; }
+.font-serif { font-family: Georgia, serif !important; }
+.font-mycustom { font-family: "MyCustomFont", sans-serif !important; }
+.font-dotsbold { font-family: "BPdotsUnicaseSquareBold", sans-serif !important; }
+*/
+/*#endregion*/
+
+
+
+/*#endregion*/
+
+/*#region - HEADINGs 🗼 ============================== */
+/*____________________________________________________*/
+
+.hdr { margin-bottom: 8px; }
+h2 { margin: 0 0 6px; font-size: 16px; }
+
+/* Dedicated heading override for Holy Expressor title */
+.hdr h2 {
+  font-family: "PLANK__", sans-serif;
+  font-size: 20px;
+}
+
+
+.heading-1{
+   font-size: 10px;
+   color: var(--G-faded-text);
+
+  letter-spacing: 0.25em;
+vertical-align: top !important;;
+}
+
+h4 { 
+  
+    margin: 6px 0; 
+    font-size: 13px;
+    font-family: var(--f-pixel) !important;
+    font-size: 20px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+
+      font-weight: normal;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+  font-smooth: never;
+
+ }
+
+
+/*#endregion*/
+
+/*---------------------------------\-----*/
+/*#endregion* font-----------------\----*/
+
+
+/*#region* - 🔘 Utility: Checkbox Labels ============================== */
+/*____________________________________________________*/
+
+
+
+ .checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+
+/*---------------------------------\-----*/
+/*#endregion* checkbox-------------\----*/
+
+
+/* =============================
+   🔧 Base Resets & Global Styles
+   ============================= */
+* { box-sizing: border-box; }
+body { 
+  font-family: Arial, sans-serif; 
+  padding: 0px;  
+  color: #e8e8e8; 
+}
+
+
+.shade-hard {
+  position: relative;
+  background: var(--G-color-1-deepdark-bg);
+  border-radius: 6px;
+}
+
+.shade-hard::after {
+  content: "";
+  position: absolute;
+  inset: 1px -1px -2px -1px; /* adjust to push down slightly */
+  border-bottom: 1px solid var(--G-color-1);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/*#region -🔲🟪Panels ============================== */
+/*____________________________________________________*/
+
+:root {
+  --panel-border: 0, 128, 255; /* RGB only */
+}
+
+/* Panel styling */
+.panel {
+  background: #1f1f1f;
+
+  border: 1.3px solid var(--G-colour-1-opac-50);
+
+  border-radius: 8px;
+  padding: 6px;
+  margin-top: 6px;
+  position: relative; /* required for absolute positioning to work */
+  background-color: #101010;
+  overflow: hidden; /* keeps pseudo-element edges clean */
+}
+
+/*---------------------------------\-----*/
+/*#endregion* panels----------------------\----*/
+
+
+/*#region - 📜🎞️ DROPDOWN MENUS =========================== */
+/*____________________________________________________*/
+
+
+ /* ---------------------------------------------------------
+   🧩 Context Menu Layout Normalization — V9.6
+   Hidden menus cannot intercept events; active menus do.
+--------------------------------------------------------- */
+
+/* Base */
+.context-menu {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  z-index: 100000 !important;
+  min-width: 140px;
+  background: var(--G-color-1-deepdark-bg);
+  border-radius: 6px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.25);
+  /* hidden by default */
+  display: none;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .12s ease-out;
+  transform: translate3d(0,0,0);
+  will-change: opacity, transform;
+  color: #fff;
+}
+
+
+.context-menu.active {
+  display: block !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* reset & structure */
+.context-menu,
+.context-menu ul,
+.context-menu li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.context-menu li { display: block; }
+
+.context-menu button {
+  display: block;
+  width: 100%;
+  margin: 0;
+    padding: 5px 7px;
+  text-align: left;
+  font-size: 12px;
+  line-height: 1.2;
+  color: var(--G-colour-1-light);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+      border-bottom: 1px solid var(--G-color-1);
+}
+
+.context-menu button:hover {
+  background: var(--G-color-1);
+  color: var(--G-color-1-deepdark-bg);
+}
+
+/*  🧱 Context Menu Layout – Extended Utility Set
+   Generic flex layout + right-side button pattern
+   ============================= */
+
+/* 🔹 Flex rows with space for actions (like delete / rename / info) */
+.context-menu li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 🔹 Primary label button (fills width except side buttons) */
+.context-menu .menu-main-btn {
+  flex: 1;
+  text-align: left;
+  padding-right: 6px; /* spacing before side button */
+}
+
+
+/* =========SIDE ICONS====================
+
+/* 🔹 Optional side / icon / delete button */
+/* 🔹 Override for side buttons (like delete, info, etc.) */
+
+.context-menu .menu-side-btn {
+  width: auto !important;     /* stop inheriting full width */
+  padding: 2px 6px;           /* tighten hitbox */
+  margin-left: auto;          /* push to far right */
+  text-align: center;         /* keep centered in its own box */
+  flex-shrink: 0;             /* prevent squishing */
+    border-bottom: 0px solid;
+color: var(--G-color-1);
+}
+
+.context-menu .menu-side-btn:hover {
+  opacity: 1;
+  background: var(--G-color-1);
+  color: var(--G-color-1-deepdark-bg);
+    border-bottom: 1px solid var(--G-color-1);
+        border: 0px solid var(--G-color-1) !important;
+}
+
+.context-menu .menu-side-btn:active {
+  transform: scale(0.95);
+}
+
+
+
+/* 🔹 Variant color helpers (reusable elsewhere) */
+
+.context-menu .menu-side-btn.danger {
+  color: var(--G-color-1-deepdark-bg);
+
+
+}
+
+.context-menu .menu-side-btn.warn   { color: #ffcc66; }  /* rename / caution */
+.context-menu .menu-side-btn.ok     { color: #9effa8; }  /* confirm / success */
+
+
+/* Variants */
+.context-menu.snippet-menu { background: #ff6e5a; }
+
+
+
+
+
+.context-menu.bank-menu    { background: #491e41; }
+
+
+
+/*
+   🔸 Context Menu Divider (Universal)
+   - visually separates groups of menu items
+   - plays nice inside flex <li> stacks
+   ============================= */
+
+.context-menu .menu-divider {
+    height: 1px;
+    background: var(--G-color-1-mid);
+    margin: 6px 0;
+    border: none;
+    pointer-events: none;
+transform: translateY(2px);
+
+}
+
+/*---------------------------------\-----*/
+/*#endregion* context menus--------\----*/
+
+
+/*#region - ⏹️⬛ FOREGROUND Panels ============================== */
+/*____________________________________________________*/
+
+.foreground-panel-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.55);
+  z-index: 99999;
+  animation: fgFadeIn 0.2s ease forwards;
+}
+
+.foreground-panel-box {
+
+background: var(--G-color-1-deepdark-bg);
+    border: 1px solid var(--G-color-1);
+    border-radius: 8px;
+    padding: 12px;
+    /* min-width: 280px; */
+    max-width: -135px;
+    box-shadow: 0 4px 24px rgb(0 0 0 / 60%);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 11px;
+    animation: fgPopIn 0.2s ease forwards;
+
+
+/*
+  background:var(--G-color-1-deepdark-bg);
+  border: 1px solid var(--G-color-1);
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 280px;
+  max-width: 480px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: fgPopIn 0.2s ease forwards;
+*/
+  
+}
+
+.foreground-panel-title {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: var(--G-color-1);
+}
+
+.foreground-panel-content label {
+  font-size: 11px;
+}
+
+.foreground-panel-content input,
+.foreground-panel-content textarea {
+  width: 100%;
+  padding: 6px;
+  background:var(--G-color-1-lowsatdark-bg);
+  border: 1px solid #3b3b3b;
+  color: var(--G-color-1);
+  border-radius: 4px;
+}
+
+.foreground-panel-close {
+  align-self: flex-end;
+  margin-top: 8px;
+  padding: 4px 10px;
+  border: 1px solid #3b3b3b;
+  border-radius: 4px;
+  background: #333;
+  color: #eee;
+  cursor: pointer;
+}
+
+@keyframes fgFadeIn {
+  from { opacity: 0; } 
+  to { opacity: 1; }
+}
+
+@keyframes fgPopIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+/*---------------------------------\-----*/
+/*#endregion* ----------------------\----*/
+
+
+/*#region - Rows 🕳️🟰🟰 ============================== */
+/*____________________________________________________*/
+
+/* Utility: Form Rows */
+.row { display: flex; 
+  align-items: 
+  center; gap: 8px; 
+  margin: 4px 0; }
+.row label { font-size: 12px; }
+
+.row input[type="text"],
+.row input[type="number"],
+select,
+textarea,
+input {
+  background: #1e1e1e;
+  color: #e8e8e8;
+  border: 1px solid #3b3b3b;
+  border-radius: 4px;
+  padding: 6px;
+}
+
+textarea { width: 100%; }
+
+
+/*---------------------------------\-----*/
+/*#endregion* rows-----------------\----*/
+
+
+/*#region -🎛️ EXPRESS AREA 🖥️ ============================== */
+/*____________________________________________________*/
+
+
+#expressArea {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: transparent !important;
+
+  box-sizing: border-box;
+}
+
+#expressArea .row {
+  width: 100%;
+  display: flex;
+  align-items: stretch;
+  gap: 8px; /* Optional */
+}
+
+
+/* Remove container spacing */
+#expressArea #codeEditor .cm-editor {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none; /* optional */
+}
+
+/* Remove scroller spacing */
+#expressArea #codeEditor .cm-scroller {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Remove inner content padding */
+#expressArea #codeEditor .cm-content {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/*#region - Codemirror Editor styling ============================== */
+/*____________________________________________________*/
+
+
+
+/* Container */
+#codeEditor {
+  flex: 1 1 auto;
+  min-height: 120px;
+  min-width: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* Editor itself */
+#codeEditor .cm-editor {
+ 
+  min-height: 120px;
+  min-width: 0;   /* ✅ allows flex child to shrink */
+  flex: 1 1 auto;
+  
+  
+  border: 1px solid #444;
+  border-radius: 6px;
+  background: #1b1b1b;
+  font-family: "Fira Code", ui-monospace, Menlo, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #f0f0f0;
+  box-shadow: inset 0 0 6px #00000055;
+  transition: border-color 0.2s ease;
+}
+
+/* Focus ring */
+#codeEditor .cm-editor.cm-focused {
+  border-color: #4c7ef3;
+  outline: none;
+}
+
+/* Content area */
+#codeEditor .cm-content {
+  padding: 6px 10px;
+  caret-color: #4c7ef3;
+}
+
+/* 🎛️ CodeMirror Scrollbar Styling */
+
+/* style the scroll container and reduce its thickness */
+#codeEditor .cm-scroller {
+  overflow: auto;
+}
+
+/* narrower scrollbar inside cm-scroller */
+#codeEditor .cm-scroller::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+#codeEditor .cm-scroller::-webkit-scrollbar-track {
+  background: #1b1b1b;
+}
+
+#codeEditor .cm-scroller::-webkit-scrollbar-thumb {
+  background-color: #4c7ef3;
+  border-radius: 3px;
+}
+
+#codeEditor .cm-scroller::-webkit-scrollbar-thumb:hover {
+  background-color: #3a6ed3;
+}
+
+/*---------------------------------\-----*/
+/*#endregion* codemirror----------------------\----*/
+
+/*---------------------------------\-----*/
+/*#endregion* express----------------------\----*/
+
+
+/*#region - ✂️✂️🟰🟰S N I P P E T S 🟰🟰✂️✂️ 🗼 ============================== */
+/*____________________________________________________*/
+
+/*#region BANK🏦 */
+
+#bankHeader {
+  display: flex;
+  align-items: center;
+  gap: 0px; /* minimal space between text and dropdown */
+      margin-top: -9px;
+    margin-left: -9px;
+    margin-bottom: 3px;
+}
+
+/* 🏷️ Static label + editable input share same styling */
+#bankHeader #bankNameLabel,
+#bankHeader input[type="text"] {
+  display: inline-block;
+  font-family: var(--f-pixel-c);
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--G-color-1-offwhite);
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0;
+  margin: 0;
+  width: 120px; /* compact fixed width */
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+#bankNameLabel {
+  overflow: visible;
+  display: inline-block;
+}
+
+/* ✏️ Focused input gets light accent line */
+#bankHeader input[type="text"]:focus {
+  border-bottom: 1px solid var(--G-color-1);
+  background: var(--G-color-1-lowsatdark-bg);
+    overflow: visible;
+  align-items: baseline; /* avoids cutting off tall shadows */
+}
+
+/* 🔧 Context Menu Layout Fix */
+#bankSelectMenu li {
+  position: relative; /* establishes local coordinate space */
+  display: block; /* stop flex shrink */
+}
+
+/* Main bank button now spans full width */
+#bankSelectMenu .bank-name-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding-right: 24px; /* space for the delete button’s visual area */
+  box-sizing: border-box;
+}
+
+/* Delete button positioned on top (same x/y as before) */
+#bankSelectMenu .menu-side-btn {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2; /* ensures it sits visually in front */
+  pointer-events: auto;
+}
+
+/* Optional: prevent click interference */
+#bankSelectMenu .bank-name-btn {
+  position: relative;
+  z-index: 1;
+}
+
+
+/*#endregion */
+
+
+/*#region - SNIPPET Editor🎞️✂️================================== */
+/*   🧩 Snippet Editor (Foreground Panel content)============== */
+
+.snippet-editor-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.snippet-editor-form label {
+  font-size: 11px;
+  color: var(--G-color-1-offwhite);
+}
+
+.snippet-editor-input,
+.snippet-editor-textarea {
+  width: 100%;
+  padding: 6px;
+  background: #1e1e1e;
+  border: 1px solid #3b3b3b;
+  color: #eee;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.snippet-editor-textarea {
+  height: 100px;
+  resize: vertical;
+}
+
+.snippet-editor-save {
+  align-self: flex-end;
+  margin-top: 4px;
+  padding: 4px 10px;
+  border: 1px solid #3b3b3b;
+  border-radius: 4px;
+  background: #333;
+  color: #eee;
+  cursor: pointer;
+}
+
+.snippet-editor-save:hover {
+  background: #444;
+}
+
+/*---------------------------------\-----*/
+/*#endregion* snip editor-----------\----*/
+
+
+#snippetsBar {
+  display: block;
+
+
+  background: none;
+
+}
+
+#snippetsRow {
+  display: flex;
+  flex-wrap: wrap;
+    gap: 8px;
+    margin-left: 4px;
+    margin-top: 2px;
+  /*padding-top: 4px;
+  min-height: 28px;*/
+  
+}
+
+
+/* ======================================================================== */
+
+
+
+/*---------------------------------\-----*/
+/*#endregion* snips main-----------\----*/  
+
+
+/*#region 💡✨✨ HOLY GLOW============================= */
+/*____________________________________________________*/
+
+/* ════════════════════════════════════════════════════
+   🌟 GLOBAL GLOW UTILITY
+   - Attach via class .holy-glow or variants
+   - Works on any element with position:relative
+   - Includes hover animation
+   =================================================== */
+
+/* Base */
+.holy-glow {
+  position: relative;      /* ensures ::after anchors correctly */
+  z-index: 1;              /* keeps content above glow */
+}
+
+/* Glow layer */
+.holy-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0px;             /* how far glow extends beyond element */
+  border-radius: inherit;  /* adapts to rounded shapes */
+  background: var(--G-color-1);
+  opacity: 0.25;
+  filter: blur(10px);
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+/* Hover intensity */
+.holy-glow:hover::after {
+  opacity: 0.45;
+  filter: blur(10px);
+
+}
+
+.holy-glow-text {
+  position: relative;
+  color: #1b1b1b; /* fallback for browsers w/out filter */
+  text-shadow:
+    0 0 4px var(--G-color-1),
+    0 0 8px var(--G-color-1),
+    0 0 12px var(--G-color-1-light);
+  transition: text-shadow 0.3s ease, color 0.3s ease;
+}
+
+.holy-glow-text:hover {
+  color: #1b1b1b;
+  text-shadow:
+    0 0 6px var(--G-color-1),
+    0 0 12px var(--G-color-1-light),
+    0 0 18px var(--G-color-1-light);
+}
+
+@keyframes slowPulse {
+  from { opacity: 0.25; filter: blur(6px); }
+  to   { opacity: 0.6;  filter: blur(12px); }
+}
+/*---------------------------------\-----*/
+/*#endregion* 💡✨✨----------------------\----*/
+
+
+/* ╔═══════════════════════════════════╗ */
+/* ╚═══════════════════════════════════╝ */
+/*#region - ⬛⬜⬛   B U T T O N   S T Y L E S   ⬛⬜⬛ ======================= */
+/*____________________________________________________*/
+
+
+/*#region 🟪🔵 M A I N BUTTONS ============================== */
+/*____________________________________________________*/
+
+
+button {
+      margin: 0px;
+    padding: 4px 5px;
+   
+    border: 1px solid var(--G-colour-1-opac-30); 
+  
+  border-radius: 6px;
+  background: #333;
+  color: var(--G-color-1-light);
+  cursor: pointer;
+  font-size: 11.5px;
+
+}
+
+
+button:hover {
+  background: #00a303;
+  border-color: #1aff00;
+}
+
+button.primary {
+  background: #4c7ef3;
+  border-color: #4c7ef3;
+}
+button.tab-btn {
+  background: #221325;
+  margin-left: 6px;
+  padding: 0px 0px;
+  width: 20%;
+  font-size:80%;
+  color: #513a56; 
+} 
+
+
+button:disabled { opacity: 0.5; cursor: default; }
+
+/* Wrapper keeps circle + label together */
+.target-btn-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 8px; /* spacing between buttons */
+}
+
+/*-----------------------------------\----*/  
+/*#endregion* main buttons-----------\----*/  
+
+/*#region - 📩📩📩 GLOBAL BUTTON 📩LABELS ◉◉◉◉◉◉◉◉================= */
+/* 🌐 GLOBAL BUTTON LABELS */
+.label {
+  font-size: 10px;            /* default readable size */
+  color: #cccccc;
+  text-align: center;
+  letter-spacing: 1px;        /* subtle tracking */
+  text-transform: uppercase;  /* consistent button look */
+  pointer-events: none;  
+
+       /* prevents accidental selection */
+}
+
+
+.label-under {
+  font-size: 6.5px;            /* default readable size */
+  color: #ccc;
+  text-align: center;
+  letter-spacing: 1px;        /* subtle tracking */
+  text-transform: uppercase;  /* consistent button look */
+  pointer-events: none;       /* prevents accidental selection */
+}
+/*#endregion* ----------------------\----*/
+
+
+/*#region 🟧🟧🟧 RHOMBUS Button styling ============================== */
+/*____________________________________________________*/
+
+
+
+.btn-rhombus {
+  --btn-stroke: var(--G-color-1); 
+  --btn-fill: var(--G-color-1-mid);
+  --btn-text: var(--G-color-1-light);
+  color: var(--btn-stroke);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  padding: 0;
+  transform: 
+    scale(1.4) translateX(10px);
+  transform-origin: center;
+  margin-top: 5px;
+  margin-bottom: 2px;
+
+}
+
+
+.btn-rhombus:hover {
+  --btn-stroke: var(--G-color-1-light);
+  --btn-fill: var(--G-color-1);
+  --btn-text: var(--G-color-1-deepdark-bg);
+  font-weight: bold;
+    background: none;
+    border-color: none;
+}
+
+
+.btn-rhombus .rhombus-icon path,
+.btn-rhombus .rhombus-icon line,
+.btn-rhombus .rhombus-icon rect {
+  stroke: var(--btn-stroke);
+  stroke-width: 1.5;
+  stroke-miterlimit: 10;
+  fill: var(--btn-fill);
+}
+
+
+
+.btn-rhombus .rhombus-icon rect {
+  stroke: none; /* middle stays clean */
+}
+
+.btn-rhombus .label {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--btn-text);
+  font-family: var(--f1);
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.rhombus-left  { transform: translateX(01px); }
+.rhombus-right { transform: translateX(-1px); }
+
+
+
+
+/*#endregion*/
+
+/*#region ⏹️⏹️🟧 RHOMBUS Snippet ✂️ Buttons ----------*/
+
+   /*These two are legacy definitions for snippets in general (not the rhombus 
+   itself). They mostly affect padding, color, and hover visuals.
+   You can move these up near the flex block — they’re non-conflicting. */
+/* ======================================================================== */
+
+.snippet-btn {
+  display: inline-block;
+
+  border-radius: 6px;
+      height: 22px;
+  background: none;          /* transparent background */
+           /* fallback text color */
+
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+/* Optional hover glow or darkening for the snippet button zone */
+.snippet-btn:hover {
+  background: none;          /* mild dark overlay behind the SVG */
+  border-color: none;
+}
+
+
+/* #region 🧩 btn-rhombus2-flex — “Mark II” Flexible Rhombus Button Layout    */
+/* -------------------------------------------------------------------------- */
+/* Used by the Snippet Buttons. This version builds the button using          */
+/* three separate SVGs (left cap, middle stretch, right cap) so it can        */
+/* expand and contract automatically based on label text length.              */
+
+:root {
+  /* 🎨 Global button theme defaults */
+  --btn-Rs-stroke: var(--G-color-1);        /* outer line color */
+  --btn-Rs-fill: var(--G-color-1-mid);      /* interior fill color */
+  --btn-Rs-text: var(--G-color-1-midlight); /* text color */
+    --btn-Rs-mid-stroke: var(--G-color-1-midlight);    
+
+ --btn-Rs-stroke-hover: var(--G-color-1-light);        
+ --btn-Rs-fill-hover: var(--G-color-1);      
+ --btn-Rs-text-hover: var(--G-color-1-deepdark-bg); 
+    --btn-Rs-mid-stroke-hover: var(--G-color-1);      
+  }
+
+.btn-rhombus2-flex {
+
+  /* 🎨 Button theme colors — drawn from your global palette */
+
+  /* 🧱 STRUCTURE / LAYOUT */
+  position: relative;                    /* allows inner elements (like .label) 
+                                            to position themselves relative to this button */
+  display: inline-flex;                  /* creates a horizontal flex container so 
+                                            all children (SVG caps, label) align in a row */
+  align-items: center;                   /* vertically centers everything inside */
+  justify-content: center;               /* centers everything horizontally */
+  border: none;                          /* removes default button border */
+  background: none;                      /* removes native button background */
+  cursor: pointer;                       /* shows pointer cursor on hover */
+padding: 0 0 !important;                            /* removes browser padding */
+  margin: -5.3px -7px !important  ;                      /* sits neatly with siblings (spacing added later) */
+  transform: scale(0.9);                 /* slightly reduces visual scale to match others */
+
+  /* 📏 WIDTH CONTROL */
+  width: auto;                           /* auto-expands to fit label + SVGs */
+  min-width: 60px;                       /* prevents it from collapsing too small */
+  max-width: 180px;     
+    line-height: 0;              /* caps the width — prevents it stretching too far */
+    height: 22.5px;
+
+
+}
+
+/* 🌈 HOVER STATE — dynamic recolor                                           */
+/* Matches Apply button hover: changes fill and stroke theme colors          */
+/* via CSS variables.                                                         */
+
+.btn-rhombus2-flex:hover {
+  --btn-Rs-stroke: var(--btn-Rs-stroke-hover);
+  --btn-Rs-fill: var(--btn-Rs-fill-hover);
+  --btn-Rs-text: var(--btn-Rs-text-hover);
+  
+  --btn-Rs-mid-stroke: var(--btn-Rs-mid-stroke-hover);
+
+  font-weight: bold;
+  stroke-width: 1px !important;
+}
+
+
+
+/* 🎞️ RHOMBUS-WRAP — the internal container that holds all 3 SVG segments     */
+/* -------------------------------------------------------------------------- */
+                                           
+
+.btn-rhombus2-flex .rhombus-wrap {
+  display: flex;                         /* lays out the three SVGs in a row */
+  align-items: center;                   /* keeps their vertical alignment consistent */
+  height: 18.5px;                        /* the total button height */
+  position: relative;                    /* positions child elements like .label cleanly */
+  flex: 1 1 auto;       
+                
+}
+
+
+/* 🎯 RHOMBUS-LEFT & RHOMBUS-RIGHT — the end caps                            */
+
+
+.btn-rhombus2-flex .rhombus-left,
+.btn-rhombus2-flex .rhombus-right {
+
+  flex: 0 0 auto;                        /* fixed width, not affected by flex growth */
+  width: 7.47px;                         /* exact cap size (matches Apply button geometry) */
+}
+
+.btn-rhombus2-flex .rhombus-mid line {
+  transform-box: fill-box;
+  transform-origin: center;
+transform: scaleX(0.98);
+}
+
+/* 🧩 RHOMBUS-MID — the middle section that stretches dynamically             */
+
+
+.btn-rhombus2-flex .rhombus-mid {
+  flex: 1 0 auto;                        /* grows to fill available space but doesn’t shrink 
+                                            smaller than its content */
+  display: flex;                         /* creates a mini flexbox for internal SVG centering */
+  align-items: center;                   /* vertically centers SVG and label if needed */
+  justify-content: center;               /* centers horizontally */
+  width: auto;                           /* auto width follows label size */
+  min-width: 10px;                       /* safety minimum so it doesn’t collapse */
+   
+  /* middle line gets dimmer colour
+  --btn-Rs-stroke: var(--btn-Rs-mid-stroke); 
+  */
+
+
+  }
+
+
+/* ========================================================================== */
+/* 🧠 SVG RULES — global vector settings for all parts of the rhombus         */
+/* -------------------------------------------------------------------------- */
+
+.btn-rhombus2-flex svg {
+  height: 18.5px;                        /* locks consistent button height */
+  fill: inherit;                           
+  stroke: inherit;             /* outline color uses theme variable */
+  stroke-width: 1;                       /* thin outline */
+  stroke-miterlimit: 10;                 /* keeps corners clean (used for sharp joins) */
+  vector-effect: non-scaling-stroke;     /* stroke width stays consistent on scale */
+    shape-rendering: geometricPrecision;  
+
+}
+
+
+/* ========================================================================== */
+/* 📏 RHOMBUS-MID SVG — makes the middle SVG stretch horizontally             */
+/* -------------------------------------------------------------------------- */
+
+.btn-rhombus2-flex .rhombus-mid svg {
+  width: 100%;                           /* fill available horizontal space */
+}
+
+
+/* ========================================================================== */
+/* 📩📩📩 LABEL — text inside the button                                         */
+/* -------------------------------------------------------------------------- */
+/* The label sits visually centered, not absolute-positioned like v1,        */
+/* so it stays aligned as the SVG stretches.                                 */
+/* ========================================================================== */
+.btn-rhombus2-flex .label {
+  position: relative;                     /* positioned in normal flow, not overlapping SVG */
+
+  z-index: 2;                             /* ensures text is above glows and SVG lines */
+
+  padding: 0 10px;                       /* horizontal space inside the mid section */
+  font-family: var(--f1);
+  font-size: 11.5px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--btn-Rs-text);
+  white-space: nowrap;                   /* stops multi-line wrapping */
+  pointer-events: none;                  /* makes label text unclickable (passes clicks to button) */
+  line-height: 1;                        /* keeps text vertically tight and centered */
+
+  max-width: 100px;           /* match button width minus side caps */
+  overflow: hidden;           /* hides overflowing text cleanly */
+  text-overflow: ellipsis;    /* adds … when text overflows */
+  display: inline-block;      /* required for ellipsis to work */
+  vertical-align: middle;     /* keeps text aligned nicely */
+
+transform: translateY(2.5px) !important; /* fine-tunes vertical centering */
+  margin-bottom: -12px; /* roughly cancels the phantom space */
+}
+
+/*#endregion*/
+
+
+
+
+
+
+/* #endregion */
+
+
+/*#region*-_ DropDown time*/
+
+/* ╔═══════════════════════════════════════╗
+   ║   🔽 Dropdown Button (Cleaned) – V2.0 ║
+   ╚═══════════════════════════════════════╝ */
+
+button.Dd-blank {
+  background: none;
+  margin-left: 4px; /* tighter than before */
+  padding: 0 4px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  border: 0px solid var(--G-colour-1-opac-30);
+  width: 18px; /* ensures proper square hitbox */
+  color: var(--G-color-1-offwhite);
+  transform: translate(0.7px, 2.2px) scale(1.1);
+}
+
+/* 🔻 Dropdown icon positioning */
+button.Dd-blank .dropdown-icon {
+  width: 8px;
+  height: 8px;
+  display: block;
+  margin: 0;
+  transform: translateY(-0.5px) translateX(0.3px);
+}
+
+/* ✴️ SVG appearance + slight highlight (kept minimal) */
+.dropdown-icon path {
+  stroke: var(--G-color-1);
+  fill: var(--G-color-1-mid);
+  stroke-width: 1;
+  stroke-linejoin: round;
+  transition: stroke 0.25s ease, fill 0.25s ease, filter 0.35s ease;
+
+}
+
+/* Hover: intensify fill + light stroke highlight */
+button.Dd-blank:hover .dropdown-icon path {
+  fill: var(--G-color-1);
+  filter: drop-shadow(0 0 4px var(--G-color-1-light));
+}
+
+/* Icon wrapper sizing */
+.dropdown-icon {
+  width: 9px;
+  height: 10px;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+
+
+/*#endregion*/
+
+
+/*#region - Circle buttons 🔵 ◉◉◉◉◉◉◉◉================= */
+/*____________________________________________________*/
+
+/* ✦✦✦✦✦✦✦✦✦✦   ⠀⢀⣤⣶⣶⣶⣤⡀   ✦✦✦✦✦✦✦✦✦✦ */
+/* ✧◉◉◉◉◉◉◉◉◉  ⢸⣿⣿⣿⣿⣿⣿⡇    ◉◉◉◉◉◉◉◉◉✧ */
+/* ✦✦✦✦✦✦✦✦✦✦   ⠈⠛⠿⠿⠿⠛⠁   ✦✦✦✦✦✦✦✦✦✦ */
+/*                  Circle style */
+
+
+/* 📩 Circle Button Label Variant (sibling version) */
+.circle-btn + .label {
+  font-size: 1px;
+  color: #00ffd9;
+  margin-top: 4px;
+  text-align: center;
+  letter-spacing: 1.5px;
+}
+
+
+.circle-btn {
+  width: 26px;
+  height: 26px;
+  
+  padding: 11px 11px;
+  /*border: solid #8a8a8ab !important;*/
+  border: solid #8a8a8a !important;
+  border-radius: 41px;
+  
+  background: #242424;
+  color: #eee;
+  
+  border-radius: 50%;
+  cursor: pointer;
+  transition: border-color 0.2s;
+   
+}
+
+
+/* --------------- Behaviours  ⠁⠛⠿⠿⠿⠛⠁  */
+
+.circle-btn:hover {
+  border: 1.5px solid #702801 !important; /* dark orange hover */
+}
+
+
+.circle-btn.flash-orange {
+  border: 1.5px solid #ff7427 !important; /* bright orange click flash */
+}
+
+
+.circle-btn.stay-orange {
+  border: 1.5px solid #ff7427 !important; /* bright orange persistent */
+}
+
+
+/*  🟦Blue versions */
+.circle-btn.circle-blue:hover {
+  border: 1.5px solid #1e40af !important; /* dark blue hover */
+}
+
+.circle-btn.circle-blue.flash-blue {
+  border: 1.5px solid #3b82f6 !important; /* bright blue click flash */
+}
+
+.circle-btn.circle-blue.stay-blue {
+  border: 1.5px solid #3b82f6 !important; /* bright blue persistent */
+}
+
+
+
+
+
+/*---------------------------------\-----*/
+/*#endregion* ----------------------\----*/
+
+/*#region - APPLY 🧼🎯 ============================== */
+/*____________________________________________________*/
+
+
+
+/* =============================
+   🔘 Buttons - Custom Variants
+   ============================= */
+  
+   
+button.target-btn { border: 2px solid #ff7415; }
+
+.apply-row { display: flex; gap: 8px; }
+
+.apply-btn {
+  font-family: "dotsbold", sans-serif !important;
+  background-color: var(--G-colour-1-opac-10);
+  color: #fff; /* text color */
+  border: 1px solid var(--G-color-1); /* border color */
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.apply-target-btn {
+  background-color: #ff7415;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#exprPickBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #3b82f6;
+  border: none;
+  color: #ff0000;
+
+  cursor: pointer;
+}
+/*-------------------------------\-----*/
+/*#endregion* APPLY -------------\----*/
+/* ╔═══════════════════════════════════╗ */
+/* ╚═══════════════════════════════════╝ */
+/*---------------------------------\-----*/
+/*#endregion* ⬛⬜⬛ BUTTON-------\----*/
+
+
+
+  
+
+/*#region - Misc/Dev/Admin ➕➕➕ ============================== */
+/*____________________________________________________*/
+
+
+/* =============================
+   🎯 Target / Apply Outputs
+   ============================= */
+#TargetList,
+#applyOutput {
+  font-family: dotsbold, sans-serif !important;
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+
+/* =============================
+   🔔 Apply Report
+   ============================= */
+   
+#applyReportContainer {
+  border: 1px solid #444;
+  padding: 6px;
+  margin-top: 4px;
+  background: #222;
+  font-size: 11px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+#applyReport {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size:9px;
+}
+
+/* =============================
+   🔔 Toast Notifications
+   ============================= */
+   
+#toast {
+  position: fixed;
+  left: 10px;
+  bottom: 10px;
+  font-size: 12px;
+  background: #00000088;
+  padding: 6px 8px;
+  border-radius: 6px;
+  display: none;
+}
+
+/* =============================
+   ➕ Misc Layout
+   ============================= */
+.picks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+.pick { display: flex; align-items: center; gap: 8px; }
+
+
+
+/*---------------------------------\-----*/
+/*#endregion* ----------------------\----*/
+
+
+
+
+
+
+
+
+
+
+
