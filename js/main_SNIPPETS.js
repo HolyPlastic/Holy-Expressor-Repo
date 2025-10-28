@@ -36,6 +36,19 @@ Holy.SNIPPETS.banks = [
   var HX_LOG_MODE = window.HX_LOG_MODE || "verbose";
 
 
+  // V2 – Scoped document resolver for multi-panel safety
+  function cy_resolveDoc() {
+    try {
+      // CEP sets window.location.href differently per panel.
+      if (window.location.href.includes("quickpanel.html")) {
+        return window.document; // Quick Panel DOM
+      }
+      return window.document; // main panel fallback
+    } catch (e) {
+      console.warn("[Holy.SNIPPETS] cy_resolveDoc fallback to window.document", e);
+      return window.document;
+    }
+  }
 
 
   // -==-=-++++++*...................((((((((((((((())))>>>>
@@ -45,171 +58,180 @@ Holy.SNIPPETS.banks = [
 
 
 
-// V1 — multiple banks scaffold
-Holy.SNIPPETS.banks = [
-  {
-    id: 1,
-    name: "Default",
-    snippets: [
-      { id: 1, name: "Wiggle", expr: "wiggle(2,20)" },
-      { id: 2, name: "Loop", expr: "loopOut('cycle')" },
-      { id: 3, name: "Random", expr: "random(0,100)" },
-      { id: 4, name: "Ease", expr: "ease(time, 0, 1, 0, 100)" }
-    ]
-  }
-];
-
-// active bank pointer
-Holy.SNIPPETS.activeBankId = 1;
-
-// helper to resolve current bank
-function cy_getActiveBank() {
-  const id = Holy.SNIPPETS.activeBankId;
-  const b = Holy.SNIPPETS.banks.find(x => x.id === id);
-  return b || Holy.SNIPPETS.banks[0];
-}
-// 🌍 Make it globally accessible
-window.cy_getActiveBank = cy_getActiveBank;
-
-// V1.0 – setActiveBank utility
-function cy_setActiveBank(id) {
-  const bank = Holy.SNIPPETS.banks.find(b => b.id === id);
-  if (!bank) {
-    console.warn("[Holy.SNIPPETS] cy_setActiveBank: invalid id", id);
-    return;
-  }
-  Holy.SNIPPETS.activeBankId = id;
-  cy_saveBanksToDisk();
-  renderBankHeader();
-  renderSnippets();
-  console.log(`[Holy.SNIPPETS] Active bank switched → ${bank.name}`);
-}
-
-// expose for cross-module safety
-window.cy_setActiveBank = cy_setActiveBank;
-
-
-// V1 — attempt to load user banks from disk
-(function cy_loadBanksFromDisk() {
-  try {
-    const { file } = Holy.UTILS.cy_getBanksPaths();
-    const loaded = Holy.UTILS.cy_readJSONFile(file);
-    if (loaded && Array.isArray(loaded.banks) && loaded.banks.length) {
-      Holy.SNIPPETS.banks = loaded.banks;
-      Holy.SNIPPETS.activeBankId = loaded.activeBankId || loaded.banks[0].id;
-      console.log("[Holy.SNIPPETS] Loaded banks from disk:", { count: loaded.banks.length });
-    } else {
-      // first-run: persist the in-memory defaults
-      cy_saveBanksToDisk();
+  // V1 — multiple banks scaffold
+  Holy.SNIPPETS.banks = [
+    {
+      id: 1,
+      name: "Default",
+      snippets: [
+        { id: 1, name: "Wiggle", expr: "wiggle(2,20)" },
+        { id: 2, name: "Loop", expr: "loopOut('cycle')" },
+        { id: 3, name: "Random", expr: "random(0,100)" },
+        { id: 4, name: "Ease", expr: "ease(time, 0, 1, 0, 100)" }
+      ]
     }
-  } catch (e) {
-    console.warn("[Holy.SNIPPETS] load banks failed, using defaults", e);
+  ];
+
+  // active bank pointer
+  Holy.SNIPPETS.activeBankId = 1;
+
+  // helper to resolve current bank
+  function cy_getActiveBank() {
+    const id = Holy.SNIPPETS.activeBankId;
+    const b = Holy.SNIPPETS.banks.find(x => x.id === id);
+    return b || Holy.SNIPPETS.banks[0];
   }
-})();
+  // 🌍 Make it globally accessible
+  window.cy_getActiveBank = cy_getActiveBank;
 
-
-
-
-
-
-
-// V1 — persist current banks to disk
-function cy_saveBanksToDisk() {
-  const { file } = Holy.UTILS.cy_getBanksPaths();
-  const payload = {
-    version: 1,
-    activeBankId: Holy.SNIPPETS.activeBankId,
-    banks: Holy.SNIPPETS.banks
-  };
-  const res = Holy.UTILS.cy_writeJSONFile(file, payload);
-  if (res.err) console.warn("[Holy.SNIPPETS] save banks failed:", res);
-  else console.log("[Holy.SNIPPETS] Banks saved:", file);
-}
-
-function renderBankHeader() {
-  const bank = cy_getActiveBank();
-  const labelEl = document.getElementById("bankNameLabel");
-  if (!labelEl) {
-    console.warn("[Holy.SNIPPETS] bankNameLabel not found");
-    return;
+  // V1.0 – setActiveBank utility
+  function cy_setActiveBank(id) {
+    const bank = Holy.SNIPPETS.banks.find(b => b.id === id);
+    if (!bank) {
+      console.warn("[Holy.SNIPPETS] cy_setActiveBank: invalid id", id);
+      return;
+    }
+    Holy.SNIPPETS.activeBankId = id;
+    cy_saveBanksToDisk();
+    renderBankHeader();
+    renderSnippets();
+    console.log(`[Holy.SNIPPETS] Active bank switched → ${bank.name}`);
   }
-  labelEl.textContent = bank.name;
 
-  const menu = document.getElementById("bankSelectMenu");
-  menu.innerHTML = "";
-  Holy.SNIPPETS.banks.forEach(b => {
-    const li = document.createElement("li");
-    const btn = document.createElement("button");
-    btn.textContent = b.name;
-    btn.dataset.bankId = b.id;
-    li.appendChild(btn);
-    menu.appendChild(li);
-  });
+  // expose for cross-module safety
+  window.cy_setActiveBank = cy_setActiveBank;
 
 
-
-}
-
-function bankBinder() {
-  const labelEl = document.getElementById("bankNameLabel");
-  const selBtn  = document.getElementById("bankSelectBtn");
-  const menu    = document.getElementById("bankSelectMenu");
-
-  // 🧩 Inline rename behaviour
-  labelEl.addEventListener("click", () => {
-    const bank  = cy_getActiveBank();
-    const input = document.createElement("input");
-    input.type  = "text";
-    input.value = bank.name;
-    labelEl.replaceWith(input);
-    input.focus();
-
-    input.addEventListener("blur", () => {
-      const newName = input.value.trim();
-      if (newName) {
-        bank.name = newName;
+  // V1 — attempt to load user banks from disk
+  (function cy_loadBanksFromDisk() {
+    try {
+      const { file } = Holy.UTILS.cy_getBanksPaths();
+      const loaded = Holy.UTILS.cy_readJSONFile(file);
+      if (loaded && Array.isArray(loaded.banks) && loaded.banks.length) {
+        Holy.SNIPPETS.banks = loaded.banks;
+        Holy.SNIPPETS.activeBankId = loaded.activeBankId || loaded.banks[0].id;
+        console.log("[Holy.SNIPPETS] Loaded banks from disk:", { count: loaded.banks.length });
+      } else {
+        // first-run: persist the in-memory defaults
         cy_saveBanksToDisk();
       }
-      input.replaceWith(labelEl);
-      renderBankHeader();
+    } catch (e) {
+      console.warn("[Holy.SNIPPETS] load banks failed, using defaults", e);
+    }
+  })();
+
+
+
+
+
+
+
+  // V1 — persist current banks to disk
+  function cy_saveBanksToDisk() {
+    const { file } = Holy.UTILS.cy_getBanksPaths();
+    const payload = {
+      version: 1,
+      activeBankId: Holy.SNIPPETS.activeBankId,
+      banks: Holy.SNIPPETS.banks
+    };
+    const res = Holy.UTILS.cy_writeJSONFile(file, payload);
+    if (res.err) console.warn("[Holy.SNIPPETS] save banks failed:", res);
+    else console.log("[Holy.SNIPPETS] Banks saved:", file);
+  }
+
+  // V2.1 — renderBankHeader (scoped DOM-safe version)
+  function renderBankHeader() {
+    const doc = cy_resolveDoc(); // 🧩 ensure correct document context (main vs quick panel)
+    const bank = cy_getActiveBank();
+
+    const labelEl = doc.getElementById("bankNameLabel");
+    if (!labelEl) {
+      console.warn("[Holy.SNIPPETS] bankNameLabel not found in this panel");
+      return;
+    }
+
+    labelEl.textContent = bank.name;
+
+    const menu = doc.getElementById("bankSelectMenu");
+    if (!menu) {
+      console.warn("[Holy.SNIPPETS] bankSelectMenu not found in this panel");
+      return;
+    }
+
+    menu.innerHTML = "";
+    Holy.SNIPPETS.banks.forEach(b => {
+      const li = doc.createElement("li");
+      const btn = doc.createElement("button");
+      btn.textContent = b.name;
+      btn.dataset.bankId = b.id;
+      li.appendChild(btn);
+      menu.appendChild(li);
+    });
+  }
+
+
+  function bankBinder() {
+    const doc = cy_resolveDoc();
+    const labelEl = doc.getElementById("bankNameLabel");
+    const selBtn = doc.getElementById("bankSelectBtn");
+    const menu = doc.getElementById("bankSelectMenu");
+
+
+    // 🧩 Inline rename behaviour
+    labelEl.addEventListener("click", () => {
+      const bank = cy_getActiveBank();
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = bank.name;
+      labelEl.replaceWith(input);
+      input.focus();
+
+      input.addEventListener("blur", () => {
+        const newName = input.value.trim();
+        if (newName) {
+          bank.name = newName;
+          cy_saveBanksToDisk();
+        }
+        input.replaceWith(labelEl);
+        renderBankHeader();
+      });
+
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") input.blur();
+      });
     });
 
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") input.blur();
-    });
-  });
-
-  // 🧩 Bank selection dropdown
-  selBtn.addEventListener("click", (e) => {
+ // 🧩 Bank selection dropdown
+selBtn.addEventListener("click", (e) => {
   e.preventDefault();
   e.stopPropagation();
+  const doc = cy_resolveDoc();
+  const menu = doc.getElementById("bankSelectMenu");
 
-  const menu = document.getElementById("bankSelectMenu");
   if (!menu) return console.warn("[Holy.SNIPPETS] bankSelectMenu not found");
 
   // rebuild menu dynamically
   menu.innerHTML = "";
   Holy.SNIPPETS.banks.forEach(b => {
-    const li = document.createElement("li");
+    const li = doc.createElement("li");
     li.style.display = "flex";
     li.style.justifyContent = "space-between";
     li.style.alignItems = "center";
 
     // name button (select)
-    const nameBtn = document.createElement("button");
+    const nameBtn = doc.createElement("button");
     nameBtn.textContent = b.name + (b.id === Holy.SNIPPETS.activeBankId ? " ✓" : "");
     nameBtn.dataset.action = "select";
     nameBtn.dataset.bankId = b.id;
     nameBtn.classList.add("bank-name-btn");
-
     li.appendChild(nameBtn);
 
-    // ⛔⛔delete button (only for banks beyond #1)
+    // delete button (only for banks beyond #1)
     if (b.id !== 1) {
-      const delBtn = document.createElement("button");
+      const delBtn = doc.createElement("button");
       delBtn.textContent = "−";
       delBtn.title = "Delete bank";
-delBtn.classList.add("menu-side-btn");
+      delBtn.classList.add("menu-side-btn");
       delBtn.dataset.action = "delete";
       delBtn.dataset.bankId = b.id;
       li.appendChild(delBtn);
@@ -218,16 +240,13 @@ delBtn.classList.add("menu-side-btn");
     menu.appendChild(li);
   });
 
+  // divider + new bank
+  const divider = doc.createElement("hr");
+  divider.classList.add("menu-divider");
+  menu.appendChild(divider);
 
-
-  // 🔹 Add a subtle visual divider before "New Bank"
-const divider = document.createElement("hr");
-divider.classList.add("menu-divider");
-menu.appendChild(divider);
-  
-  // + new bank at bottom
-  const liNew = document.createElement("li");
-  const btnNew = document.createElement("button");
+  const liNew = doc.createElement("li");
+  const btnNew = doc.createElement("button");
   btnNew.textContent = "+ New Bank";
   btnNew.dataset.action = "new";
   liNew.appendChild(btnNew);
@@ -241,8 +260,7 @@ menu.appendChild(divider);
     }
   });
 });
-
-}
+  }
 
 
 
@@ -251,12 +269,12 @@ menu.appendChild(divider);
 
 
 
-// V3 — snippet rhombus using flexible width variant
-function createRhombusButton(labelText) {
-  const btn = document.createElement("button");
-  btn.className = "btn-rhombus2-flex f21 snippet-btn";
+  // V3 — snippet rhombus using flexible width variant
+  function createRhombusButton(labelText) {
+    const btn = document.createElement("button");
+    btn.className = "btn-rhombus2-flex f21 snippet-btn";
 
-  btn.innerHTML = `
+    btn.innerHTML = `
 <div>
  <span class="label">${labelText}</span>
   <div class="rhombus-wrap">
@@ -289,141 +307,147 @@ function createRhombusButton(labelText) {
 </div>
 
   `;
-  return btn;
-}
-
-
-
-// ---------------------------------------------------------
-// 🧠 Global state
-// ---------------------------------------------------------
-let snippet_ID = null;  // globally tracked active snippet
-
-
-
-
-// ---------------------------------------------------------
-// 🧩 Render Snippets 
-// (V4) — Multi-Bank aware + dataset ID + open token tracking
-// ---------------------------------------------------------
-function renderSnippets() {
-  const bar = document.getElementById("snippetsRow");
-  if (!bar) return console.warn("[Holy.SNIPPETS] snippetsRow not found");
-
-  // 🔁 pivot to active bank
-  const _bank = cy_getActiveBank();
-  const source = _bank?.snippets || [];
-
-  // 🧹 clear previous buttons
-  bar.innerHTML = "";
-
-  // 🧱 fail-safe guard
-  if (!Array.isArray(source) || source.length === 0) {
-    const emptyMsg = document.createElement("div");
-    emptyMsg.textContent = "No snippets in this bank";
-    emptyMsg.style.opacity = "0.5";
-    emptyMsg.style.fontSize = "12px";
-    bar.appendChild(emptyMsg);
-    return;
+    return btn;
   }
 
-  // 🎨 build each snippet button
-  source.forEach((snippet) => {
-    const snippetId = snippet.id; // closure-safe capture
-const btn = createRhombusButton(snippet.name);
-btn.dataset.id = snippetId; // keep only this
 
-    // 🖱 Left-click → apply expression
-    btn.addEventListener("click", () => {
-      cy_evalApplyExpression(snippet.expr, (res) => {
-        if (Holy.BUTTONS && typeof Holy.BUTTONS.updateApplyReport === "function") {
-          Holy.BUTTONS.updateApplyReport(`Snippet: ${snippet.name}`, res);
-        }
-        if (res && res.ok) Holy.UI.toast(`Applied: ${snippet.name}`);
-        else Holy.UI.toast(`Snippet error: ${res?.err || "Apply failed"}`);
+
+  // ---------------------------------------------------------
+  // 🧠 Global state
+  // ---------------------------------------------------------
+  let snippet_ID = null;  // globally tracked active snippet
+
+
+
+
+  // ---------------------------------------------------------
+  // 🧩 Render Snippets 
+  // (V4) — Multi-Bank aware + dataset ID + open token tracking
+  // ---------------------------------------------------------
+  function renderSnippets() {
+    const doc = cy_resolveDoc();
+    const bar = doc.getElementById("snippetsRow");
+    if (!bar) return console.warn("[Holy.SNIPPETS] snippetsRow not found");
+
+    // 🔁 pivot to active bank
+    const _bank = cy_getActiveBank();
+    const source = _bank?.snippets || [];
+
+    // 🧹 clear previous buttons
+    bar.innerHTML = "";
+
+    // 🧱 fail-safe guard
+    if (!Array.isArray(source) || source.length === 0) {
+      const emptyMsg = document.createElement("div");
+      emptyMsg.textContent = "No snippets in this bank";
+      emptyMsg.style.opacity = "0.5";
+      emptyMsg.style.fontSize = "12px";
+      bar.appendChild(emptyMsg);
+      return;
+    }
+
+    // 🎨 build each snippet button
+    source.forEach((snippet) => {
+      const snippetId = snippet.id; // closure-safe capture
+      const btn = createRhombusButton(snippet.name);
+      btn.dataset.id = snippetId; // keep only this
+
+      // 🖱 Left-click → apply expression
+      btn.addEventListener("click", () => {
+        cy_evalApplyExpression(snippet.expr, (res) => {
+          if (Holy.BUTTONS && typeof Holy.BUTTONS.updateApplyReport === "function") {
+            Holy.BUTTONS.updateApplyReport(`Snippet: ${snippet.name}`, res);
+          }
+          if (res && res.ok) Holy.UI.toast(`Applied: ${snippet.name}`);
+          else Holy.UI.toast(`Snippet error: ${res?.err || "Apply failed"}`);
+        });
       });
+
+      // 🖱 Right-click → open context menu (Edit / Express)
+      btn.addEventListener(
+        "mousedown",
+        (e) => {
+          if (e.button !== 2) return;
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          e.stopPropagation();
+
+          const doc = cy_resolveDoc();
+          const menuEl = doc.getElementById("snippetContextMenu");
+
+          if (!menuEl) {
+            console.warn("[Holy.SNIPPETS] Context menu element not found");
+            return;
+          }
+
+          // ✅ store ID BEFORE opening menu
+          snippet_ID = snippetId;
+          console.log(`[Holy.SNIPPETS] Stored snippet ID ${snippetId}`);
+
+          // 💾 also carry the ID + token via dataset for safer retrieval
+          menuEl.dataset.snipId = snippetId;
+          menuEl.dataset.token = Date.now();
+          console.log(
+            `[Holy.SNIPPETS] Menu open token ${menuEl.dataset.token} for ID ${snippetId}`
+          );
+
+          // Show the context menu (ensuring the ID remains until menu click)
+          Holy.MENU.contextM_menuBuilder(e, menuEl, {
+            anchorEl: btn,
+            onSelect: (action, ev, menu) => {
+              console.log(`[Holy.SNIPPETS] onSelect from menu: ${action}`);
+              contextM_SNIPPETS_actionHandler(action);
+            }
+          });
+
+        },
+        true
+      );
+
+      bar.appendChild(btn);
     });
 
-    // 🖱 Right-click → open context menu (Edit / Express)
-    btn.addEventListener(
-      "mousedown",
-      (e) => {
-        if (e.button !== 2) return;
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        e.stopPropagation();
+    // 💾 persist banks after creation (Patch 4)
+    cy_saveBanksToDisk();
 
-        const menuEl = document.getElementById("snippetContextMenu"); // target the snippet menu only
-        if (!menuEl) {
-          console.warn("[Holy.SNIPPETS] Context menu element not found");
-          return;
-        }
-
-        // ✅ store ID BEFORE opening menu
-        snippet_ID = snippetId;
-        console.log(`[Holy.SNIPPETS] Stored snippet ID ${snippetId}`);
-
-        // 💾 also carry the ID + token via dataset for safer retrieval
-        menuEl.dataset.snipId = snippetId;
-        menuEl.dataset.token = Date.now();
-        console.log(
-          `[Holy.SNIPPETS] Menu open token ${menuEl.dataset.token} for ID ${snippetId}`
-        );
-
-        // Show the context menu (ensuring the ID remains until menu click)
-        Holy.MENU.contextM_menuBuilder(e, menuEl, {
-  anchorEl: btn,
-  onSelect: (action, ev, menu) => {
-    console.log(`[Holy.SNIPPETS] onSelect from menu: ${action}`);
-    contextM_SNIPPETS_actionHandler(action);
-  }
-});
-
-      },
-      true
+    console.log(
+      `[Holy.SNIPPETS] Rendered ${source.length} snippets from bank: ${_bank.name}`
     );
-
-    bar.appendChild(btn);
-  });
-
-  // 💾 persist banks after creation (Patch 4)
-  cy_saveBanksToDisk();
-
-  console.log(
-    `[Holy.SNIPPETS] Rendered ${source.length} snippets from bank: ${_bank.name}`
-  );
-}
-
-
-
-
-
-
-
-// ---------------------------------------------------------
-// 💾 Save Snippet — Foreground Panel version (multi-bank aware)
-// ---------------------------------------------------------
-document.addEventListener("DOMContentLoaded", () => {
-  const saveBtn = document.getElementById("saveSnip");
-  if (saveBtn) {
-    saveBtn.addEventListener("click", () => {
-      const name = document.getElementById("snipName")?.value || "";
-      const expr = document.getElementById("snipExpr")?.value || "";
-      const bank = cy_getActiveBank();
-      const snip = bank.snippets.find(s => s.id === snippet_ID);
-
-      if (snip) {
-        snip.name = name.trim() || snip.name;
-        snip.expr = expr.trim() || snip.expr;
-        renderSnippets();
-        Holy.UI.toast(`Snippet updated in bank: ${bank.name}`);
-      } else {
-        console.warn("[Holy.SNIPPETS] saveSnip: snippet not found");
-      }
-    });
-  } else {
   }
-});
+
+
+
+
+
+
+
+  // ---------------------------------------------------------
+  // 💾 Save Snippet — Foreground Panel version (multi-bank aware)
+  // ---------------------------------------------------------
+  document.addEventListener("DOMContentLoaded", () => {
+    const doc = cy_resolveDoc();
+    const saveBtn = doc.getElementById("saveSnip");
+
+    if (saveBtn) {
+      saveBtn.addEventListener("click", () => {
+        const name = doc.getElementById("snipName")?.value || "";
+        const expr = doc.getElementById("snipExpr")?.value || "";
+
+        const bank = cy_getActiveBank();
+        const snip = bank.snippets.find(s => s.id === snippet_ID);
+
+        if (snip) {
+          snip.name = name.trim() || snip.name;
+          snip.expr = expr.trim() || snip.expr;
+          renderSnippets();
+          Holy.UI.toast(`Snippet updated in bank: ${bank.name}`);
+        } else {
+          console.warn("[Holy.SNIPPETS] saveSnip: snippet not found");
+        }
+      });
+    } else {
+    }
+  });
 
 
 
@@ -437,7 +461,7 @@ document.addEventListener("DOMContentLoaded", () => {
       var js = 'he_S_SS_applyExpressionToSelection(' + JSON.stringify(JSON.stringify(payload)) + ')';
       cs.evalScript(js, function (res) {
         var out = {};
-        try { out = JSON.parse(res || "{}"); } catch (e) {}
+        try { out = JSON.parse(res || "{}"); } catch (e) { }
         if (typeof cb === "function") cb(out);
       });
     } catch (err) {
@@ -477,19 +501,19 @@ document.addEventListener("DOMContentLoaded", () => {
   // ---------------------------------------------------------
 
 
-// ---------------------------------------------------------
-// 🧩 Snippet Edit UI — Foreground Panel version (multi-bank ready)
-// ---------------------------------------------------------
-function openSnippetEditUI(snipId) {
-  const bank = cy_getActiveBank();
-  const snip = bank.snippets.find(s => s.id === snipId);
-  if (!snip) return console.warn("[Holy.SNIPPETS] snippet not found in active bank:", snipId);
+  // ---------------------------------------------------------
+  // 🧩 Snippet Edit UI — Foreground Panel version (multi-bank ready)
+  // ---------------------------------------------------------
+  function openSnippetEditUI(snipId) {
+    const bank = cy_getActiveBank();
+    const snip = bank.snippets.find(s => s.id === snipId);
+    if (!snip) return console.warn("[Holy.SNIPPETS] snippet not found in active bank:", snipId);
 
-  // 🪶 Create Foreground Panel dynamically
-  const panel = Holy.UTILS.cy_createForegroundPanel("foregroundSnippetEditor", {
-    title: `Edit Snippet – ${snip.name}`,
+    // 🪶 Create Foreground Panel dynamically
+    const panel = Holy.UTILS.cy_createForegroundPanel("foregroundSnippetEditor", {
+      title: `Edit Snippet – ${snip.name}`,
 
-    innerHTML: `
+      innerHTML: `
       <div class="snippet-editor-form">
         <label for="fgSnipName">Name</label>
         <input id="fgSnipName" type="text" value="${snip.name}" class="snippet-editor-input">
@@ -503,48 +527,48 @@ function openSnippetEditUI(snipId) {
         </div>
       </div>
     `
-  });
+    });
 
-  // 🧩 Retrieve field references
-  const nameInput = panel.querySelector("#fgSnipName");
-  const exprInput = panel.querySelector("#fgSnipExpr");
-  const saveBtn = panel.querySelector("#fgSaveSnip");
-  const cancelBtn = panel.querySelector("#fgCancelSnip");
+    // 🧩 Retrieve field references
+    const nameInput = panel.querySelector("#fgSnipName");
+    const exprInput = panel.querySelector("#fgSnipExpr");
+    const saveBtn = panel.querySelector("#fgSaveSnip");
+    const cancelBtn = panel.querySelector("#fgCancelSnip");
 
-  // ✅ Preserve CodeMirror isolation
-  if (exprInput) {
-    exprInput.removeEventListener("focus", Holy.EXPRESS?.attachListeners);
-    exprInput.removeEventListener("input", Holy.EXPRESS?.EDITOR_insertText);
+    // ✅ Preserve CodeMirror isolation
+    if (exprInput) {
+      exprInput.removeEventListener("focus", Holy.EXPRESS?.attachListeners);
+      exprInput.removeEventListener("input", Holy.EXPRESS?.EDITOR_insertText);
+    }
+
+    // ✅ Prefill + track global ID
+    nameInput.value = snip.name;
+    exprInput.value = snip.expr;
+    snippet_ID = snip.id;
+
+    // 💾 Save handler
+    saveBtn.onclick = () => {
+      const newName = nameInput.value.trim();
+      const newExpr = exprInput.value.trim();
+      snip.name = newName || snip.name;
+      snip.expr = newExpr || snip.expr;
+
+      renderSnippets();
+      // 💾 persist updated bank state to disk (Patch 3)
+      cy_saveBanksToDisk();
+      panel.remove();
+      Holy.UI?.toast?.(`Updated: ${snip.name}`);
+      console.log(`[Holy.SNIPPETS] Foreground panel updated snippet →`, snip);
+    };
+
+    // ❌ Cancel handler
+    cancelBtn.onclick = () => {
+      panel.remove();
+      console.log(`[Holy.SNIPPETS] Edit cancelled for: ${snip.name}`);
+    };
+
+    console.log(`[Holy.SNIPPETS] Foreground edit panel opened for: ${snip.name}`);
   }
-
-  // ✅ Prefill + track global ID
-  nameInput.value = snip.name;
-  exprInput.value = snip.expr;
-  snippet_ID = snip.id;
-
-  // 💾 Save handler
-  saveBtn.onclick = () => {
-    const newName = nameInput.value.trim();
-    const newExpr = exprInput.value.trim();
-    snip.name = newName || snip.name;
-    snip.expr = newExpr || snip.expr;
-
-    renderSnippets();
-    // 💾 persist updated bank state to disk (Patch 3)
-cy_saveBanksToDisk();
-    panel.remove();
-    Holy.UI?.toast?.(`Updated: ${snip.name}`);
-    console.log(`[Holy.SNIPPETS] Foreground panel updated snippet →`, snip);
-  };
-
-  // ❌ Cancel handler
-  cancelBtn.onclick = () => {
-    panel.remove();
-    console.log(`[Holy.SNIPPETS] Edit cancelled for: ${snip.name}`);
-  };
-
-  console.log(`[Holy.SNIPPETS] Foreground edit panel opened for: ${snip.name}`);
-}
 
 
 
@@ -568,178 +592,180 @@ cy_saveBanksToDisk();
   // ---------------------------------------------------------
   // 💡 Main button wiring
   // ---------------------------------------------------------
-function cy_wireSingleButton() {
-  const btn = document.getElementById("he_snippet_wiggle");
-  if (!btn) return;
-
-  // 💡 Left-click → Apply expression immediately
-  btn.addEventListener("click", () => {
-    const expr = "wiggle(2, 20)";
-    cy_evalApplyExpression(expr, res => {
-      if (Holy.BUTTONS && typeof Holy.BUTTONS.updateApplyReport === "function") {
-        Holy.BUTTONS.updateApplyReport("Snippet: wiggle(2, 20)", res);
-      }
-      if (res && res.ok) {
-        if (Holy.UI && Holy.UI.toast) Holy.UI.toast("Applied: wiggle(2, 20)");
-      } else {
-        if (Holy.UI && Holy.UI.toast) {
-          Holy.UI.toast("Snippet error: " + (res.err || "Apply failed"));
-        }
-      }
-    });
-  });
-
-  // 💡 Right-click → Show global context menu
-  btn.addEventListener("contextmenu", function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const menu = document.querySelector(".context-menu");
-    if (!menu) {
-      console.warn("[Holy.SNIPPETS] Context menu element not found");
+  // V2.1 — cy_wireSingleButton (scoped DOM + safe container)
+  function cy_wireSingleButton() {
+    const doc = cy_resolveDoc(); // 🧩 ensure correct document (main vs quick panel)
+    const btn = doc.getElementById("he_snippet_wiggle");
+    if (!btn) {
+      console.warn("[Holy.SNIPPETS] Wiggle button not found in this panel");
       return;
     }
 
-    // Use new global utility for consistent alignment
-    Holy.MENU.contextM_menuBuilder(e, menu, {
-  container: document.getElementById("snippetsBar"),
-  anchorEl: btn,
-  onSelect: (action, ev, menuEl) => {
-    contextM_SNIPPETS_actionHandler(action);
-  }
-});
+    // 💡 Left-click → Apply expression immediately
+    btn.addEventListener("click", () => {
+      const expr = "wiggle(2, 20)";
+      cy_evalApplyExpression(expr, (res) => {
+        if (Holy.BUTTONS && typeof Holy.BUTTONS.updateApplyReport === "function") {
+          Holy.BUTTONS.updateApplyReport("Snippet: wiggle(2, 20)", res);
+        }
 
-  }); // ✅ closes event listener
+        if (res && res.ok) {
+          Holy.UI?.toast?.("Applied: wiggle(2, 20)");
+        } else {
+          Holy.UI?.toast?.("Snippet error: " + (res?.err || "Apply failed"));
+        }
+      });
+    });
 
-} // ✅ closes cy_wireSingleButton()
+    // 🖱 Right-click → Show global context menu
+    btn.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-
-
-
-
-// ---------------------------------------------------------
-// ⚡ Context-menu action dispatcher (V3 — multi-bank)
-// ---------------------------------------------------------
-function contextM_SNIPPETS_actionHandler(action) {
-  console.log(`[Holy.SNIPPETS] Context action triggered: ${action}`);
-  console.log(`[Holy.SNIPPETS] Current stored ID:`, snippet_ID);
-
-  const bank = cy_getActiveBank();
-
-  switch (action) {
-    case "edit":
-      if (snippet_ID != null) {
-        console.log(`[Holy.SNIPPETS] Opening edit UI for ID ${snippet_ID}`);
-        openSnippetEditUI(snippet_ID);
-      } else {
-        console.warn("[Holy.SNIPPETS] No snippet ID stored for edit");
-      }
-      break;
-
-    case "express": {
-      const snip = bank.snippets.find(s => s.id === snippet_ID);
-      if (!snip) {
-        console.warn("[Holy.SNIPPETS] No snippet found for Express action");
+      const menu = doc.querySelector(".context-menu");
+      if (!menu) {
+        console.warn("[Holy.SNIPPETS] Context menu element not found in this panel");
         return;
       }
 
-      cy_sendToExpressArea(snip.expr);
-      Holy.UI?.toast?.(`Sent ${snip.name} to Express Area (Bank: ${bank.name})`);
-      console.log(`[Holy.SNIPPETS] Expressed snippet ${snip.id}: ${snip.expr}`);
-      break;
-    }
-
-    default:
-      console.warn("[Holy.SNIPPETS] Unknown context action:", action);
+      // Use new global utility for consistent alignment
+      Holy.MENU.contextM_menuBuilder(e, menu, {
+        container: doc.getElementById("snippetsBar"),
+        anchorEl: btn,
+        onSelect: (action, ev, menuEl) => {
+          contextM_SNIPPETS_actionHandler(action);
+        },
+      });
+    });
   }
-}
-
-
-// V1.0 – bank context-menu router
-function contextM_BANKS_actionHandler(action, bankId) {
-  switch (action) {
-    case "select":
-      if (!bankId) return;
-      cy_setActiveBank(Number(bankId));
-      break;
-
-case "new": {
-  const newId = Math.max(...Holy.SNIPPETS.banks.map(b => b.id)) + 1;
-  const newBank = {
-    id: newId,
-    name: `Bank ${newId}`,
-    snippets: []
-  };
-
-  Holy.SNIPPETS.banks.push(newBank);
-  Holy.SNIPPETS.activeBankId = newId;
-  cy_saveBanksToDisk();
-  renderBankHeader();
-  renderSnippets();
-
-  Holy.UI.toast(`Created new bank: ${newBank.name}`);
-  console.log(`[Holy.SNIPPETS] Created new bank →`, newBank);
-  break;
-}
-
-case "delete":
-  if (!bankId || Number(bankId) === 1) {
-    Holy.UI.toast("Bank 1 cannot be deleted");
-    break;
-  }
-  Holy.SNIPPETS.banks = Holy.SNIPPETS.banks.filter(b => b.id !== Number(bankId));
-  Holy.SNIPPETS.activeBankId = Holy.SNIPPETS.banks[0].id;
-  cy_saveBanksToDisk();
-  renderBankHeader();
-  renderSnippets();
-  Holy.UI.toast("Bank deleted");
-  break;
-
-
-    default:
-      console.warn("[Holy.SNIPPETS] Unknown bank menu action:", action);
-  }
-}
 
 
 
 
-// ---------------------------------------------------------
-// ⚡ Context-menu action dispatcher (V3 — multi-bank)
-// ---------------------------------------------------------
-function contextM_SNIPPETS_actionHandler(action) {
-  console.log(`[Holy.SNIPPETS] Context action triggered: ${action}`);
-  console.log(`[Holy.SNIPPETS] Current stored ID:`, snippet_ID);
 
-  const bank = cy_getActiveBank();
+  // ---------------------------------------------------------
+  // ⚡ Context-menu action dispatcher (V3 — multi-bank)
+  // ---------------------------------------------------------
+  function contextM_SNIPPETS_actionHandler(action) {
+    console.log(`[Holy.SNIPPETS] Context action triggered: ${action}`);
+    console.log(`[Holy.SNIPPETS] Current stored ID:`, snippet_ID);
 
-  switch (action) {
-    case "edit":
-      if (snippet_ID != null) {
-        console.log(`[Holy.SNIPPETS] Opening edit UI for ID ${snippet_ID}`);
-        openSnippetEditUI(snippet_ID);
-      } else {
-        console.warn("[Holy.SNIPPETS] No snippet ID stored for edit");
-      }
-      break;
+    const bank = cy_getActiveBank();
 
-    case "express": {
-      const snip = bank.snippets.find(s => s.id === snippet_ID);
-      if (!snip) {
-        console.warn("[Holy.SNIPPETS] No snippet found for Express action");
-        return;
+    switch (action) {
+      case "edit":
+        if (snippet_ID != null) {
+          console.log(`[Holy.SNIPPETS] Opening edit UI for ID ${snippet_ID}`);
+          openSnippetEditUI(snippet_ID);
+        } else {
+          console.warn("[Holy.SNIPPETS] No snippet ID stored for edit");
+        }
+        break;
+
+      case "express": {
+        const snip = bank.snippets.find(s => s.id === snippet_ID);
+        if (!snip) {
+          console.warn("[Holy.SNIPPETS] No snippet found for Express action");
+          return;
+        }
+
+        cy_sendToExpressArea(snip.expr);
+        Holy.UI?.toast?.(`Sent ${snip.name} to Express Area (Bank: ${bank.name})`);
+        console.log(`[Holy.SNIPPETS] Expressed snippet ${snip.id}: ${snip.expr}`);
+        break;
       }
 
-      cy_sendToExpressArea(snip.expr);
-      Holy.UI?.toast?.(`Sent ${snip.name} to Express Area (Bank: ${bank.name})`);
-      console.log(`[Holy.SNIPPETS] Expressed snippet ${snip.id}: ${snip.expr}`);
-      break;
+      default:
+        console.warn("[Holy.SNIPPETS] Unknown context action:", action);
     }
-
-    default:
-      console.warn("[Holy.SNIPPETS] Unknown context action:", action);
   }
-}
+
+
+  // V1.0 – bank context-menu router
+  function contextM_BANKS_actionHandler(action, bankId) {
+    switch (action) {
+      case "select":
+        if (!bankId) return;
+        cy_setActiveBank(Number(bankId));
+        break;
+
+      case "new": {
+        const newId = Math.max(...Holy.SNIPPETS.banks.map(b => b.id)) + 1;
+        const newBank = {
+          id: newId,
+          name: `Bank ${newId}`,
+          snippets: []
+        };
+
+        Holy.SNIPPETS.banks.push(newBank);
+        Holy.SNIPPETS.activeBankId = newId;
+        cy_saveBanksToDisk();
+        renderBankHeader();
+        renderSnippets();
+
+        Holy.UI.toast(`Created new bank: ${newBank.name}`);
+        console.log(`[Holy.SNIPPETS] Created new bank →`, newBank);
+        break;
+      }
+
+      case "delete":
+        if (!bankId || Number(bankId) === 1) {
+          Holy.UI.toast("Bank 1 cannot be deleted");
+          break;
+        }
+        Holy.SNIPPETS.banks = Holy.SNIPPETS.banks.filter(b => b.id !== Number(bankId));
+        Holy.SNIPPETS.activeBankId = Holy.SNIPPETS.banks[0].id;
+        cy_saveBanksToDisk();
+        renderBankHeader();
+        renderSnippets();
+        Holy.UI.toast("Bank deleted");
+        break;
+
+
+      default:
+        console.warn("[Holy.SNIPPETS] Unknown bank menu action:", action);
+    }
+  }
+
+
+
+
+  // ---------------------------------------------------------
+  // ⚡ Context-menu action dispatcher (V3 — multi-bank)
+  // ---------------------------------------------------------
+  function contextM_SNIPPETS_actionHandler(action) {
+    console.log(`[Holy.SNIPPETS] Context action triggered: ${action}`);
+    console.log(`[Holy.SNIPPETS] Current stored ID:`, snippet_ID);
+
+    const bank = cy_getActiveBank();
+
+    switch (action) {
+      case "edit":
+        if (snippet_ID != null) {
+          console.log(`[Holy.SNIPPETS] Opening edit UI for ID ${snippet_ID}`);
+          openSnippetEditUI(snippet_ID);
+        } else {
+          console.warn("[Holy.SNIPPETS] No snippet ID stored for edit");
+        }
+        break;
+
+      case "express": {
+        const snip = bank.snippets.find(s => s.id === snippet_ID);
+        if (!snip) {
+          console.warn("[Holy.SNIPPETS] No snippet found for Express action");
+          return;
+        }
+
+        cy_sendToExpressArea(snip.expr);
+        Holy.UI?.toast?.(`Sent ${snip.name} to Express Area (Bank: ${bank.name})`);
+        console.log(`[Holy.SNIPPETS] Expressed snippet ${snip.id}: ${snip.expr}`);
+        break;
+      }
+
+      default:
+        console.warn("[Holy.SNIPPETS] Unknown context action:", action);
+    }
+  }
 
 
 
@@ -755,59 +781,61 @@ function contextM_SNIPPETS_actionHandler(action) {
 
 
 
-// ---------------------------------------------------------
-// 💡 Init (V3 — uses active bank abstraction)
-// ---------------------------------------------------------
-function init() {
-  const bar = document.getElementById("snippetsRow");
-  if (!bar) return console.warn("[Holy.SNIPPETS] snippetsRow not found");
+  // ---------------------------------------------------------
+  // 💡 Init (V3 — uses active bank abstraction)
+  // ---------------------------------------------------------
+  function init() {
+    const doc = cy_resolveDoc();
+    const bar = doc.getElementById("snippetsRow");
+    if (!bar) return console.warn("[Holy.SNIPPETS] snippetsRow not found");
 
-  bar.innerHTML = "";
+    bar.innerHTML = "";
 
-  const bank = cy_getActiveBank();
-  const source = bank?.snippets || [];
+    const bank = cy_getActiveBank();
+    const source = bank?.snippets || [];
 
-  source.forEach(snippet => {
-    const btn = document.createElement("button");
-    btn.className = "snippet-btn";
-    btn.textContent = snippet.name;
-    bar.appendChild(btn);
-  });
+    source.forEach(snippet => {
+const btn = doc.createElement("button");
 
-  console.log(`[Holy.SNIPPETS] Initialized with ${source.length} snippets from bank: ${bank.name}`);
+      btn.className = "snippet-btn";
+      btn.textContent = snippet.name;
+      bar.appendChild(btn);
+    });
+
+    console.log(`[Holy.SNIPPETS] Initialized with ${source.length} snippets from bank: ${bank.name}`);
     // 🧩 ensure disk state and UI are in sync
-  renderSnippets();
+    renderSnippets();
 
-}
-
-
-
-function rebindQuickAccessUI() {
-  try {
-    bankBinder();
-  } catch (err) {
-    console.warn("[Holy.SNIPPETS] bankBinder failed during rebind", err);
   }
 
-  try {
-    renderBankHeader();
-  } catch (err) {
-    console.warn("[Holy.SNIPPETS] renderBankHeader failed during rebind", err);
-  }
-}
 
-// ---------------------------------------------------------
-// ⚙️ Activate interactive context menu actions
-// ---------------------------------------------------------
-document.addEventListener("DOMContentLoaded", () => {
-  try {
-    console.log("[Holy.SNIPPETS] DOMContentLoaded → Context menu actions initialized ✅");
-    bankBinder();       // ✅ corrected name — attaches rename + select listeners
-    renderBankHeader(); // render menu entries and label
-  } catch (err) {
-    console.warn("[Holy.SNIPPETS] Context menu init failed:", err);
+
+  function rebindQuickAccessUI() {
+    try {
+      bankBinder();
+    } catch (err) {
+      console.warn("[Holy.SNIPPETS] bankBinder failed during rebind", err);
+    }
+
+    try {
+      renderBankHeader();
+    } catch (err) {
+      console.warn("[Holy.SNIPPETS] renderBankHeader failed during rebind", err);
+    }
   }
-});
+
+  // ---------------------------------------------------------
+  // ⚙️ Activate interactive context menu actions
+  // ---------------------------------------------------------
+  document.addEventListener("DOMContentLoaded", () => {
+    try {
+      console.log("[Holy.SNIPPETS] DOMContentLoaded → Context menu actions initialized ✅");
+      bankBinder();       // ✅ corrected name — attaches rename + select listeners
+      renderBankHeader(); // render menu entries and label
+    } catch (err) {
+      console.warn("[Holy.SNIPPETS] Context menu init failed:", err);
+    }
+  });
   // ---------------------------------------------------------
   // 🚀 MODULE EXPORT (Preserve existing Holy.SNIPPETS.bank)
   // ---------------------------------------------------------

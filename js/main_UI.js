@@ -46,19 +46,43 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+// ---------------------------------------------------------
+// ⚡ Quick Access Panel Launcher (with Warm-Wake Fix)
+// ---------------------------------------------------------
+const quickAccessBtn = document.getElementById("quickAccessLaunchBtn");
+if (quickAccessBtn) {
+  quickAccessBtn.addEventListener("click", () => {
+    try {
+      console.log("[UI] Opening quick access panel");
+      const cs = new CSInterface();
 
-  const quickAccessBtn = document.getElementById("quickAccessLaunchBtn");
-  if (quickAccessBtn) {
-    quickAccessBtn.addEventListener("click", () => {
-      try {
-        console.log("UI: Opening quick access panel");
-        const cs = new CSInterface();
-        cs.requestOpenExtension("com.holy.expressor.quickpanel");
-      } catch (err) {
-        console.error("UI: Failed to open quick access panel →", err);
-      }
-    });
-  }
+      // ✅ Open the panel
+      cs.requestOpenExtension("com.holy.expressor.quickpanel");
+
+      // 🧠 Warm-Wake: nudge CEP runtime to initialize fully
+      setTimeout(() => {
+        try {
+          const pokeEvent = new CSEvent("com.holy.expressor.quickpanel.log", "APPLICATION");
+          pokeEvent.data = JSON.stringify({
+            level: "log",
+            messages: ["[WarmWake] Triggered immediate handshake after open."]
+          });
+          cs.dispatchEvent(pokeEvent);
+          console.log("[UI] Warm-Wake signal dispatched to QuickPanel");
+        } catch (e) {
+          console.warn("[UI] QuickPanel Warm-Wake dispatch failed", e);
+        }
+      }, 800); // small delay to ensure panel process is alive
+
+      // 🧩 Optional: bring AE focus back to the panel stack (can help in some builds)
+       cs.evalScript("app.activeViewer && app.activeViewer.setActive();");
+
+    } catch (err) {
+      console.error("[UI] Failed to open quick access panel →", err);
+    }
+  });
+}
+
 
   const editorMaxBtn = document.getElementById("editorMaximizeBtn");
   if (editorMaxBtn) {
@@ -95,20 +119,26 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+// ✅ REWRITE – QuickPanel Log Listener (safe for object or string payload)
 function quickPanelLogListener(evt) {
   if (!evt) return;
 
-  var payload = {};
+  let payload = evt.data;
   try {
-    payload = JSON.parse(evt.data || "{}");
+    // CEP >=6.1 sends already-parsed objects; handle both cases
+    if (typeof payload === "string") {
+      payload = JSON.parse(payload || "{}");
+    } else if (typeof payload !== "object" || payload === null) {
+      payload = {};
+    }
   } catch (err) {
     console.warn("[Holy.UI] Failed to parse quick panel log payload", err, evt.data);
     return;
   }
 
-  var level = payload.level;
-  var messages = payload.messages || [];
-  var target = console[level] || console.log;
+  const level = payload.level || "log";
+  const messages = payload.messages || [];
+  const target = console[level] || console.log;
 
   try {
     target.apply(console, ["[QuickPanel]"].concat(messages));
@@ -118,9 +148,11 @@ function quickPanelLogListener(evt) {
   }
 }
 
+// ✅ Keep listener registration as-is
 if (!document.body || !document.body.classList.contains("quick-panel")) {
   cs.addEventListener("com.holy.expressor.quickpanel.log", quickPanelLogListener);
 }
+
 
   
   // ------------- Tabs -------------

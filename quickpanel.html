@@ -1,129 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Holy Expressor Quick Access</title>
-  <link rel="stylesheet" href="css/styles.css" />
-  <script>
-    (function STYLE_boot(){
-      try {
-        var theme = localStorage.getItem('he_theme') || 'default';
-        document.documentElement.classList.add("theme-" + theme);
-
-        function hexToRgb(hex) {
-          var clean = hex.replace('#', '');
-          var bigint = parseInt(clean, 16);
-          return {
-            r: (bigint >> 16) & 255,
-            g: (bigint >> 8) & 255,
-            b: bigint & 255
-          };
-        }
-
-        function rgbToHsl(r, g, b) {
-          r /= 255; g /= 255; b /= 255;
-          var max = Math.max(r, g, b);
-          var min = Math.min(r, g, b);
-          var h, s, l = (max + min) / 2;
-
-          if (max === min) {
-            h = s = 0;
-          } else {
-            var d = max - min;
-            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-            switch (max) {
-              case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-              case g: h = (b - r) / d + 2; break;
-              case b: h = (r - g) / d + 4; break;
-            }
-            h /= 6;
-          }
-
-          return {
-            h: Math.round(h * 360),
-            s: Math.round(s * 100),
-            l: Math.round(l * 100)
-          };
-        }
-
-        var root = document.documentElement;
-        var hex = getComputedStyle(root).getPropertyValue('--G-color-1').trim();
-        var rgb = hexToRgb(hex || '#000000');
-        var hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
-
-        root.style.setProperty('--G-colour-1-RGB', rgb.r + ', ' + rgb.g + ', ' + rgb.b);
-        root.style.setProperty('--G-color-1-H', hsl.h);
-        root.style.setProperty('--G-color-1-S', hsl.s + '%');
-        root.style.setProperty('--G-color-1-L', hsl.l + '%');
-      } catch (e) {
-        console.warn('STYLE_boot failed', e);
-      }
-    })();
-  </script>
-  <script src="js/libs/CSInterface.js"></script>
-  <script src="js/json2.js"></script>
-  <script defer src="js/main_UTILS.js"></script>
-  <script defer src="js/main_MENU.js"></script>
-  <script defer src="js/main_UI.js"></script>
-  <script defer src="js/main_SNIPPETS.js"></script>
-  <script defer src="js/quickpanel.js"></script>
+  <style>
+    body { background:#1a1a1a; color:white; font-family:sans-serif; }
+    button { padding:10px 20px; margin:40px; font-size:16px; }
+  </style>
 </head>
-<body class="quick-panel">
-  <div class="panel quick-panel__content">
-    <header class="express-panel-header">
-      <span class="heading-1 f18">Quick Access</span>
-      <div class="express-panel-actions">
-        <button id="quickPanelCloseBtn" class="btn-smallpop" type="button" title="Close quick panel">
-          <span aria-hidden="true">✕</span>
-          <span class="sr-only">Close panel</span>
-        </button>
-      </div>
-    </header>
-    <div class="panel-body">
-      <div id="appRoot" class="quick-panel__snippets">
-        <div id="quickSnippetsMount" class="quick-panel__mount">
-          <div id="snippetsBar" class="panel hide-when-editor-maximized">
-            <div id="bankHeader" class=>
-              <span class="heading-1 f18-c">Snippets </span>
-              <button id="bankSelectBtn" class="Dd-blank" title="Select Bank">
-                <svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
-                     width="6" height="6" viewBox="0 0 5.63 5.63">
-                  <path d="M1.13.5h3.38c.46,0,.77.49.56.9l-1.69,3.38c-.23.46-.89.46-1.12,0L.57,1.4c-.21-.42.09-.9.56-.9Z"/>
-                </svg>
-              </button>
-              <span id="bankNameLabel" class="f18-c">Bank 1</span>
-              <ul id="bankSelectMenu" class="context-menu"></ul>
-            </div>
-            <div class="snippetsRow" id="snippetsRow"></div>
-          </div>
-          <ul id="snippetContextMenu" class="context-menu snippet-menu hide-when-editor-maximized">
-            <li><button data-action="edit">Edit</button></li>
-            <li><button data-action="express">Express...</button></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <template id="quickPanelSnippetsTemplate">
-    <div id="snippetsBar" class="panel hide-when-editor-maximized">
-      <div id="bankHeader" class=>
-        <span class="heading-1 f18-c">Snippets </span>
-        <button id="bankSelectBtn" class="Dd-blank" title="Select Bank">
-          <svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
-               width="6" height="6" viewBox="0 0 5.63 5.63">
-            <path d="M1.13.5h3.38c.46,0,.77.49.56.9l-1.69,3.38c-.23.46-.89.46-1.12,0L.57,1.4c-.21-.42.09-.9.56-.9Z"/>
-          </svg>
-        </button>
-        <span id="bankNameLabel" class="f18-c">Bank 1</span>
-        <ul id="bankSelectMenu" class="context-menu"></ul>
-      </div>
-      <div class="snippetsRow" id="snippetsRow"></div>
-    </div>
-    <ul id="snippetContextMenu" class="context-menu snippet-menu hide-when-editor-maximized">
-      <li><button data-action="edit">Edit</button></li>
-      <li><button data-action="express">Express...</button></li>
-    </ul>
-  </template>
+<body>
+  <button id="testBtn">HELLO PANEL</button>
+  <script>
+    console.log("✅ QuickPanel minimal test running");
+    document.getElementById("testBtn").addEventListener("click", ()=>alert("It works!"));
+  </script>
 </body>
 </html>

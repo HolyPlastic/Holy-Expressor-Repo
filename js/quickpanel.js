@@ -1,3 +1,6 @@
+console.log("[QuickPanel] Reload check: ", new Date().toLocaleTimeString());
+location.reload(true);
+
 (function () {
   "use strict";
 
@@ -54,44 +57,34 @@
       });
     });
   }
+// V TEST — cloneSnippetsMarkup (disabled snippet prep so panel can render)
+function cloneSnippetsMarkup(cs) {
+  try {
+    // ✅ Test-only: clear body and show a visible button
+    console.log("[QuickPanel] Test mode active — showing button only");
 
-  function cloneSnippetsMarkup(cs) {
-    var mount = document.getElementById("quickSnippetsMount");
-    if (!mount) {
-      return Promise.reject(new Error("quickSnippetsMount not found"));
-    }
+    const mount = document.body; // use entire body as target
+    mount.innerHTML = ""; // clear any leftover markup
 
-    function injectFromDocument(doc) {
-      var bar = doc.getElementById("snippetsBar");
-      if (!bar) {
-        throw new Error("snippetsBar not found in source document");
-      }
-      var menu = doc.getElementById("snippetContextMenu");
+    const btn = document.createElement("button");
+    btn.textContent = "TEST BUTTON (Quick Panel)";
+    btn.style.padding = "10px 20px";
+    btn.style.margin = "40px";
+    btn.style.fontSize = "16px";
+    btn.style.background = "#3fa9f5";
+    btn.style.color = "#fff";
+    btn.style.border = "none";
+    btn.style.borderRadius = "6px";
+    btn.style.cursor = "pointer";
 
-      mount.innerHTML = "";
-      mount.appendChild(bar.cloneNode(true));
-      if (menu) {
-        mount.appendChild(menu.cloneNode(true));
-      }
-    }
-
-    return loadSourceHTML(cs)
-      .then(function (html) {
-        var parser = new DOMParser();
-        var doc = parser.parseFromString(html, "text/html");
-        injectFromDocument(doc);
-      })
-      .catch(function (err) {
-        console.warn("[QuickPanel] Failed to clone snippets from index.html, using template", err);
-        var tpl = document.getElementById("quickPanelSnippetsTemplate");
-        if (!tpl || !tpl.content) {
-          throw err;
-        }
-        mount.innerHTML = "";
-        mount.appendChild(tpl.content.cloneNode(true));
-        return null;
-      });
+    mount.appendChild(btn);
+  } catch (err) {
+    console.error("[QuickPanel] Test render failed", err);
   }
+
+  // Return a resolved Promise so the rest of quickpanel.js continues cleanly
+  return Promise.resolve();
+}
 
   function disableNativeContextMenu() {
     if (window.Holy && Holy.MENU && typeof Holy.MENU.contextM_disableNative === "function") {
@@ -202,3 +195,22 @@
       });
   });
 })();
+
+
+// ---------------------------------------------------------
+// 🧠 QuickPanel cold-start stabilizer
+// ---------------------------------------------------------
+window.addEventListener("DOMContentLoaded", () => {
+  console.log("[QuickPanel] DOMContentLoaded – verifying test UI");
+
+  // wait until body is really available (some builds delay this)
+  setTimeout(() => {
+    const testBtn = document.querySelector(".tab-btn");
+    if (!testBtn) {
+      console.warn("[QuickPanel] UI missing on first render, forcing redraw...");
+      document.body.innerHTML = '<button class="tab-btn">TESTING (forced redraw)</button>';
+    } else {
+      console.log("[QuickPanel] UI verified OK on load.");
+    }
+  }, 500); // tweak delay if needed
+});
