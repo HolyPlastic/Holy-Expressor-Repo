@@ -95,6 +95,33 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+function quickPanelLogListener(evt) {
+  if (!evt) return;
+
+  var payload = {};
+  try {
+    payload = JSON.parse(evt.data || "{}");
+  } catch (err) {
+    console.warn("[Holy.UI] Failed to parse quick panel log payload", err, evt.data);
+    return;
+  }
+
+  var level = payload.level;
+  var messages = payload.messages || [];
+  var target = console[level] || console.log;
+
+  try {
+    target.apply(console, ["[QuickPanel]"].concat(messages));
+  } catch (dispatchErr) {
+    console.log.apply(console, ["[QuickPanel]"].concat(messages));
+    console.warn("[Holy.UI] Quick panel log relay failed", dispatchErr);
+  }
+}
+
+if (!document.body || !document.body.classList.contains("quick-panel")) {
+  cs.addEventListener("com.holy.expressor.quickpanel.log", quickPanelLogListener);
+}
+
   
   // ------------- Tabs -------------
   function initTabs() {
