@@ -928,8 +928,8 @@ textarea { width: 100%; }
 }
 
 .btn-smallpop {
-  width: 24px;
-  height: 24px;
+width: 16px;
+    height: 16px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -946,8 +946,8 @@ textarea { width: 100%; }
 .btn-smallpop:hover,
 .btn-smallpop:focus {
   border-color: var(--G-color-1-light);
-  background: var(--G-color-1);
-  color: var(--G-color-1-deepdark-bg);
+  background: none;
+  color: var(--G-color-1-light);
   outline: none;
 }
 
@@ -979,6 +979,11 @@ textarea { width: 100%; }
   border-radius: 6px;
 }
 
+
+#editorMaximizeBtn:hover {
+  border-radius: 6px;
+  margin-left: auto;
+}
 .express-controls {
   display: flex;
   flex-direction: column;
