@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Holy Expressor Quick Access</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="js/libs/CSInterface.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const cs = new CSInterface();
+      const closeBtn = document.getElementById("quickPanelCloseBtn");
+      if (closeBtn) {
+        closeBtn.addEventListener("click", function () {
+          try {
+            cs.closeExtension();
+          } catch (err) {
+            console.error("Quick panel: failed to close extension", err);
+          }
+        });
+      }
+    });
+  </script>
+</head>
+<body class="quick-panel">
+  <div class="panel quick-panel__content">
+    <header class="express-panel-header">
+      <span class="heading-1 f18">Quick Access</span>
+      <div class="express-panel-actions">
+        <button id="quickPanelCloseBtn" class="btn-smallpop" type="button" title="Close quick panel">
+          <span aria-hidden="true">✕</span>
+          <span class="sr-only">Close panel</span>
+        </button>
+      </div>
+    </header>
+    <div class="panel-body">
+      <p class="f14">This is a prototype quick access panel. Content from Holy Expressor can be surfaced here for rapid use.</p>
+    </div>
+  </div>
+</body>
+</html>

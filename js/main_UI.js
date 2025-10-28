@@ -47,6 +47,19 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  const quickAccessBtn = document.getElementById("quickAccessLaunchBtn");
+  if (quickAccessBtn) {
+    quickAccessBtn.addEventListener("click", () => {
+      try {
+        console.log("UI: Opening quick access panel");
+        const cs = new CSInterface();
+        cs.requestOpenExtension("com.holy.expressor.quickpanel");
+      } catch (err) {
+        console.error("UI: Failed to open quick access panel →", err);
+      }
+    });
+  }
+
   const editorMaxBtn = document.getElementById("editorMaximizeBtn");
   if (editorMaxBtn) {
     const srLabel = editorMaxBtn.querySelector(".sr-only");
