@@ -39,7 +39,7 @@ html.theme-default .cm-editor {
 
 #codeEditor  {
 min-height: 50px !important;
-max-height: 100px !important;
+    max-height: 1000px !important;
 }
 
 
