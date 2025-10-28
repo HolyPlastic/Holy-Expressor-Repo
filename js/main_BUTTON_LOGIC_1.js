@@ -6,12 +6,117 @@ if (typeof Holy !== "object") Holy = {};
   // 🔗 Shared instances
   var cs = new CSInterface();
   var HX_LOG_MODE = window.HX_LOG_MODE || "verbose";
+  var applyLogEntries = [];
+  var applyLogWindow = null;
 
+  function formatApplyLogEntry(title, data) {
+    var lines = [];
 
+    try {
+      var now = new Date();
+      var stamp = typeof now.toLocaleTimeString === "function" ? now.toLocaleTimeString() : now.toISOString();
+      var label = (title && typeof title === "string") ? title : "Apply";
+      lines.push("[" + stamp + "] " + label);
 
+      var raw = data;
+      var parsed = null;
+      if (typeof raw === "string" && raw.trim()) {
+        try { parsed = JSON.parse(raw); }
+        catch (err) { parsed = null; }
+      } else if (raw && typeof raw === "object") {
+        parsed = raw;
+      }
 
+      if (parsed && typeof parsed === "object") {
+        if (typeof parsed.ok === "boolean") {
+          lines.push("Status: " + (parsed.ok ? "ok" : "error"));
+        }
+        if (parsed.applied != null) lines.push("Applied: " + parsed.applied);
+        if (parsed.skipped != null) lines.push("Skipped: " + parsed.skipped);
+        if (parsed.expressionName) lines.push("Expression: " + parsed.expressionName);
 
+        var targets = parsed.targets || parsed.paths;
+        if (Array.isArray(targets) && targets.length) {
+          lines.push("Targets:");
+          for (var i = 0; i < targets.length; i++) {
+            lines.push("- " + targets[i]);
+          }
+        }
 
+        var errs = parsed.errors;
+        if (errs && !Array.isArray(errs)) errs = [errs];
+        if (errs && errs.length) {
+          lines.push("Errors:");
+          for (var j = 0; j < errs.length; j++) {
+            var e = errs[j] || {};
+            var path = e.path || e.target || "?";
+            var errMsg = e.err || e.message || String(e);
+            lines.push("- " + path + " -> " + errMsg);
+          }
+        }
+
+        if (parsed.details && typeof parsed.details === "string") {
+          lines.push("Details: " + parsed.details);
+        }
+      } else if (typeof raw === "string" && raw.trim()) {
+        lines.push("Raw: " + raw.trim());
+      } else if (raw != null) {
+        try {
+          lines.push("Raw: " + JSON.stringify(raw));
+        } catch (err2) {
+          lines.push("Raw: [unserializable]");
+        }
+      }
+    } catch (err3) {
+      lines.push("[Log formatting failed]");
+    }
+
+    return lines.join("\n");
+  }
+
+  function ensureLogWindowContent() {
+    if (!applyLogWindow || applyLogWindow.closed) {
+      applyLogWindow = null;
+      return null;
+    }
+
+    var doc = applyLogWindow.document;
+    if (!doc) return null;
+
+    var pre = doc.getElementById("applyLogContent");
+    if (pre) return pre;
+
+    doc.open();
+    doc.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Holy Expressor Apply Log</title><style>body{margin:0;background:#111;color:#f0f0f0;font-family:Menlo,Consolas,monospace;font-size:12px;}header{padding:8px 12px;font-weight:bold;background:#1d1d1d;border-bottom:1px solid #2c2c2c;}pre{margin:0;padding:12px;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;height:calc(100vh - 40px);overflow-y:auto;box-sizing:border-box;background:#141414;}</style></head><body><header>Apply Log</header><pre id="applyLogContent">No log entries yet.</pre></body></html>');
+    doc.close();
+    return doc.getElementById("applyLogContent");
+  }
+
+  function renderApplyLogWindow() {
+    var pre = ensureLogWindowContent();
+    if (!pre) return;
+
+    pre.textContent = applyLogEntries.length ? applyLogEntries.join("\n\n") : "No log entries yet.";
+    pre.scrollTop = pre.scrollHeight;
+  }
+
+  function openApplyLogWindow() {
+    if (!applyLogWindow || applyLogWindow.closed) {
+      applyLogWindow = window.open("", "HolyExpressApplyLog", "width=520,height=600");
+      if (!applyLogWindow) {
+        console.warn("[Holy.BUTTONS] Failed to open log window (popup blocked?)");
+        return;
+      }
+      if (typeof applyLogWindow.addEventListener === "function") {
+        applyLogWindow.addEventListener("beforeunload", function () {
+          applyLogWindow = null;
+        });
+      }
+    }
+
+    renderApplyLogWindow();
+    try { applyLogWindow.focus(); } catch (err) {}
+  }
 
 
   // ... module logic ...
@@ -37,6 +142,16 @@ if (typeof Holy !== "object") Holy = {};
             if (selectTargetBtn) {
               selectTargetBtn.addEventListener("click", () => {
                 selectTargetBtn.classList.add("stay-orange");
+              });
+            }
+
+            /* ============================
+              APPLY LOG WINDOW
+              ============================ */
+            var openLogBtn = Holy.UI.DOM("#openApplyLog");
+            if (openLogBtn) {
+              openLogBtn.addEventListener("click", function () {
+                openApplyLogWindow();
               });
             }
           /* ============================
@@ -503,16 +618,6 @@ if (typeof Holy !== "object") Holy = {};
               });
             }
 
-            /* ============================
-              TOGGLE: APPLY REPORT VISIBILITY
-              ============================ */
-            var toggleReport = Holy.UI.DOM("#toggleReport");
-            if (toggleReport) {
-              toggleReport.addEventListener("change", function (e) {
-                const box = document.getElementById("applyReportContainer");
-                box.style.display = e.target.checked ? "block" : "none";
-              });
-            }
           }
 
 
@@ -526,42 +631,20 @@ if (typeof Holy !== "object") Holy = {};
 // Accepts updateApplyReport(result)  or  updateApplyReport(title, result)
 // ======================================
 function updateApplyReport(arg1, arg2) {
-  const box = document.getElementById("applyReport");
-  const container = document.getElementById("applyReportContainer");
-  if (!box || !container) return;
-
-  const toggle = document.getElementById("toggleReport");
-  container.style.display = (toggle && toggle.checked) ? "block" : "none";
-  if (!toggle || !toggle.checked) return;
-
   var title = (arguments.length === 2 && typeof arg1 === "string") ? arg1 : "";
   var data  = (arguments.length === 2 && typeof arg1 === "string") ? arg2 : arg1;
 
-  try {
-    var parsed = (typeof data === "string") ? JSON.parse(data) : (data || {});
-    if (!parsed.ok) {
-      box.textContent = "Error: " + (parsed.err || "Unknown");
-      return;
-    }
+  var entry = formatApplyLogEntry(title, data);
+  if (!entry) entry = "[No apply data]";
 
-    var errs = parsed.errors;
-    if (errs && !Array.isArray(errs)) errs = [errs];
+  applyLogEntries.push(entry);
 
-    var lines = [];
-    if (title) lines.push(title);
-    lines.push("Applied: " + (parsed.applied || 0));
-    lines.push("Skipped: " + (parsed.skipped || 0));
-    if (errs && errs.length) {
-      lines.push("Errors:");
-      for (var i = 0; i < errs.length; i++) {
-        var e = errs[i] || {};
-        lines.push("- " + (e.path || "?") + " -> " + (e.err || String(e)));
-      }
-    }
-    box.textContent = lines.join("\n");
-  } catch (e) {
-    box.textContent = "Failed to parse report";
+  var box = document.getElementById("applyReport");
+  if (box) {
+    box.textContent = entry;
   }
+
+  renderApplyLogWindow();
 }
 
 
@@ -575,7 +658,8 @@ Holy.BUTTONS = {
   cs: cs,
   HX_LOG_MODE: HX_LOG_MODE,
   wirePanelButtons: wirePanelButtons,
-  updateApplyReport: updateApplyReport
+  updateApplyReport: updateApplyReport,
+  openApplyLogWindow: openApplyLogWindow
 };
 
 })();

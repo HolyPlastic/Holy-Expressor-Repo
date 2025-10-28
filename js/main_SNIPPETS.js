@@ -336,6 +336,9 @@ btn.dataset.id = snippetId; // keep only this
     // 🖱 Left-click → apply expression
     btn.addEventListener("click", () => {
       cy_evalApplyExpression(snippet.expr, (res) => {
+        if (Holy.BUTTONS && typeof Holy.BUTTONS.updateApplyReport === "function") {
+          Holy.BUTTONS.updateApplyReport(`Snippet: ${snippet.name}`, res);
+        }
         if (res && res.ok) Holy.UI.toast(`Applied: ${snippet.name}`);
         else Holy.UI.toast(`Snippet error: ${res?.err || "Apply failed"}`);
       });
@@ -573,6 +576,9 @@ function cy_wireSingleButton() {
   btn.addEventListener("click", () => {
     const expr = "wiggle(2, 20)";
     cy_evalApplyExpression(expr, res => {
+      if (Holy.BUTTONS && typeof Holy.BUTTONS.updateApplyReport === "function") {
+        Holy.BUTTONS.updateApplyReport("Snippet: wiggle(2, 20)", res);
+      }
       if (res && res.ok) {
         if (Holy.UI && Holy.UI.toast) Holy.UI.toast("Applied: wiggle(2, 20)");
       } else {
