@@ -922,14 +922,15 @@ textarea { width: 100%; }
   margin-bottom: 4px;
 }
 
-#expressArea .express-panel-header .heading-1 {
-  margin: 0;
-  line-height: 1.1;
+.express-panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.btn-smallpop {
-width: 16px;
-    height: 16px;
+.express-panel-btn {
+  width: 26px;
+  height: 26px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
