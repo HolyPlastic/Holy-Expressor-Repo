@@ -903,55 +903,80 @@ textarea { width: 100%; }
   width: 100%;
   display: flex;
   flex-direction: column;
+  gap: 4px;
   background: transparent !important;
 
   box-sizing: border-box;
+}
+
+#expressArea.panel {
+  margin-top: 0;
+  padding: 4px 6px 8px;
 }
 
 #expressArea .express-panel-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 4px;
+  margin-bottom: 4px;
 }
 
-.express-panel-btn {
-  width: 26px;
-  height: 26px;
+#expressArea .express-panel-header .heading-1 {
+  margin: 0;
+  line-height: 1.1;
+}
+
+.btn-smallpop {
+  width: 24px;
+  height: 24px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
-  border: 1px solid var(--G-colour-1-opac-30);
-  background: rgba(0, 0, 0, 0.35);
-  color: inherit;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--G-color-1);
   cursor: pointer;
   padding: 0;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  line-height: 1;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-.express-panel-btn:hover,
-.express-panel-btn:focus {
-  background: rgba(0, 0, 0, 0.55);
-  border-color: var(--G-colour-1-opac-50);
+.btn-smallpop:hover,
+.btn-smallpop:focus {
+  border-color: var(--G-color-1-light);
+  background: var(--G-color-1);
+  color: var(--G-color-1-deepdark-bg);
   outline: none;
 }
 
-.express-panel-btn:focus-visible {
-  box-shadow: 0 0 0 2px rgba(var(--G-colour-1-RGB), 0.4);
+.btn-smallpop:focus-visible {
+  box-shadow: 0 0 0 2px rgba(var(--G-colour-1-RGB), 0.35);
 }
 
-.express-panel-btn .icon-collapse {
+.btn-smallpop svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  stroke: currentColor;
+  transition: inherit;
+}
+
+.btn-smallpop .icon-collapse {
   display: none;
 }
 
-.express-panel-btn.is-active .icon-expand {
+.btn-smallpop.is-active .icon-expand {
   display: none;
 }
 
-.express-panel-btn.is-active .icon-collapse {
+.btn-smallpop.is-active .icon-collapse {
   display: inline;
+}
+
+#editorMaximizeBtn {
+  border-radius: 6px;
 }
 
 .express-controls {
@@ -962,6 +987,8 @@ textarea { width: 100%; }
 }
 
 .express-apply {
+  margin-top: 10px;
+  padding-bottom: 6px;
   margin-top: 12px;
 }
 
@@ -1023,15 +1050,26 @@ body.editor-maximized #appRoot {
   height: 100%;
 }
 
-body.editor-maximized .hide-when-editor-maximized {
-  display: none !important;
-}
-
 body.editor-maximized #expressArea {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   margin-bottom: 12px;
+}
+
+body.editor-maximized .hdr,
+body.editor-maximized .tabs,
+body.editor-maximized #snippetsBar,
+body.editor-maximized #snippetContextMenu,
+body.editor-maximized #expressions,
+body.editor-maximized #expressControls,
+body.editor-maximized #expressMisc,
+body.editor-maximized #bankSelectMenu {
+  display: none !important;
+}
+
+body.editor-maximized #expressArea .express-panel-header .heading-1 {
+  display: none;
 }
 
 body.editor-maximized #codeEditor {
@@ -1041,6 +1079,7 @@ body.editor-maximized #codeEditor {
 
 body.editor-maximized #expressApplyRow {
   margin-top: auto;
+  margin-bottom: 12px;
   display: flex;
   justify-content: center;
 }
