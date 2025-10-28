@@ -193,10 +193,18 @@ ____________________ -------->
 <div id="expressArea" class="panel">
   <div class="express-panel-header">
     <span class="heading-1 f18">Express</span>
-    <button id="editorMaximizeBtn" class="express-panel-btn" type="button" aria-label="Maximize editor" aria-pressed="false" title="Maximize editor">
+    <div class="express-panel-actions">
+      <button id="editorClearBtn" class="btn-smallpop" type="button" aria-label="Clear editor" title="Clear editor">
+        <span aria-hidden="true">⌫</span>
+        <span class="sr-only">Clear editor</span>
+      </button>
+    <button id="editorMaximizeBtn" class="btn-smallpop" type="button" aria-label="Maximize editor" aria-pressed="false" title="Maximize editor">
       <span class="icon icon-expand" aria-hidden="true">⤢</span>
       <span class="icon icon-collapse" aria-hidden="true">⤡</span>
       <span class="sr-only">Maximize editor</span>
+      </button>
+    </div>
+
     </button>
   </div>
   <!-- V2: pick UI removed -->
@@ -216,7 +224,7 @@ ____________________ -------->
 	<!-- =======================[+]=====================-->
 	
 	
-<div id="expressControls" class="express-controls hide-when-editor-maximized">
+<div id="expressControls" class="express-controls">
     <div class="row btns">
 <!--
   Target Selected button 
@@ -235,12 +243,12 @@ ____________________ -------->
 -->
 
 <div>
-  <button id="loadFromSelectionBtn" class="circle-btn"></button>
+  <button id="loadFromSelectionBtn" class="btn-smallpop"></button>
   <div class="label-under">Load<br>Expression</div>
 </div>
 
 <div>
-  <button id="loadPathFromSelectionBtn" class="circle-btn f3"></button>
+  <button id="loadPathFromSelectionBtn" class="btn-smallpop f3"></button>
   <div class="label-under">Load<br>Path</div>
 </div>
 
@@ -332,7 +340,7 @@ ____________________ -------->
 
 
     <!-- Apply Report toggle + box -->
-<div id="expressMisc" class="express-misc hide-when-editor-maximized">
+<div id="expressMisc" class="express-misc">
     <div class="row">
       <button id="openApplyLog" class="log-button text-sm" title="Open Apply Log">Log</button>
     </div>

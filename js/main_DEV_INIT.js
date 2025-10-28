@@ -170,6 +170,28 @@ console.error("Placeholder clear failed:", e);
 }
 
 console.log("✅ CodeMirror editor mounted");
+
+const clearBtn = document.getElementById("editorClearBtn");
+if (clearBtn) {
+  clearBtn.addEventListener("click", () => {
+    if (!window.editor || !window.editor.state) {
+      console.warn("Editor clear requested but CodeMirror instance is unavailable");
+      return;
+    }
+
+    try {
+      const full = window.editor.state.doc.toString();
+      window.editor.dispatch({
+        changes: { from: 0, to: full.length, insert: "" }
+      });
+      if (typeof window.editor.focus === "function") {
+        window.editor.focus();
+      }
+    } catch (e) {
+      console.error("Failed to clear editor contents", e);
+    }
+  });
+}
 });
   
   
