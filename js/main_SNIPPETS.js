@@ -782,6 +782,20 @@ function init() {
 
 
 
+function rebindQuickAccessUI() {
+  try {
+    bankBinder();
+  } catch (err) {
+    console.warn("[Holy.SNIPPETS] bankBinder failed during rebind", err);
+  }
+
+  try {
+    renderBankHeader();
+  } catch (err) {
+    console.warn("[Holy.SNIPPETS] renderBankHeader failed during rebind", err);
+  }
+}
+
 // ---------------------------------------------------------
 // ⚙️ Activate interactive context menu actions
 // ---------------------------------------------------------
@@ -808,8 +822,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   Holy.SNIPPETS.contextM_SNIPPETS_actionHandler = contextM_SNIPPETS_actionHandler;
 
+  Holy.SNIPPETS.renderSnippets = renderSnippets;
+  Holy.SNIPPETS.rebindQuickAccessUI = rebindQuickAccessUI;
+
 
   Holy.SNIPPETS.cy_getActiveBank = cy_getActiveBank;
-  
+
 
 })();
