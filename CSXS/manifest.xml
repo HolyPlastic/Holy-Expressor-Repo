@@ -9,6 +9,7 @@
   <ExtensionList>
     <Extension Id="com.holy.expressor.panel" />
     <Extension Id="com.holy.expressor.log" />
+    <Extension Id="com.holy.expressor.quickpanel" />
   </ExtensionList>
 
   <ExecutionEnvironment>
@@ -86,6 +87,38 @@
             <Size>
               <Width>520</Width>
               <Height>600</Height>
+            </Size>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+    <Extension Id="com.holy.expressor.quickpanel">
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./quickpanel.html</MainPath>
+          <CEFCommandLine>
+              <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--enable-devtools</Parameter>
+            <Parameter>--remote-debugging-port=6904</Parameter>
+            <Parameter>--allow-file-access</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+            <Parameter>--disable-web-security</Parameter>
+
+          </CEFCommandLine>
+        </Resources>
+
+        <Lifecycle>
+          <AutoVisible>false</AutoVisible>
+        </Lifecycle>
+
+        <UI>
+          <Type>Panel</Type>
+          <Menu>Holy Expressor Quick Access</Menu>
+
+          <Geometry>
+            <Size>
+              <Width>320</Width>
+              <Height>260</Height>
             </Size>
           </Geometry>
         </UI>

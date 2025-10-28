@@ -47,6 +47,19 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  const quickAccessBtn = document.getElementById("quickAccessLaunchBtn");
+  if (quickAccessBtn) {
+    quickAccessBtn.addEventListener("click", () => {
+      try {
+        console.log("UI: Opening quick access panel");
+        const cs = new CSInterface();
+        cs.requestOpenExtension("com.holy.expressor.quickpanel");
+      } catch (err) {
+        console.error("UI: Failed to open quick access panel →", err);
+      }
+    });
+  }
+
   const editorMaxBtn = document.getElementById("editorMaximizeBtn");
   if (editorMaxBtn) {
     const srLabel = editorMaxBtn.querySelector(".sr-only");
@@ -82,16 +95,50 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+function quickPanelLogListener(evt) {
+  if (!evt) return;
+
+  var payload = {};
+  try {
+    payload = JSON.parse(evt.data || "{}");
+  } catch (err) {
+    console.warn("[Holy.UI] Failed to parse quick panel log payload", err, evt.data);
+    return;
+  }
+
+  var level = payload.level;
+  var messages = payload.messages || [];
+  var target = console[level] || console.log;
+
+  try {
+    target.apply(console, ["[QuickPanel]"].concat(messages));
+  } catch (dispatchErr) {
+    console.log.apply(console, ["[QuickPanel]"].concat(messages));
+    console.warn("[Holy.UI] Quick panel log relay failed", dispatchErr);
+  }
+}
+
+cs.addEventListener("com.holy.expressor.quickpanel.log", quickPanelLogListener);
+
   
   // ------------- Tabs -------------
   function initTabs() {
     allDOM(".tab-btn").forEach(function (btn) {
+      var tabId = btn.getAttribute("data-tab");
+      if (!tabId) return;
+
       btn.addEventListener("click", function () {
         allDOM(".tab-btn").forEach(function (b) { b.classList.remove("active"); });
         btn.classList.add("active");
-        var id = btn.getAttribute("data-tab");
         allDOM(".tab").forEach(function (t) { t.classList.remove("active"); });
-        DOM("#" + id).classList.add("active");
+        var target = DOM("#" + tabId);
+        if (!target) {
+          if (window.HX_LOG_MODE === "verbose") {
+            console.warn("[Holy.UI] Tab target not found for", tabId);
+          }
+          return;
+        }
+        target.classList.add("active");
       });
     });
   }
