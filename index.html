@@ -191,7 +191,14 @@ ____________________ -------->
 
 <!-- Express panel -->
 <div id="expressArea" class="panel">
-  <span class="heading-1 f18">Express</span>
+  <div class="express-panel-header">
+    <span class="heading-1 f18">Express</span>
+    <button id="editorMaximizeBtn" class="btn-smallpop" type="button" aria-label="Maximize editor" aria-pressed="false" title="Maximize editor">
+      <span class="icon icon-expand" aria-hidden="true">⤢</span>
+      <span class="icon icon-collapse" aria-hidden="true">⤡</span>
+      <span class="sr-only">Maximize editor</span>
+    </button>
+  </div>
   <!-- V2: pick UI removed -->
   <!-- Editor row -->
   <div id="codeEditor"></div>
@@ -209,6 +216,7 @@ ____________________ -------->
 	<!-- =======================[+]=====================-->
 	
 	
+<div id="expressControls" class="express-controls">
     <div class="row btns">
 <!--
   Target Selected button 
@@ -227,12 +235,12 @@ ____________________ -------->
 -->
 
 <div>
-  <button id="loadFromSelectionBtn" class="circle-btn"></button>
+  <button id="loadFromSelectionBtn" class="btn-smallpop"></button>
   <div class="label-under">Load<br>Expression</div>
 </div>
 
 <div>
-  <button id="loadPathFromSelectionBtn" class="circle-btn f3"></button>
+  <button id="loadPathFromSelectionBtn" class="btn-smallpop f3"></button>
   <div class="label-under">Load<br>Path</div>
 </div>
 
@@ -258,6 +266,8 @@ ____________________ -------->
       <input type="text" id="customSearch" placeholder="e.g. Stroke 1 > Opacity" disabled />
     </div>
 
+</div>
+
 <!----_-_-_-_-_-_-_---------------------------------------\--\--->
 <!-- #endregion ^^^ End Controls ^^^ -->
 
@@ -267,6 +277,7 @@ ____________________ -------->
 
 
     <!-- Apply buttons -->
+<div id="expressApplyRow" class="express-apply">
     <div class="row btns apply-row">
   
 
@@ -303,6 +314,7 @@ ____________________ -------->
 
       <!--<button id="applyTargetBtn" class="apply-target-btn">Apply</button>-->
     </div>
+</div>
 
   <!-- ================ Romby boi ==============-->
 	<!-- =======================[+]=====================-->
@@ -320,6 +332,7 @@ ____________________ -------->
 
 
     <!-- Apply Report toggle + box -->
+<div id="expressMisc" class="express-misc">
     <div class="row">
       <label class="checkbox-label text-sm">
   <input type="checkbox" id="toggleReport" />
@@ -342,12 +355,12 @@ ____________________ -------->
 
 <!-- Target box
     <div id="TargetBox" class="panel shade-hard">
-      <div id="TargetList">No results yet</div>
+    <div id="TargetList">No results yet</div>
     </div>
  -->
   <!-- Toast -->
   <footer id="toast"></footer>
-  
+
 
 
     <!-- V2: pick UI removed -->
@@ -355,6 +368,8 @@ ____________________ -------->
 
  <!----_-_-_-_-_-_-_---------------------------------------\--\--->
 <!-- #endregion ^^^ End Misc ⚪ ^^^ -->
+
+</div>
 
 
 
