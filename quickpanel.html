@@ -6,20 +6,20 @@
   <link rel="stylesheet" href="css/styles.css" />
   <script src="js/libs/CSInterface.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const cs = new CSInterface();
-      const closeBtn = document.getElementById("quickPanelCloseBtn");
-      if (closeBtn) {
-        closeBtn.addEventListener("click", function () {
-          try {
-            cs.closeExtension();
-          } catch (err) {
-            console.error("Quick panel: failed to close extension", err);
-          }
-        });
-      }
-    });
+    window.Holy = window.Holy || {};
+    Holy.UI = Holy.UI || {};
+    if (typeof Holy.UI.toast !== "function") {
+      Holy.UI.toast = function (message) {
+        if (message) {
+          console.log("[QuickPanel toast]", message);
+        }
+      };
+    }
   </script>
+  <script defer src="js/main_UTILS.js"></script>
+  <script defer src="js/main_MENU.js"></script>
+  <script defer src="js/main_SNIPPETS.js"></script>
+  <script defer src="js/quickpanel.js"></script>
 </head>
 <body class="quick-panel">
   <div class="panel quick-panel__content">
@@ -33,7 +33,26 @@
       </div>
     </header>
     <div class="panel-body">
-      <p class="f14">This is a prototype quick access panel. Content from Holy Expressor can be surfaced here for rapid use.</p>
+      <div id="appRoot" class="quick-panel__snippets">
+        <div id="snippetsBar" class="panel hide-when-editor-maximized">
+          <div id="bankHeader" class=>
+            <span class="heading-1 f18-c">Snippets </span>
+            <button id="bankSelectBtn" class="Dd-blank" title="Select Bank">
+              <svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
+                   width="6" height="6" viewBox="0 0 5.63 5.63">
+                <path d="M1.13.5h3.38c.46,0,.77.49.56.9l-1.69,3.38c-.23.46-.89.46-1.12,0L.57,1.4c-.21-.42.09-.9.56-.9Z"/>
+              </svg>
+            </button>
+            <span id="bankNameLabel" class="f18-c">Bank 1</span>
+            <ul id="bankSelectMenu" class="context-menu"></ul>
+          </div>
+          <div class="snippetsRow" id="snippetsRow"></div>
+        </div>
+        <ul id="snippetContextMenu" class="context-menu snippet-menu hide-when-editor-maximized">
+          <li><button data-action="edit">Edit</button></li>
+          <li><button data-action="express">Express...</button></li>
+        </ul>
+      </div>
     </div>
   </div>
 </body>

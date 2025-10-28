@@ -99,12 +99,21 @@ document.addEventListener("DOMContentLoaded", () => {
   // ------------- Tabs -------------
   function initTabs() {
     allDOM(".tab-btn").forEach(function (btn) {
+      var tabId = btn.getAttribute("data-tab");
+      if (!tabId) return;
+
       btn.addEventListener("click", function () {
         allDOM(".tab-btn").forEach(function (b) { b.classList.remove("active"); });
         btn.classList.add("active");
-        var id = btn.getAttribute("data-tab");
         allDOM(".tab").forEach(function (t) { t.classList.remove("active"); });
-        DOM("#" + id).classList.add("active");
+        var target = DOM("#" + tabId);
+        if (!target) {
+          if (window.HX_LOG_MODE === "verbose") {
+            console.warn("[Holy.UI] Tab target not found for", tabId);
+          }
+          return;
+        }
+        target.classList.add("active");
       });
     });
   }
