@@ -1900,23 +1900,30 @@ button.target-btn { border: 2px solid #ff7415; }
 }
 
 /* =============================
-   🔔 Apply Report
+   🔔 Apply Log button
    ============================= */
-   
-#applyReportContainer {
-  border: 1px solid #444;
-  padding: 6px;
-  margin-top: 4px;
-  background: #222;
-  font-size: 11px;
-  max-height: 120px;
-  overflow-y: auto;
+
+#openApplyLog {
+  padding: 4px 12px;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #f2f2f2;
+  background: linear-gradient(180deg, #3a3a3a 0%, #252525 100%);
+  border: 1px solid #555;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
 }
-#applyReport {
-  margin: 0;
-  white-space: pre-wrap;
-  word-break: break-word;
-  font-size:9px;
+
+#openApplyLog:hover {
+  background: linear-gradient(180deg, #4a4a4a 0%, #2f2f2f 100%);
+  border-color: #777;
+}
+
+#openApplyLog:active {
+  background: linear-gradient(180deg, #2f2f2f 0%, #1c1c1c 100%);
+  border-color: #666;
 }
 
 /* =============================
