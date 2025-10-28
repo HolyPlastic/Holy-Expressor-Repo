@@ -6,12 +6,142 @@ if (typeof Holy !== "object") Holy = {};
   // 🔗 Shared instances
   var cs = new CSInterface();
   var HX_LOG_MODE = window.HX_LOG_MODE || "verbose";
+  var APPLY_LOG_EXTENSION_ID = "com.holy.expressor.log";
+  var APPLY_LOG_EVENTS = {
+    update: "com.holy.expressor.applyLog.update",
+    request: "com.holy.expressor.applyLog.request"
+  };
+  var APPLY_LOG_MAX_ENTRIES = 250;
+  var applyLogEntries = [];
 
+  function formatApplyLogEntry(title, data) {
+    var lines = [];
 
+    try {
+      var now = new Date();
+      var stamp = typeof now.toLocaleTimeString === "function" ? now.toLocaleTimeString() : now.toISOString();
+      var label = (title && typeof title === "string") ? title : "Apply";
+      lines.push("[" + stamp + "] " + label);
 
+      var raw = data;
+      var parsed = null;
+      if (typeof raw === "string" && raw.trim()) {
+        try { parsed = JSON.parse(raw); }
+        catch (err) { parsed = null; }
+      } else if (raw && typeof raw === "object") {
+        parsed = raw;
+      }
 
+      if (parsed && typeof parsed === "object") {
+        if (typeof parsed.ok === "boolean") {
+          lines.push("Status: " + (parsed.ok ? "ok" : "error"));
+        }
+        if (parsed.applied != null) lines.push("Applied: " + parsed.applied);
+        if (parsed.skipped != null) lines.push("Skipped: " + parsed.skipped);
+        if (parsed.expressionName) lines.push("Expression: " + parsed.expressionName);
 
+        var targets = parsed.targets || parsed.paths;
+        if (Array.isArray(targets) && targets.length) {
+          lines.push("Targets:");
+          for (var i = 0; i < targets.length; i++) {
+            lines.push("- " + targets[i]);
+          }
+        }
 
+        var errs = parsed.errors;
+        if (errs && !Array.isArray(errs)) errs = [errs];
+        if (errs && errs.length) {
+          lines.push("Errors:");
+          for (var j = 0; j < errs.length; j++) {
+            var e = errs[j] || {};
+            var path = e.path || e.target || "?";
+            var errMsg = e.err || e.message || String(e);
+            lines.push("- " + path + " -> " + errMsg);
+          }
+        }
+
+        if (parsed.details && typeof parsed.details === "string") {
+          lines.push("Details: " + parsed.details);
+        }
+      } else if (typeof raw === "string" && raw.trim()) {
+        lines.push("Raw: " + raw.trim());
+      } else if (raw != null) {
+        try {
+          lines.push("Raw: " + JSON.stringify(raw));
+        } catch (err2) {
+          lines.push("Raw: [unserializable]");
+        }
+      }
+    } catch (err3) {
+      lines.push("[Log formatting failed]");
+    }
+
+    return lines.join("\n");
+  }
+
+  function broadcastApplyLogEntries(targetExtensionId) {
+    if (!cs || typeof cs.dispatchEvent !== "function") return;
+    if (typeof CSEvent !== "function") return;
+
+    try {
+      var evt = new CSEvent(APPLY_LOG_EVENTS.update, "APPLICATION");
+      evt.data = JSON.stringify({ entries: applyLogEntries.slice() });
+      if (targetExtensionId) {
+        evt.extensionId = targetExtensionId;
+      }
+      cs.dispatchEvent(evt);
+    } catch (err) {
+      console.warn("[Holy.BUTTONS] Failed to broadcast log entries", err);
+    }
+  }
+
+  function openApplyLogWindow() {
+    broadcastApplyLogEntries(APPLY_LOG_EXTENSION_ID);
+
+    if (!cs || typeof cs.requestOpenExtension !== "function") {
+      console.warn("[Holy.BUTTONS] requestOpenExtension unavailable; unable to open log panel");
+      return;
+    }
+
+    try {
+      cs.requestOpenExtension(APPLY_LOG_EXTENSION_ID, "");
+    } catch (err) {
+      console.warn("[Holy.BUTTONS] Failed to open log panel via requestOpenExtension", err);
+      try {
+        var sysPathConst = (typeof SystemPath !== "undefined" && SystemPath.EXTENSION) ? SystemPath.EXTENSION : "extension";
+        var basePath = cs.getSystemPath && cs.getSystemPath(sysPathConst);
+        if (basePath) {
+          var normalized = basePath.replace(/\\/g, "/");
+          if (normalized.charAt(normalized.length - 1) !== "/") normalized += "/";
+          if (/^[a-zA-Z]:/.test(normalized)) {
+            normalized = "/" + normalized; // ensure Windows drive paths start with a slash
+          }
+          var url = "file://" + (normalized.charAt(0) === "/" ? "" : "/") + normalized + "log.html";
+          url = encodeURI(url);
+          if (typeof cs.openURLInDefaultBrowser === "function") {
+            cs.openURLInDefaultBrowser(url);
+          }
+        }
+      } catch (err2) {
+        console.warn("[Holy.BUTTONS] Fallback log open failed", err2);
+      }
+    }
+  }
+
+  if (cs && typeof cs.addEventListener === "function") {
+    cs.addEventListener(APPLY_LOG_EVENTS.request, function (event) {
+      var targetId = APPLY_LOG_EXTENSION_ID;
+      if (event && typeof event.data === "string" && event.data) {
+        try {
+          var payload = JSON.parse(event.data);
+          if (payload && typeof payload.requester === "string" && payload.requester) {
+            targetId = payload.requester;
+          }
+        } catch (err) {}
+      }
+      broadcastApplyLogEntries(targetId);
+    });
+  }
 
 
   // ... module logic ...
@@ -37,6 +167,16 @@ if (typeof Holy !== "object") Holy = {};
             if (selectTargetBtn) {
               selectTargetBtn.addEventListener("click", () => {
                 selectTargetBtn.classList.add("stay-orange");
+              });
+            }
+
+            /* ============================
+              APPLY LOG WINDOW
+              ============================ */
+            var openLogBtn = Holy.UI.DOM("#openApplyLog");
+            if (openLogBtn) {
+              openLogBtn.addEventListener("click", function () {
+                openApplyLogWindow();
               });
             }
           /* ============================
@@ -503,16 +643,6 @@ if (typeof Holy !== "object") Holy = {};
               });
             }
 
-            /* ============================
-              TOGGLE: APPLY REPORT VISIBILITY
-              ============================ */
-            var toggleReport = Holy.UI.DOM("#toggleReport");
-            if (toggleReport) {
-              toggleReport.addEventListener("change", function (e) {
-                const box = document.getElementById("applyReportContainer");
-                box.style.display = e.target.checked ? "block" : "none";
-              });
-            }
           }
 
 
@@ -526,42 +656,23 @@ if (typeof Holy !== "object") Holy = {};
 // Accepts updateApplyReport(result)  or  updateApplyReport(title, result)
 // ======================================
 function updateApplyReport(arg1, arg2) {
-  const box = document.getElementById("applyReport");
-  const container = document.getElementById("applyReportContainer");
-  if (!box || !container) return;
-
-  const toggle = document.getElementById("toggleReport");
-  container.style.display = (toggle && toggle.checked) ? "block" : "none";
-  if (!toggle || !toggle.checked) return;
-
   var title = (arguments.length === 2 && typeof arg1 === "string") ? arg1 : "";
   var data  = (arguments.length === 2 && typeof arg1 === "string") ? arg2 : arg1;
 
-  try {
-    var parsed = (typeof data === "string") ? JSON.parse(data) : (data || {});
-    if (!parsed.ok) {
-      box.textContent = "Error: " + (parsed.err || "Unknown");
-      return;
-    }
+  var entry = formatApplyLogEntry(title, data);
+  if (!entry) entry = "[No apply data]";
 
-    var errs = parsed.errors;
-    if (errs && !Array.isArray(errs)) errs = [errs];
-
-    var lines = [];
-    if (title) lines.push(title);
-    lines.push("Applied: " + (parsed.applied || 0));
-    lines.push("Skipped: " + (parsed.skipped || 0));
-    if (errs && errs.length) {
-      lines.push("Errors:");
-      for (var i = 0; i < errs.length; i++) {
-        var e = errs[i] || {};
-        lines.push("- " + (e.path || "?") + " -> " + (e.err || String(e)));
-      }
-    }
-    box.textContent = lines.join("\n");
-  } catch (e) {
-    box.textContent = "Failed to parse report";
+  applyLogEntries.push(entry);
+  if (applyLogEntries.length > APPLY_LOG_MAX_ENTRIES) {
+    applyLogEntries.shift();
   }
+
+  var box = document.getElementById("applyReport");
+  if (box) {
+    box.textContent = entry;
+  }
+
+  broadcastApplyLogEntries();
 }
 
 
@@ -575,7 +686,8 @@ Holy.BUTTONS = {
   cs: cs,
   HX_LOG_MODE: HX_LOG_MODE,
   wirePanelButtons: wirePanelButtons,
-  updateApplyReport: updateApplyReport
+  updateApplyReport: updateApplyReport,
+  openApplyLogWindow: openApplyLogWindow
 };
 
 })();
