@@ -916,6 +916,12 @@ textarea { width: 100%; }
   margin-bottom: 8px;
 }
 
+.express-panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .express-panel-btn {
   width: 26px;
   height: 26px;
