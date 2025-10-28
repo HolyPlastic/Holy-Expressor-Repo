@@ -6,8 +6,13 @@ if (typeof Holy !== "object") Holy = {};
   // 🔗 Shared instances
   var cs = new CSInterface();
   var HX_LOG_MODE = window.HX_LOG_MODE || "verbose";
+  var APPLY_LOG_EXTENSION_ID = "com.holy.expressor.log";
+  var APPLY_LOG_EVENTS = {
+    update: "com.holy.expressor.applyLog.update",
+    request: "com.holy.expressor.applyLog.request"
+  };
+  var APPLY_LOG_MAX_ENTRIES = 250;
   var applyLogEntries = [];
-  var applyLogWindow = null;
 
   function formatApplyLogEntry(title, data) {
     var lines = [];
@@ -74,48 +79,68 @@ if (typeof Holy !== "object") Holy = {};
     return lines.join("\n");
   }
 
-  function ensureLogWindowContent() {
-    if (!applyLogWindow || applyLogWindow.closed) {
-      applyLogWindow = null;
-      return null;
+  function broadcastApplyLogEntries(targetExtensionId) {
+    if (!cs || typeof cs.dispatchEvent !== "function") return;
+    if (typeof CSEvent !== "function") return;
+
+    try {
+      var evt = new CSEvent(APPLY_LOG_EVENTS.update, "APPLICATION");
+      evt.data = JSON.stringify({ entries: applyLogEntries.slice() });
+      if (targetExtensionId) {
+        evt.extensionId = targetExtensionId;
+      }
+      cs.dispatchEvent(evt);
+    } catch (err) {
+      console.warn("[Holy.BUTTONS] Failed to broadcast log entries", err);
     }
-
-    var doc = applyLogWindow.document;
-    if (!doc) return null;
-
-    var pre = doc.getElementById("applyLogContent");
-    if (pre) return pre;
-
-    doc.open();
-    doc.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Holy Expressor Apply Log</title><style>body{margin:0;background:#111;color:#f0f0f0;font-family:Menlo,Consolas,monospace;font-size:12px;}header{padding:8px 12px;font-weight:bold;background:#1d1d1d;border-bottom:1px solid #2c2c2c;}pre{margin:0;padding:12px;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;height:calc(100vh - 40px);overflow-y:auto;box-sizing:border-box;background:#141414;}</style></head><body><header>Apply Log</header><pre id="applyLogContent">No log entries yet.</pre></body></html>');
-    doc.close();
-    return doc.getElementById("applyLogContent");
-  }
-
-  function renderApplyLogWindow() {
-    var pre = ensureLogWindowContent();
-    if (!pre) return;
-
-    pre.textContent = applyLogEntries.length ? applyLogEntries.join("\n\n") : "No log entries yet.";
-    pre.scrollTop = pre.scrollHeight;
   }
 
   function openApplyLogWindow() {
-    if (!applyLogWindow || applyLogWindow.closed) {
-      applyLogWindow = window.open("", "HolyExpressApplyLog", "width=520,height=600");
-      if (!applyLogWindow) {
-        console.warn("[Holy.BUTTONS] Failed to open log window (popup blocked?)");
-        return;
-      }
-      if (typeof applyLogWindow.addEventListener === "function") {
-        applyLogWindow.addEventListener("beforeunload", function () {
-          applyLogWindow = null;
-        });
-      }
+    broadcastApplyLogEntries(APPLY_LOG_EXTENSION_ID);
+
+    if (!cs || typeof cs.requestOpenExtension !== "function") {
+      console.warn("[Holy.BUTTONS] requestOpenExtension unavailable; unable to open log panel");
+      return;
     }
 
-    renderApplyLogWindow();
-    try { applyLogWindow.focus(); } catch (err) {}
+    try {
+      cs.requestOpenExtension(APPLY_LOG_EXTENSION_ID, "");
+    } catch (err) {
+      console.warn("[Holy.BUTTONS] Failed to open log panel via requestOpenExtension", err);
+      try {
+        var sysPathConst = (typeof SystemPath !== "undefined" && SystemPath.EXTENSION) ? SystemPath.EXTENSION : "extension";
+        var basePath = cs.getSystemPath && cs.getSystemPath(sysPathConst);
+        if (basePath) {
+          var normalized = basePath.replace(/\\/g, "/");
+          if (normalized.charAt(normalized.length - 1) !== "/") normalized += "/";
+          if (/^[a-zA-Z]:/.test(normalized)) {
+            normalized = "/" + normalized; // ensure Windows drive paths start with a slash
+          }
+          var url = "file://" + (normalized.charAt(0) === "/" ? "" : "/") + normalized + "log.html";
+          url = encodeURI(url);
+          if (typeof cs.openURLInDefaultBrowser === "function") {
+            cs.openURLInDefaultBrowser(url);
+          }
+        }
+      } catch (err2) {
+        console.warn("[Holy.BUTTONS] Fallback log open failed", err2);
+      }
+    }
+  }
+
+  if (cs && typeof cs.addEventListener === "function") {
+    cs.addEventListener(APPLY_LOG_EVENTS.request, function (event) {
+      var targetId = APPLY_LOG_EXTENSION_ID;
+      if (event && typeof event.data === "string" && event.data) {
+        try {
+          var payload = JSON.parse(event.data);
+          if (payload && typeof payload.requester === "string" && payload.requester) {
+            targetId = payload.requester;
+          }
+        } catch (err) {}
+      }
+      broadcastApplyLogEntries(targetId);
+    });
   }
 
 
@@ -638,13 +663,16 @@ function updateApplyReport(arg1, arg2) {
   if (!entry) entry = "[No apply data]";
 
   applyLogEntries.push(entry);
+  if (applyLogEntries.length > APPLY_LOG_MAX_ENTRIES) {
+    applyLogEntries.shift();
+  }
 
   var box = document.getElementById("applyReport");
   if (box) {
     box.textContent = entry;
   }
 
-  renderApplyLogWindow();
+  broadcastApplyLogEntries();
 }
 
 
