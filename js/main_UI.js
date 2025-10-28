@@ -118,7 +118,9 @@ function quickPanelLogListener(evt) {
   }
 }
 
-cs.addEventListener("com.holy.expressor.quickpanel.log", quickPanelLogListener);
+if (!document.body || !document.body.classList.contains("quick-panel")) {
+  cs.addEventListener("com.holy.expressor.quickpanel.log", quickPanelLogListener);
+}
 
   
   // ------------- Tabs -------------
