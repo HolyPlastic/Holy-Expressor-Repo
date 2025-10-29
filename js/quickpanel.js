@@ -275,12 +275,27 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
 
     var cs = safeNewCSInterface();
 
+    if (window.Holy && Holy.State && typeof Holy.State.init === "function") {
+      try {
+        Holy.State.init({ panel: "quick" });
+      } catch (err) {
+        console.warn("[QuickPanel] Holy.State.init failed", err);
+      }
+    }
+
     installLogProxy(cs);
     ensureHostBridge(cs);
     disableNativeContextMenu();
     initSnippets();
     rebindSnippetsUI();
     renderSnippets();
+    if (window.Holy && Holy.State && typeof Holy.State.attachPanelBindings === "function") {
+      try {
+        Holy.State.attachPanelBindings();
+      } catch (err) {
+        console.warn("[QuickPanel] Holy.State.attachPanelBindings failed", err);
+      }
+    }
     scheduleColdStartRecovery(cs);
     sendWarmWake(cs);
 

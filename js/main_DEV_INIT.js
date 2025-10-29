@@ -82,6 +82,13 @@ function loadJSX() {
 
 function init() {
     loadJSX();
+    if (Holy.State && typeof Holy.State.init === "function") {
+      try {
+        Holy.State.init({ panel: "main" });
+      } catch (err) {
+        console.warn("[DEV_INIT] Holy.State.init failed", err);
+      }
+    }
     Holy.UI.initTabs();
     Holy.EXPRESS.initPresets();
     Holy.BUTTONS.wirePanelButtons();
@@ -96,6 +103,14 @@ function init() {
     } else {
         // 💡 CHECKER: prevent crash if SNIPPETS failed to load
         console.warn("[Holy.SNIPPETS] init unavailable at boot");
+    }
+
+    if (Holy.State && typeof Holy.State.attachPanelBindings === "function") {
+      try {
+        Holy.State.attachPanelBindings();
+      } catch (err) {
+        console.warn("[DEV_INIT] Holy.State.attachPanelBindings failed", err);
+      }
     }
 
 
@@ -171,6 +186,14 @@ console.error("Placeholder clear failed:", e);
 
 console.log("✅ CodeMirror editor mounted");
 
+if (Holy.State && typeof Holy.State.bindEditor === "function") {
+  try {
+    Holy.State.bindEditor(window.editor);
+  } catch (err) {
+    console.warn("[DEV_INIT] Holy.State.bindEditor failed", err);
+  }
+}
+
 const clearBtn = document.getElementById("editorClearBtn");
 if (clearBtn) {
   clearBtn.addEventListener("click", () => {
@@ -186,6 +209,13 @@ if (clearBtn) {
       });
       if (typeof window.editor.focus === "function") {
         window.editor.focus();
+      }
+      if (Holy.State && typeof Holy.State.update === "function") {
+        try {
+          Holy.State.update({ expressionText: "" });
+        } catch (err) {
+          console.warn("[DEV_INIT] Holy.State.update failed after clear", err);
+        }
       }
     } catch (e) {
       console.error("Failed to clear editor contents", e);
