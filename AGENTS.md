@@ -253,4 +253,5 @@ If conflicts arise, assume this file overrides individual code comments.
 ## 🪶 Agent Notes
 
 * 2025-10-29 – gpt-5-codex: Added quick panel host-bridge priming helper (see `js/quickpanel.js`) to eagerly load JSX modules and verify readiness on open. Includes timed retries alongside existing cold-start recovery.
+* 2025-10-29 – gpt-5-codex: Introduced `Holy.State` shared persistence layer syncing expression and toggle state between panels; see `js/main_STATE.js`.
 
