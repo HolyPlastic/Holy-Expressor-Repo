@@ -232,7 +232,6 @@ Holy.UI.initTabs()
 
 ---
 
-
 ## 🧩 12. Current Development Era
  ### 12.1 Objective
   Develop quickpanel that shows snippet buttons/banks and main apply button. 
@@ -245,12 +244,6 @@ Holy.UI.initTabs()
   * Cause: timing gap during CSInterface and JSX bridge initialization on cold start.
   * Status: non-blocking; logged for optimization.
   * Future agents: investigate a lightweight readiness check or deferred `loadJSX()` trigger to ensure first interaction is valid.
-
----
-
-
-✅ **Agents.md is the single source of truth** for module behavior and load rules.
-If conflicts arise, assume this file overrides individual code comments.
 
 ---
 
@@ -273,3 +266,9 @@ If conflicts arise, assume this file overrides individual code comments.
 * 2025-10-29 – gpt-5-codex: Added quick panel host-bridge priming helper (see `js/quickpanel.js`) to eagerly load JSX modules and verify readiness on open. Includes timed retries alongside existing cold-start recovery.
 * 2025-10-29 – gpt-5-codex: Introduced `Holy.State` shared persistence layer syncing expression and toggle state between panels; see `js/main_STATE.js`.
 
+---
+
+✅ **Agents.md is the single source of truth** for module behavior and load rules.
+If conflicts arise, assume this file overrides individual code comments.
+
+---
