@@ -69,6 +69,20 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
     ready: false
   };
 
+  var bridgeWaitConfig = {
+    timeoutMs: 5000,
+    interval: 120
+  };
+
+  var focusListenerAttached = false;
+
+  var moduleWaitState = {
+    attempts: 0,
+    maxAttempts: 15,
+    delay: 120,
+    satisfied: false
+  };
+
   function getSharedCSInterface(preferred) {
     if (preferred) {
       return preferred;
@@ -173,6 +187,27 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
     }, 900);
   }
 
+  function whenHostBridgeReady(onComplete) {
+    var start = Date.now();
+
+    function check() {
+      if (hostBridgeState.ready) {
+        onComplete(true);
+        return;
+      }
+
+      if (Date.now() - start >= bridgeWaitConfig.timeoutMs) {
+        console.warn("[QuickPanel] Host bridge readiness timeout");
+        onComplete(false);
+        return;
+      }
+
+      setTimeout(check, bridgeWaitConfig.interval);
+    }
+
+    check();
+  }
+
   function disableNativeContextMenu() {
     if (window.Holy && Holy.MENU && typeof Holy.MENU.contextM_disableNative === "function") {
       try {
@@ -211,12 +246,110 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
       return false;
     }
 
-    if (row.children && row.children.length) {
+    var hasChildren = !!(row.children && row.children.length);
+    if (!hasChildren) {
+      renderSnippets();
+      hasChildren = !!(row.children && row.children.length);
+    }
+
+    if (!hasChildren) {
+      return false;
+    }
+
+    var height = row.offsetHeight || 0;
+    if (typeof row.getBoundingClientRect === "function") {
+      try {
+        height = Math.max(height, row.getBoundingClientRect().height || 0);
+      } catch (err) {
+        console.warn("[QuickPanel] getBoundingClientRect failed", err);
+      }
+    }
+
+    if (height > 0) {
       return true;
     }
 
-    renderSnippets();
-    return !!(row.children && row.children.length);
+    forcePanelRepaint();
+
+    height = row.offsetHeight || 0;
+    if (typeof row.getBoundingClientRect === "function") {
+      try {
+        height = Math.max(height, row.getBoundingClientRect().height || 0);
+      } catch (err2) {
+        console.warn("[QuickPanel] getBoundingClientRect retry failed", err2);
+      }
+    }
+
+    if (height > 0) {
+      return true;
+    }
+
+    console.warn("[QuickPanel] Snippet row still collapsed after repaint");
+    return false;
+  }
+
+  var layoutRetryState = {
+    attempts: 0,
+    maxAttempts: 6
+  };
+
+  function guaranteePanelLayout() {
+    if (ensurePanelPainted()) {
+      layoutRetryState.attempts = 0;
+      return true;
+    }
+
+    if (layoutRetryState.attempts >= layoutRetryState.maxAttempts) {
+      console.warn("[QuickPanel] Layout retries exhausted; panel may remain blank");
+      return false;
+    }
+
+    layoutRetryState.attempts += 1;
+
+    var raf = typeof window.requestAnimationFrame === "function"
+      ? window.requestAnimationFrame.bind(window)
+      : function (cb) {
+          return setTimeout(cb, 16);
+        };
+
+    raf(function () {
+      guaranteePanelLayout();
+    });
+
+    return false;
+  }
+
+  function kickInitialPaint(row, onComplete) {
+    var raf = typeof window.requestAnimationFrame === "function"
+      ? window.requestAnimationFrame.bind(window)
+      : function (cb) {
+          return setTimeout(cb, 16);
+        };
+
+    raf(function () {
+      raf(function () {
+        try {
+          var previousVisibility = row.style.visibility;
+          row.style.visibility = "hidden";
+          void row.offsetHeight;
+          row.style.visibility = previousVisibility || "";
+        } catch (err) {
+          console.warn("[QuickPanel] kickInitialPaint visibility flip failed", err);
+        }
+
+        var height = 0;
+        try {
+          height = row.offsetHeight || 0;
+          if (typeof row.getBoundingClientRect === "function") {
+            height = Math.max(height, row.getBoundingClientRect().height || 0);
+          }
+        } catch (measureErr) {
+          console.warn("[QuickPanel] kickInitialPaint measurement failed", measureErr);
+        }
+
+        onComplete(height);
+      });
+    });
   }
 
   function scheduleColdStartRecovery(cs) {
@@ -225,7 +358,9 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
         console.warn("[QuickPanel] Cold-start check #1 → forcing rebind");
         rebindSnippetsUI();
         renderSnippets();
+        forcePanelRepaint();
         ensureHostBridge(cs);
+        guaranteePanelLayout();
       }
     }, 300);
 
@@ -234,7 +369,16 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
         console.warn("[QuickPanel] Cold-start check #2 → requesting state sync");
         rebindSnippetsUI();
         renderSnippets();
+        forcePanelRepaint();
         ensureHostBridge(cs);
+        if (window.Holy && Holy.State && typeof Holy.State.reload === "function") {
+          try {
+            Holy.State.reload();
+          } catch (reloadErr) {
+            console.warn("[QuickPanel] State reload during cold-start recovery failed", reloadErr);
+          }
+        }
+        guaranteePanelLayout();
       }
     }, 900);
   }
@@ -256,34 +400,139 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
       console.warn("[QuickPanel] Warm wake dispatch failed", err);
     }
   }
-function initSnippets() {
-  if (window.Holy && Holy.SNIPPETS && typeof Holy.SNIPPETS.init === "function") {
+
+  function forcePanelRepaint() {
     try {
-      Holy.SNIPPETS.init();
+      var root = document.getElementById("quickPanelRoot");
+      if (!root) {
+        return;
+      }
+
+      var previousVisibility = root.style.visibility;
+      root.style.visibility = "hidden";
+      void root.offsetHeight;
+      root.style.visibility = previousVisibility || "";
     } catch (err) {
-      console.error("[QuickPanel] Failed to initialize snippets", err);
+      console.warn("[QuickPanel] forcePanelRepaint failed", err);
     }
-  } else {
-    console.warn("[QuickPanel] Holy.SNIPPETS.init not available");
   }
 
-  // ---------------------------------------------------------
-  // 📍02 – Warm-Start Self-Heal
-  // ---------------------------------------------------------
-  setTimeout(function () {
-    var row = document.querySelector("#snippetsRow");
-    if (!row) {
-      console.warn("[QuickPanel] Detected blank init → forcing redraw");
-      if (window.Holy && Holy.SNIPPETS && typeof Holy.SNIPPETS.init === "function") {
-        try {
-          Holy.SNIPPETS.init();
-        } catch (e) {
-          console.warn("[QuickPanel] Self-heal reinit failed", e);
+  function areQuickPanelModulesReady() {
+    if (moduleWaitState.satisfied) {
+      return true;
+    }
+
+    if (!window.Holy) {
+      return false;
+    }
+
+    var hasSnippets = !!(Holy.SNIPPETS &&
+      typeof Holy.SNIPPETS.init === "function" &&
+      typeof Holy.SNIPPETS.renderSnippets === "function" &&
+      typeof Holy.SNIPPETS.rebindQuickAccessUI === "function");
+
+    var hasUI = !!(Holy.UI && typeof Holy.UI.toast === "function");
+    var hasState = !!(Holy.State && typeof Holy.State.init === "function");
+
+    moduleWaitState.satisfied = hasSnippets && hasUI && hasState;
+    return moduleWaitState.satisfied;
+  }
+
+  function waitForQuickPanelModules(onReady) {
+    if (areQuickPanelModulesReady()) {
+      onReady();
+      return;
+    }
+
+    moduleWaitState.attempts += 1;
+    if (moduleWaitState.attempts > moduleWaitState.maxAttempts) {
+      console.warn("[QuickPanel] Module readiness timeout → proceeding with degraded init");
+      onReady();
+      return;
+    }
+
+    setTimeout(function () {
+      waitForQuickPanelModules(onReady);
+    }, moduleWaitState.delay);
+  }
+
+  function verifyPanelContainerVisibility() {
+    var root = document.getElementById("quickPanelRoot");
+    if (!root) {
+      console.warn("[QuickPanel] quickPanelRoot missing");
+      return;
+    }
+
+    try {
+      var computed = window.getComputedStyle ? window.getComputedStyle(root) : null;
+      if (computed) {
+        var hidden = computed.display === "none" || computed.visibility === "hidden";
+        if (hidden) {
+          console.warn("[QuickPanel] quickPanelRoot computed hidden state", {
+            display: computed.display,
+            visibility: computed.visibility
+          });
         }
       }
+    } catch (err) {
+      console.warn("[QuickPanel] Failed to verify container visibility", err);
     }
-  }, 800);
-}
+  }
+
+  function attachFocusRehydrationListener() {
+    if (focusListenerAttached) {
+      return;
+    }
+
+    focusListenerAttached = true;
+
+    window.addEventListener("focus", function () {
+      console.log("[Holy.State] Panel refocused → rehydrating state");
+      if (window.Holy && Holy.State && typeof Holy.State.reload === "function") {
+        try {
+          Holy.State.reload();
+        } catch (e) {
+          console.warn("[Holy.State] reload failed", e);
+        }
+      }
+    });
+  }
+
+  function initSnippets() {
+    if (window.Holy && Holy.SNIPPETS && typeof Holy.SNIPPETS.init === "function") {
+      try {
+        Holy.SNIPPETS.init();
+      } catch (err) {
+        console.error("[QuickPanel] Failed to initialize snippets", err);
+      }
+    } else {
+      console.warn("[QuickPanel] Holy.SNIPPETS.init not available");
+    }
+
+    // ---------------------------------------------------------
+    // 📍02 – Warm-Start Self-Heal
+    // ---------------------------------------------------------
+    setTimeout(function () {
+      var row = document.querySelector("#snippetsRow");
+      if (!row) {
+        console.warn("[QuickPanel] Detected blank init → forcing redraw");
+        if (window.Holy && Holy.SNIPPETS && typeof Holy.SNIPPETS.init === "function") {
+          try {
+            Holy.SNIPPETS.init();
+          } catch (e) {
+            console.warn("[QuickPanel] Self-heal reinit failed", e);
+          }
+        }
+        guaranteePanelLayout();
+        return;
+      }
+
+      if (!row.children || !row.children.length || row.offsetHeight === 0) {
+        console.warn("[QuickPanel] Detected collapsed snippet row after init → retrying layout");
+        guaranteePanelLayout();
+      }
+    }, 800);
+  }
 
 // ---------------------------------------------------------
 // 💡 DOMContentLoaded – main QuickPanel boot
@@ -294,54 +543,69 @@ document.addEventListener("DOMContentLoaded", function () {
 
   var cs = safeNewCSInterface();
 
-  // initialize state if available
-  if (window.Holy && Holy.State && typeof Holy.State.init === "function") {
-    try {
-      Holy.State.init({ panel: "quick" });
-    } catch (err) {
-      console.warn("[QuickPanel] Holy.State.init failed", err);
-    }
-  }
-
   installLogProxy(cs);
-  ensureHostBridge(cs);
   disableNativeContextMenu();
+  verifyPanelContainerVisibility();
 
-  initSnippets();
-  rebindSnippetsUI();
-  renderSnippets();
+  ensureHostBridge(cs);
 
-  if (window.Holy && Holy.State && typeof Holy.State.attachPanelBindings === "function") {
-    try {
-      Holy.State.attachPanelBindings();
-    } catch (err) {
-      console.warn("[QuickPanel] Holy.State.attachPanelBindings failed", err);
-    }
-  }
-
-  scheduleColdStartRecovery(cs);
-  sendWarmWake(cs);
-
-  // ---------------------------------------------------------
-  // 📍01 – Focus Rehydration Listener
-  // ---------------------------------------------------------
-  window.addEventListener("focus", function () {
-    console.log("[Holy.State] Panel refocused → rehydrating state");
-    if (window.Holy && Holy.State && typeof Holy.State.reload === "function") {
-      try {
-        Holy.State.reload();
-      } catch (e) {
-        console.warn("[Holy.State] reload failed", e);
+  whenHostBridgeReady(function (bridgeReady) {
+    waitForQuickPanelModules(function () {
+      if (!bridgeReady) {
+        console.warn("[QuickPanel] Proceeding without confirmed host bridge readiness");
       }
-    }
+
+      if (window.Holy && Holy.State && typeof Holy.State.init === "function") {
+        try {
+          Holy.State.init({ panel: "quick" });
+        } catch (err) {
+          console.warn("[QuickPanel] Holy.State.init failed", err);
+        }
+      }
+
+      initSnippets();
+      renderSnippets();
+
+      var row = doc.getElementById("snippetsRow");
+      var afterPaint = function () {
+        rebindSnippetsUI();
+        guaranteePanelLayout();
+
+        if (window.Holy && Holy.State && typeof Holy.State.attachPanelBindings === "function") {
+          try {
+            Holy.State.attachPanelBindings();
+          } catch (err) {
+            console.warn("[QuickPanel] Holy.State.attachPanelBindings failed", err);
+          }
+        }
+
+        scheduleColdStartRecovery(cs);
+        sendWarmWake(cs);
+        attachFocusRehydrationListener();
+      };
+
+      if (row) {
+        kickInitialPaint(row, function (height) {
+          if (height === 0) {
+            console.warn("[QuickPanel] kickInitialPaint measured zero height");
+          }
+
+          afterPaint();
+        });
+      } else {
+        console.warn("[QuickPanel] snippetsRow missing during initial paint kick");
+        forcePanelRepaint();
+        afterPaint();
+      }
+    });
   });
 
   // ---------------------------------------------------------
 // 📍V4.2 – LiveSync listener (Quick Panel)
 // ---------------------------------------------------------
 try {
-  var cs = new CSInterface();
-  cs.addEventListener("com.holy.expressor.stateChanged", function (evt) {
+  var liveCs = new CSInterface();
+  liveCs.addEventListener("com.holy.expressor.stateChanged", function (evt) {
     try {
       var payload = typeof evt.data === "object" ? evt.data : JSON.parse(evt.data);
       console.log("[QuickPanel] LiveSync event received →", payload);
