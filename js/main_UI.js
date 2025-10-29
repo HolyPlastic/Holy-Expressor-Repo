@@ -30,94 +30,87 @@ window.HX_LOG_MODE = "verbose";
   }
   
   
-// V2 — External Flyover Trigger via JSX bridge
-document.addEventListener("DOMContentLoaded", () => {
-  const flyoBtn = document.getElementById("flyoLaunchBtn");
-  if (flyoBtn) {
-    flyoBtn.addEventListener("click", () => {
-      console.log("UI: Flyover button clicked (external bridge mode)");
+  document.addEventListener("DOMContentLoaded", function () {
+    // V2 — External Flyover Trigger via JSX bridge
+    var flyoBtn = document.getElementById("flyoLaunchBtn");
+    if (flyoBtn) {
+      flyoBtn.addEventListener("click", function () {
+        console.log("UI: Flyover button clicked (external bridge mode)");
 
-      // ⚙️ Call the JSX bridge to launch the .bat file
-      try {
-        const cs = new CSInterface();
-        cs.evalScript("he_launchFlyover()");
-      } catch (err) {
-        console.error("UI: Failed to call JSX bridge →", err);
-      }
-    });
-  }
-// ---------------------------------------------------------
-// ⚡ Quick Access Panel Launcher (with Warm-Wake Fix)
-// ---------------------------------------------------------
-const quickAccessBtn = document.getElementById("quickAccessLaunchBtn");
-if (quickAccessBtn) {
-  quickAccessBtn.addEventListener("click", () => {
-    try {
-      console.log("[UI] Opening quick access panel");
-      const cs = new CSInterface();
-
-      // ✅ Open the panel
-      cs.requestOpenExtension("com.holy.expressor.quickpanel");
-
-      // 🧠 Warm-Wake: nudge CEP runtime to initialize fully
-      setTimeout(() => {
         try {
-          const pokeEvent = new CSEvent("com.holy.expressor.quickpanel.log", "APPLICATION");
-          pokeEvent.data = JSON.stringify({
-            level: "log",
-            messages: ["[WarmWake] Triggered immediate handshake after open."]
-          });
-          cs.dispatchEvent(pokeEvent);
-          console.log("[UI] Warm-Wake signal dispatched to QuickPanel");
-        } catch (e) {
-          console.warn("[UI] QuickPanel Warm-Wake dispatch failed", e);
+          cs.evalScript("he_launchFlyover()");
+        } catch (err) {
+          console.error("UI: Failed to call JSX bridge →", err);
         }
-      }, 800); // small delay to ensure panel process is alive
+      });
+    }
 
-      // 🧩 Optional: bring AE focus back to the panel stack (can help in some builds)
-       cs.evalScript("app.activeViewer && app.activeViewer.setActive();");
+    // ---------------------------------------------------------
+    // ⚡ Quick Access Panel Launcher (with Warm-Wake Fix)
+    // ---------------------------------------------------------
+    var quickAccessBtn = document.getElementById("quickAccessLaunchBtn");
+    if (quickAccessBtn) {
+      quickAccessBtn.addEventListener("click", function () {
+        try {
+          console.log("[UI] Opening quick access panel");
+          cs.requestOpenExtension("com.holy.expressor.quickpanel");
 
-    } catch (err) {
-      console.error("[UI] Failed to open quick access panel →", err);
+          setTimeout(function () {
+            try {
+              var pokeEvent = new CSEvent("com.holy.expressor.quickpanel.log", "APPLICATION");
+              pokeEvent.data = JSON.stringify({
+                level: "log",
+                messages: ["[WarmWake] Triggered immediate handshake after open."]
+              });
+              cs.dispatchEvent(pokeEvent);
+              console.log("[UI] Warm-Wake signal dispatched to QuickPanel");
+            } catch (e) {
+              console.warn("[UI] QuickPanel Warm-Wake dispatch failed", e);
+            }
+          }, 800);
+
+          cs.evalScript("app.activeViewer && app.activeViewer.setActive();");
+        } catch (err) {
+          console.error("[UI] Failed to open quick access panel →", err);
+        }
+      });
+    }
+
+
+    var editorMaxBtn = document.getElementById("editorMaximizeBtn");
+    if (editorMaxBtn) {
+      var srLabel = editorMaxBtn.querySelector(".sr-only");
+
+      function applyMaximizeState(isMaximized) {
+        var label = isMaximized ? "Restore editor size" : "Maximize editor";
+        document.body.classList.toggle("editor-maximized", isMaximized);
+        editorMaxBtn.classList.toggle("is-active", isMaximized);
+        editorMaxBtn.setAttribute("aria-pressed", String(isMaximized));
+        editorMaxBtn.setAttribute("aria-label", label);
+        editorMaxBtn.setAttribute("title", label);
+        if (srLabel) srLabel.textContent = label;
+
+        if (window.editor) {
+          try {
+            if (typeof window.editor.requestMeasure === "function") {
+              window.editor.requestMeasure();
+            } else if (window.editor.dom && typeof window.editor.dom.getBoundingClientRect === "function") {
+              window.editor.dom.getBoundingClientRect();
+            }
+          } catch (err) {
+            if (window.HX_LOG_MODE === "verbose") {
+              console.warn("Editor resize refresh failed", err);
+            }
+          }
+        }
+      }
+
+      editorMaxBtn.addEventListener("click", function () {
+        var nextState = !document.body.classList.contains("editor-maximized");
+        applyMaximizeState(nextState);
+      });
     }
   });
-}
-
-
-  const editorMaxBtn = document.getElementById("editorMaximizeBtn");
-  if (editorMaxBtn) {
-    const srLabel = editorMaxBtn.querySelector(".sr-only");
-
-    function applyMaximizeState(isMaximized) {
-      const label = isMaximized ? "Restore editor size" : "Maximize editor";
-      document.body.classList.toggle("editor-maximized", isMaximized);
-      editorMaxBtn.classList.toggle("is-active", isMaximized);
-      editorMaxBtn.setAttribute("aria-pressed", String(isMaximized));
-      editorMaxBtn.setAttribute("aria-label", label);
-      editorMaxBtn.setAttribute("title", label);
-      if (srLabel) srLabel.textContent = label;
-
-      if (window.editor) {
-        try {
-          if (typeof window.editor.requestMeasure === "function") {
-            window.editor.requestMeasure();
-          } else if (window.editor.dom && typeof window.editor.dom.getBoundingClientRect === "function") {
-            window.editor.dom.getBoundingClientRect();
-          }
-        } catch (err) {
-          if (window.HX_LOG_MODE === "verbose") {
-            console.warn("Editor resize refresh failed", err);
-          }
-        }
-      }
-    }
-
-    editorMaxBtn.addEventListener("click", () => {
-      const nextState = !document.body.classList.contains("editor-maximized");
-      applyMaximizeState(nextState);
-    });
-  }
-});
 
 // ✅ REWRITE – QuickPanel Log Listener (safe for object or string payload)
 function quickPanelLogListener(evt) {
