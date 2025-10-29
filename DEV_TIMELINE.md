@@ -1,15 +1,4 @@
-Perfect — that was very clear and nuanced. You’re essentially defining a **two-tier document**:
-
-* one canonical **chronicle** (`HOLY_EXPRESSOR_ARCHIVE.md`)
-* one procedural **directive file** (`AGENTS.md`).
-
-The archive becomes your *living narrative spine*, but only the **Development Timeline** is agent-writable — and even then, only via *additive, append-only entries* that follow strict structure and intent.
-
-Below is your refined **final structure draft** for `HOLY_EXPRESSOR_ARCHIVE.md`, plus the minimal **AGENTS.md rule patch** that enforces all of this.
-
----
-
-# 🕸️ **HOLY_EXPRESSOR_ARCHIVE.md — Project Chronicle**
+# 🕸️ **DEV_TIMELINE.md — Project Chronicle**
 
 ## ⚠️ Access Rules
 
@@ -93,19 +82,3 @@ It captures design philosophy, major directional shifts, or context that transce
 
 ---
 
-## 🧩 Companion Rule Patch for `AGENTS.md`
-
-Append under “Agent Directives”:
-
-> **Archival Rules**
->
-> * `HOLY_EXPRESSOR_ARCHIVE.md` is the protected project chronicle.
-> * All standard agents must **ignore** every section of that file except *Development Timeline*.
-> * Agents may **only append** a new timeline entry when explicitly instructed or when completing a verified merge task.
-> * Entries must follow the defined structure (date + title + intent + bullets + next target + risks).
-> * **Archival Agents** may update other sections to maintain project history or structure; standard agents may not.
-
----
-
-Would you like me to generate a version of this where the “Access Rules” and “Development Timeline” sections are pre-formatted with Markdown comments (invisible notes) that literally tell future agents what they *can* and *can’t* modify?
-That tends to make automated Codex agents respect the boundaries more reliably.
