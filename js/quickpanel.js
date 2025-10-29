@@ -69,6 +69,13 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
     ready: false
   };
 
+  var moduleWaitState = {
+    attempts: 0,
+    maxAttempts: 15,
+    delay: 120,
+    satisfied: false
+  };
+
   function getSharedCSInterface(preferred) {
     if (preferred) {
       return preferred;
@@ -212,6 +219,9 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
     }
 
     if (row.children && row.children.length) {
+      if (row.offsetHeight === 0) {
+        forcePanelRepaint();
+      }
       return true;
     }
 
@@ -225,6 +235,7 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
         console.warn("[QuickPanel] Cold-start check #1 → forcing rebind");
         rebindSnippetsUI();
         renderSnippets();
+        forcePanelRepaint();
         ensureHostBridge(cs);
       }
     }, 300);
@@ -234,6 +245,7 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
         console.warn("[QuickPanel] Cold-start check #2 → requesting state sync");
         rebindSnippetsUI();
         renderSnippets();
+        forcePanelRepaint();
         ensureHostBridge(cs);
       }
     }, 900);
@@ -256,34 +268,90 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
       console.warn("[QuickPanel] Warm wake dispatch failed", err);
     }
   }
-function initSnippets() {
-  if (window.Holy && Holy.SNIPPETS && typeof Holy.SNIPPETS.init === "function") {
+
+  function forcePanelRepaint() {
     try {
-      Holy.SNIPPETS.init();
+      var root = document.getElementById("quickPanelRoot");
+      if (!root) {
+        return;
+      }
+
+      var previousVisibility = root.style.visibility;
+      root.style.visibility = "hidden";
+      void root.offsetHeight;
+      root.style.visibility = previousVisibility || "";
     } catch (err) {
-      console.error("[QuickPanel] Failed to initialize snippets", err);
+      console.warn("[QuickPanel] forcePanelRepaint failed", err);
     }
-  } else {
-    console.warn("[QuickPanel] Holy.SNIPPETS.init not available");
   }
 
-  // ---------------------------------------------------------
-  // 📍02 – Warm-Start Self-Heal
-  // ---------------------------------------------------------
-  setTimeout(function () {
-    var row = document.querySelector("#snippetsRow");
-    if (!row) {
-      console.warn("[QuickPanel] Detected blank init → forcing redraw");
-      if (window.Holy && Holy.SNIPPETS && typeof Holy.SNIPPETS.init === "function") {
-        try {
-          Holy.SNIPPETS.init();
-        } catch (e) {
-          console.warn("[QuickPanel] Self-heal reinit failed", e);
+  function areQuickPanelModulesReady() {
+    if (moduleWaitState.satisfied) {
+      return true;
+    }
+
+    if (!window.Holy) {
+      return false;
+    }
+
+    var hasSnippets = !!(Holy.SNIPPETS &&
+      typeof Holy.SNIPPETS.init === "function" &&
+      typeof Holy.SNIPPETS.renderSnippets === "function" &&
+      typeof Holy.SNIPPETS.rebindQuickAccessUI === "function");
+
+    var hasUI = !!(Holy.UI && typeof Holy.UI.toast === "function");
+    var hasState = !!(Holy.State && typeof Holy.State.init === "function");
+
+    moduleWaitState.satisfied = hasSnippets && hasUI && hasState;
+    return moduleWaitState.satisfied;
+  }
+
+  function waitForQuickPanelModules(onReady) {
+    if (areQuickPanelModulesReady()) {
+      onReady();
+      return;
+    }
+
+    moduleWaitState.attempts += 1;
+    if (moduleWaitState.attempts > moduleWaitState.maxAttempts) {
+      console.warn("[QuickPanel] Module readiness timeout → proceeding with degraded init");
+      onReady();
+      return;
+    }
+
+    setTimeout(function () {
+      waitForQuickPanelModules(onReady);
+    }, moduleWaitState.delay);
+  }
+
+  function initSnippets() {
+    if (window.Holy && Holy.SNIPPETS && typeof Holy.SNIPPETS.init === "function") {
+      try {
+        Holy.SNIPPETS.init();
+      } catch (err) {
+        console.error("[QuickPanel] Failed to initialize snippets", err);
+      }
+    } else {
+      console.warn("[QuickPanel] Holy.SNIPPETS.init not available");
+    }
+
+    // ---------------------------------------------------------
+    // 📍02 – Warm-Start Self-Heal
+    // ---------------------------------------------------------
+    setTimeout(function () {
+      var row = document.querySelector("#snippetsRow");
+      if (!row) {
+        console.warn("[QuickPanel] Detected blank init → forcing redraw");
+        if (window.Holy && Holy.SNIPPETS && typeof Holy.SNIPPETS.init === "function") {
+          try {
+            Holy.SNIPPETS.init();
+          } catch (e) {
+            console.warn("[QuickPanel] Self-heal reinit failed", e);
+          }
         }
       }
-    }
-  }, 800);
-}
+    }, 800);
+  }
 
 // ---------------------------------------------------------
 // 💡 DOMContentLoaded – main QuickPanel boot
@@ -294,54 +362,56 @@ document.addEventListener("DOMContentLoaded", function () {
 
   var cs = safeNewCSInterface();
 
-  // initialize state if available
-  if (window.Holy && Holy.State && typeof Holy.State.init === "function") {
-    try {
-      Holy.State.init({ panel: "quick" });
-    } catch (err) {
-      console.warn("[QuickPanel] Holy.State.init failed", err);
-    }
-  }
-
   installLogProxy(cs);
   ensureHostBridge(cs);
   disableNativeContextMenu();
 
-  initSnippets();
-  rebindSnippetsUI();
-  renderSnippets();
-
-  if (window.Holy && Holy.State && typeof Holy.State.attachPanelBindings === "function") {
-    try {
-      Holy.State.attachPanelBindings();
-    } catch (err) {
-      console.warn("[QuickPanel] Holy.State.attachPanelBindings failed", err);
-    }
-  }
-
-  scheduleColdStartRecovery(cs);
-  sendWarmWake(cs);
-
-  // ---------------------------------------------------------
-  // 📍01 – Focus Rehydration Listener
-  // ---------------------------------------------------------
-  window.addEventListener("focus", function () {
-    console.log("[Holy.State] Panel refocused → rehydrating state");
-    if (window.Holy && Holy.State && typeof Holy.State.reload === "function") {
+  waitForQuickPanelModules(function () {
+    if (window.Holy && Holy.State && typeof Holy.State.init === "function") {
       try {
-        Holy.State.reload();
-      } catch (e) {
-        console.warn("[Holy.State] reload failed", e);
+        Holy.State.init({ panel: "quick" });
+      } catch (err) {
+        console.warn("[QuickPanel] Holy.State.init failed", err);
       }
     }
+
+    initSnippets();
+    rebindSnippetsUI();
+    renderSnippets();
+    forcePanelRepaint();
+
+    if (window.Holy && Holy.State && typeof Holy.State.attachPanelBindings === "function") {
+      try {
+        Holy.State.attachPanelBindings();
+      } catch (err) {
+        console.warn("[QuickPanel] Holy.State.attachPanelBindings failed", err);
+      }
+    }
+
+    scheduleColdStartRecovery(cs);
+    sendWarmWake(cs);
+
+    // ---------------------------------------------------------
+    // 📍01 – Focus Rehydration Listener
+    // ---------------------------------------------------------
+    window.addEventListener("focus", function () {
+      console.log("[Holy.State] Panel refocused → rehydrating state");
+      if (window.Holy && Holy.State && typeof Holy.State.reload === "function") {
+        try {
+          Holy.State.reload();
+        } catch (e) {
+          console.warn("[Holy.State] reload failed", e);
+        }
+      }
+    });
   });
 
   // ---------------------------------------------------------
 // 📍V4.2 – LiveSync listener (Quick Panel)
 // ---------------------------------------------------------
 try {
-  var cs = new CSInterface();
-  cs.addEventListener("com.holy.expressor.stateChanged", function (evt) {
+  var liveCs = new CSInterface();
+  liveCs.addEventListener("com.holy.expressor.stateChanged", function (evt) {
     try {
       var payload = typeof evt.data === "object" ? evt.data : JSON.parse(evt.data);
       console.log("[QuickPanel] LiveSync event received →", payload);
