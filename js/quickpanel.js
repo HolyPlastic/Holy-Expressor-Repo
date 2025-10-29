@@ -69,6 +69,13 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
     ready: false
   };
 
+  var bridgeWaitConfig = {
+    timeoutMs: 5000,
+    interval: 120
+  };
+
+  var focusListenerAttached = false;
+
   var moduleWaitState = {
     attempts: 0,
     maxAttempts: 15,
@@ -178,6 +185,27 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
         primeHostBridge(cs);
       }
     }, 900);
+  }
+
+  function whenHostBridgeReady(onComplete) {
+    var start = Date.now();
+
+    function check() {
+      if (hostBridgeState.ready) {
+        onComplete(true);
+        return;
+      }
+
+      if (Date.now() - start >= bridgeWaitConfig.timeoutMs) {
+        console.warn("[QuickPanel] Host bridge readiness timeout");
+        onComplete(false);
+        return;
+      }
+
+      setTimeout(check, bridgeWaitConfig.interval);
+    }
+
+    check();
   }
 
   function disableNativeContextMenu() {
@@ -291,6 +319,39 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
     return false;
   }
 
+  function kickInitialPaint(row, onComplete) {
+    var raf = typeof window.requestAnimationFrame === "function"
+      ? window.requestAnimationFrame.bind(window)
+      : function (cb) {
+          return setTimeout(cb, 16);
+        };
+
+    raf(function () {
+      raf(function () {
+        try {
+          var previousVisibility = row.style.visibility;
+          row.style.visibility = "hidden";
+          void row.offsetHeight;
+          row.style.visibility = previousVisibility || "";
+        } catch (err) {
+          console.warn("[QuickPanel] kickInitialPaint visibility flip failed", err);
+        }
+
+        var height = 0;
+        try {
+          height = row.offsetHeight || 0;
+          if (typeof row.getBoundingClientRect === "function") {
+            height = Math.max(height, row.getBoundingClientRect().height || 0);
+          }
+        } catch (measureErr) {
+          console.warn("[QuickPanel] kickInitialPaint measurement failed", measureErr);
+        }
+
+        onComplete(height);
+      });
+    });
+  }
+
   function scheduleColdStartRecovery(cs) {
     setTimeout(function () {
       if (!ensurePanelPainted()) {
@@ -395,6 +456,48 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
     }, moduleWaitState.delay);
   }
 
+  function verifyPanelContainerVisibility() {
+    var root = document.getElementById("quickPanelRoot");
+    if (!root) {
+      console.warn("[QuickPanel] quickPanelRoot missing");
+      return;
+    }
+
+    try {
+      var computed = window.getComputedStyle ? window.getComputedStyle(root) : null;
+      if (computed) {
+        var hidden = computed.display === "none" || computed.visibility === "hidden";
+        if (hidden) {
+          console.warn("[QuickPanel] quickPanelRoot computed hidden state", {
+            display: computed.display,
+            visibility: computed.visibility
+          });
+        }
+      }
+    } catch (err) {
+      console.warn("[QuickPanel] Failed to verify container visibility", err);
+    }
+  }
+
+  function attachFocusRehydrationListener() {
+    if (focusListenerAttached) {
+      return;
+    }
+
+    focusListenerAttached = true;
+
+    window.addEventListener("focus", function () {
+      console.log("[Holy.State] Panel refocused → rehydrating state");
+      if (window.Holy && Holy.State && typeof Holy.State.reload === "function") {
+        try {
+          Holy.State.reload();
+        } catch (e) {
+          console.warn("[Holy.State] reload failed", e);
+        }
+      }
+    });
+  }
+
   function initSnippets() {
     if (window.Holy && Holy.SNIPPETS && typeof Holy.SNIPPETS.init === "function") {
       try {
@@ -441,46 +544,58 @@ document.addEventListener("DOMContentLoaded", function () {
   var cs = safeNewCSInterface();
 
   installLogProxy(cs);
-  ensureHostBridge(cs);
   disableNativeContextMenu();
+  verifyPanelContainerVisibility();
 
-  waitForQuickPanelModules(function () {
-    if (window.Holy && Holy.State && typeof Holy.State.init === "function") {
-      try {
-        Holy.State.init({ panel: "quick" });
-      } catch (err) {
-        console.warn("[QuickPanel] Holy.State.init failed", err);
+  ensureHostBridge(cs);
+
+  whenHostBridgeReady(function (bridgeReady) {
+    waitForQuickPanelModules(function () {
+      if (!bridgeReady) {
+        console.warn("[QuickPanel] Proceeding without confirmed host bridge readiness");
       }
-    }
 
-    initSnippets();
-    rebindSnippetsUI();
-    renderSnippets();
-    forcePanelRepaint();
-    guaranteePanelLayout();
-
-    if (window.Holy && Holy.State && typeof Holy.State.attachPanelBindings === "function") {
-      try {
-        Holy.State.attachPanelBindings();
-      } catch (err) {
-        console.warn("[QuickPanel] Holy.State.attachPanelBindings failed", err);
-      }
-    }
-
-    scheduleColdStartRecovery(cs);
-    sendWarmWake(cs);
-
-    // ---------------------------------------------------------
-    // 📍01 – Focus Rehydration Listener
-    // ---------------------------------------------------------
-    window.addEventListener("focus", function () {
-      console.log("[Holy.State] Panel refocused → rehydrating state");
-      if (window.Holy && Holy.State && typeof Holy.State.reload === "function") {
+      if (window.Holy && Holy.State && typeof Holy.State.init === "function") {
         try {
-          Holy.State.reload();
-        } catch (e) {
-          console.warn("[Holy.State] reload failed", e);
+          Holy.State.init({ panel: "quick" });
+        } catch (err) {
+          console.warn("[QuickPanel] Holy.State.init failed", err);
         }
+      }
+
+      initSnippets();
+      renderSnippets();
+
+      var row = doc.getElementById("snippetsRow");
+      var afterPaint = function () {
+        rebindSnippetsUI();
+        guaranteePanelLayout();
+
+        if (window.Holy && Holy.State && typeof Holy.State.attachPanelBindings === "function") {
+          try {
+            Holy.State.attachPanelBindings();
+          } catch (err) {
+            console.warn("[QuickPanel] Holy.State.attachPanelBindings failed", err);
+          }
+        }
+
+        scheduleColdStartRecovery(cs);
+        sendWarmWake(cs);
+        attachFocusRehydrationListener();
+      };
+
+      if (row) {
+        kickInitialPaint(row, function (height) {
+          if (height === 0) {
+            console.warn("[QuickPanel] kickInitialPaint measured zero height");
+          }
+
+          afterPaint();
+        });
+      } else {
+        console.warn("[QuickPanel] snippetsRow missing during initial paint kick");
+        forcePanelRepaint();
+        afterPaint();
       }
     });
   });
