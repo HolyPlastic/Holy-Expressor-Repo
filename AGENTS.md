@@ -233,14 +233,18 @@ Holy.UI.initTabs()
 ---
 
 
-## 🧩 12. Active Quirks / Known Behaviors
-
-### Quick Panel Bootstrap Timing
-* The quick access panel (`quickpanel.html`) now includes `main_DEV_INIT.js` to load the JSX stack when opened standalone.
-* Current behavior: panel requires a short focus cycle (~1–2 s) before first button press executes correctly. Second press then works normally.
-* Cause: timing gap during CSInterface and JSX bridge initialization on cold start.
-* Status: non-blocking; logged for optimization.
-* Future agents: investigate a lightweight readiness check or deferred `loadJSX()` trigger to ensure first interaction is valid.
+## 🧩 12. Current Development Era
+ ### 12.1 Objective
+  Develop quickpanel that shows snippet buttons/banks and main apply button. 
+  Updates in real time betrween the quickpanel and main panel if changes are made to snippets/banks.
+ 
+ ### 12.2 Active Quirks / Known Behaviors
+  **###Quick Panel Bootstrap Timing**
+  * The quick access panel (`quickpanel.html`) now includes `main_DEV_INIT.js` to load the JSX stack when opened standalone.
+  * Current behavior: panel requires a short focus cycle (~1–2 s) before first button press executes correctly. Second press then works normally.
+  * Cause: timing gap during CSInterface and JSX bridge initialization on cold start.
+  * Status: non-blocking; logged for optimization.
+  * Future agents: investigate a lightweight readiness check or deferred `loadJSX()` trigger to ensure first interaction is valid.
 
 ---
 
@@ -250,7 +254,7 @@ If conflicts arise, assume this file overrides individual code comments.
 
 ---
 
-### 🪶 Agent Notes Directive
+## 🪶 Agent Notes Directive
 
 - Every agent must add a short, factual entry to the **🪶 Agent Notes** section of `AGENTS.md` when finishing a task.  
 - Each note should summarise what changed or was discovered — **1 to 3 sentences max**.  
