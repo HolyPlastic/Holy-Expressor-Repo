@@ -64,6 +64,14 @@ window.HX_LOG_MODE = "verbose";
               });
               cs.dispatchEvent(pokeEvent);
               console.log("[UI] Warm-Wake signal dispatched to QuickPanel");
+              // After warm-wake dispatch
+console.log("[QuickPanel] forcing AE repaint (main UI)...");
+window.dispatchEvent(new Event("resize"));
+document.body.style.transform = "scale(1)";
+void document.body.offsetHeight;
+document.body.style.transform = "";
+console.log("[QuickPanel] repaint sequence complete (main UI).");
+
             } catch (e) {
               console.warn("[UI] QuickPanel Warm-Wake dispatch failed", e);
             }
