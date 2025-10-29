@@ -239,7 +239,7 @@ Holy.UI.initTabs()
   Updates in real time betrween the quickpanel and main panel if changes are made to snippets/banks.
  
  ### 12.2 Active Quirks / Known Behaviors
-  **###Quick Panel Bootstrap Timing**
+  **Quick Panel Bootstrap Timing**
   * The quick access panel (`quickpanel.html`) now includes `main_DEV_INIT.js` to load the JSX stack when opened standalone.
   * Current behavior: panel requires a short focus cycle (~1–2 s) before first button press executes correctly. Second press then works normally.
   * Cause: timing gap during CSInterface and JSX bridge initialization on cold start.
