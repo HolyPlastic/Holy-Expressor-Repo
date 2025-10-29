@@ -250,6 +250,20 @@ If conflicts arise, assume this file overrides individual code comments.
 
 ---
 
+### 🪶 Agent Notes Directive
+
+- Every agent must add a short, factual entry to the **🪶 Agent Notes** section of `AGENTS.md` when finishing a task.  
+- Each note should summarise what changed or was discovered — **1 to 3 sentences max**.  
+- Include the **date** and **agent ID** (e.g. `2025-10-30 – gpt-5-codex:`).  
+- If **no functional change** occurred, record: “no functional change – analysis only.”  
+- If a **functional change** occurred, also include:  
+  - **Design Intent:** One sentence describing the goal of the change.  
+  - **Risks / Concerns:** One line noting any potential issues or trade-offs (only if applicable).  
+- Notes are **append-only** — never edit or remove earlier entries.  
+- These notes serve as the **active working log**. Once a change is approved or merged, maintainers or Archival Agents may migrate the entry into the official development timeline file.  
+
+---
+
 ## 🪶 Agent Notes
 
 * 2025-10-29 – gpt-5-codex: Added quick panel host-bridge priming helper (see `js/quickpanel.js`) to eagerly load JSX modules and verify readiness on open. Includes timed retries alongside existing cold-start recovery.
