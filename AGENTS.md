@@ -343,6 +343,8 @@ Holy.UI.initTabs()
 * 2025-10-30 – gpt-5-codex: Added host-bridge readiness fencing and a double-RAF paint kick so the quick panel renders after the CEP bridge is live and snippet rows report height before binding handlers. Design Intent: Ensure initial open waits for bridge readiness and forces a fresh paint to avoid blank loads. Risks / Concerns: Bridge polling timeout falls back to degraded init, so persistent bridge failures may still need manual intervention.
 * 2025-10-29 – gpt-5-codex: Added QuickPanel DOM Timing Trace (DOMContentLoaded/load/focus/timeout) to diagnose initialization order on cold start. No functional change.
 
+* 2025-10-30 – gpt-5-codex: Added ensureHostReady() loop in main_UI.js to delay QuickPanel launch until hostEnvironment is confirmed. Resolves white/gray blank panel issue on first click.
+
 
 
 ---

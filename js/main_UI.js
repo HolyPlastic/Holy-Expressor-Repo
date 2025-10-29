@@ -17,7 +17,28 @@ window.HX_LOG_MODE = "verbose";
 
 
 
- // ------------- UI helpers -------------
+// ------------- UI helpers -------------
+  function ensureHostReady(callback, attempts = 0) {
+    const maxAttempts = 15;
+    const interval = 300;
+    const env = cs && cs.hostEnvironment ? cs.hostEnvironment : {};
+
+    if (env.appName && env.appName.length) {
+      console.log("[UI] Host environment ready, proceeding with callback.");
+      callback();
+      return;
+    }
+
+    if (attempts >= maxAttempts) {
+      console.warn("[UI] Host environment never became ready after", attempts, "attempts");
+      callback(); // fallback to proceed anyway
+      return;
+    }
+
+    console.log("[UI] Host not ready, retrying...", attempts);
+    setTimeout(() => ensureHostReady(callback, attempts + 1), interval);
+  }
+
   var DOM = function (sel) { return document.querySelector(sel); };
   var allDOM = function (sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); };
   function toast(msg) {
@@ -53,7 +74,10 @@ window.HX_LOG_MODE = "verbose";
       quickAccessBtn.addEventListener("click", function () {
         try {
           console.log("[UI] Opening quick access panel");
-          cs.requestOpenExtension("com.holy.expressor.quickpanel");
+          console.log("[UI] Checking host readiness before launching QuickPanel...");
+          ensureHostReady(() => {
+            cs.requestOpenExtension("com.holy.expressor.quickpanel");
+          });
 
           setTimeout(function () {
             try {
