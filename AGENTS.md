@@ -232,6 +232,19 @@ Holy.UI.initTabs()
 
 ---
 
+
+## 🧩 12. Active Quirks / Known Behaviors
+
+### Quick Panel Bootstrap Timing
+* The quick access panel (`quickpanel.html`) now includes `main_DEV_INIT.js` to load the JSX stack when opened standalone.
+* Current behavior: panel requires a short focus cycle (~1–2 s) before first button press executes correctly. Second press then works normally.
+* Cause: timing gap during CSInterface and JSX bridge initialization on cold start.
+* Status: non-blocking; logged for optimization.
+* Future agents: investigate a lightweight readiness check or deferred `loadJSX()` trigger to ensure first interaction is valid.
+
+---
+
+
 ✅ **Agents.md is the single source of truth** for module behavior and load rules.
 If conflicts arise, assume this file overrides individual code comments.
 
