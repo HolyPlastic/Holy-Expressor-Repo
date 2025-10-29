@@ -64,6 +64,115 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
     });
   }
 
+  var hostBridgeState = {
+    priming: false,
+    ready: false
+  };
+
+  function getSharedCSInterface(preferred) {
+    if (preferred) {
+      return preferred;
+    }
+
+    if (window.Holy && Holy.UI && Holy.UI.cs) {
+      return Holy.UI.cs;
+    }
+
+    return safeNewCSInterface();
+  }
+
+  function primeHostBridge(preferredCs) {
+    if (hostBridgeState.ready) {
+      return true;
+    }
+
+    var cs = getSharedCSInterface(preferredCs);
+    if (!cs) {
+      return false;
+    }
+
+    if (window.Holy && Holy.DEV_INIT && typeof Holy.DEV_INIT.loadJSX === "function") {
+      try {
+        Holy.DEV_INIT.loadJSX();
+      } catch (err) {
+        console.warn("[QuickPanel] Holy.DEV_INIT.loadJSX() failed", err);
+      }
+    }
+
+    if (hostBridgeState.priming) {
+      return hostBridgeState.ready;
+    }
+
+    var basePath;
+    try {
+      basePath = cs.getSystemPath(SystemPath.EXTENSION);
+    } catch (errGetPath) {
+      console.warn("[QuickPanel] Unable to resolve extension path", errGetPath);
+      return false;
+    }
+
+    function toAbsolute(rel) {
+      return (basePath + rel).replace(/\\/g, "\\\\");
+    }
+
+    var hostModules = [
+      "/jsx/modules/host_UTILS.jsx",
+      "/jsx/modules/host_MAPS.jsx",
+      "/jsx/modules/host_GET.jsx",
+      "/jsx/modules/host_APPLY.jsx",
+      "/jsx/modules/host_DEV.jsx",
+      "/jsx/modules/host_FLYO.jsx",
+      "/jsx/host.jsx"
+    ];
+
+    hostBridgeState.priming = true;
+
+    try {
+      hostModules.forEach(function (file) {
+        cs.evalScript('$.evalFile("' + toAbsolute(file) + '")');
+      });
+    } catch (errEval) {
+      hostBridgeState.priming = false;
+      console.warn("[QuickPanel] Host module load failed", errEval);
+      return false;
+    }
+
+    try {
+      cs.evalScript('(typeof he_S_SS_applyExpressionToSelection)', function (res) {
+        if (res === "function") {
+          hostBridgeState.ready = true;
+          console.log("[QuickPanel] Host bridge primed");
+        } else {
+          hostBridgeState.priming = false;
+          console.warn("[QuickPanel] Host bridge check returned", res);
+        }
+      });
+    } catch (verifyErr) {
+      hostBridgeState.priming = false;
+      console.warn("[QuickPanel] Host bridge verification failed", verifyErr);
+    }
+
+    return hostBridgeState.ready;
+  }
+
+  function ensureHostBridge(cs) {
+    if (primeHostBridge(cs)) {
+      return;
+    }
+
+    setTimeout(function () {
+      if (!hostBridgeState.ready) {
+        primeHostBridge(cs);
+      }
+    }, 300);
+
+    setTimeout(function () {
+      if (!hostBridgeState.ready) {
+        primeHostBridge(cs);
+      }
+    }, 900);
+  }
+
   function disableNativeContextMenu() {
     if (window.Holy && Holy.MENU && typeof Holy.MENU.contextM_disableNative === "function") {
       try {
@@ -110,12 +219,13 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
     return !!(row.children && row.children.length);
   }
 
-  function scheduleColdStartRecovery() {
+  function scheduleColdStartRecovery(cs) {
     setTimeout(function () {
       if (!ensurePanelPainted()) {
         console.warn("[QuickPanel] Cold-start check #1 → forcing rebind");
         rebindSnippetsUI();
         renderSnippets();
+        ensureHostBridge(cs);
       }
     }, 300);
 
@@ -124,6 +234,7 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
         console.warn("[QuickPanel] Cold-start check #2 → requesting state sync");
         rebindSnippetsUI();
         renderSnippets();
+        ensureHostBridge(cs);
       }
     }, 900);
   }
@@ -165,11 +276,12 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
     var cs = safeNewCSInterface();
 
     installLogProxy(cs);
+    ensureHostBridge(cs);
     disableNativeContextMenu();
     initSnippets();
     rebindSnippetsUI();
     renderSnippets();
-    scheduleColdStartRecovery();
+    scheduleColdStartRecovery(cs);
     sendWarmWake(cs);
 
     var closeBtn = doc.getElementById("quickPanelCloseBtn");
