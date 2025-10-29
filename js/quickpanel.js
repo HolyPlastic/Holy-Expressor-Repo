@@ -256,7 +256,6 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
       console.warn("[QuickPanel] Warm wake dispatch failed", err);
     }
   }
-
 function initSnippets() {
   if (window.Holy && Holy.SNIPPETS && typeof Holy.SNIPPETS.init === "function") {
     try {
@@ -286,59 +285,91 @@ function initSnippets() {
   }, 800);
 }
 
+// ---------------------------------------------------------
+// 💡 DOMContentLoaded – main QuickPanel boot
+// ---------------------------------------------------------
+document.addEventListener("DOMContentLoaded", function () {
+  var doc = window.document;
+  doc.body.classList.add("quick-panel");
 
-  document.addEventListener("DOMContentLoaded", function () {
-    var doc = window.document;
-    doc.body.classList.add("quick-panel");
+  var cs = safeNewCSInterface();
 
-    var cs = safeNewCSInterface();
-
-    if (window.Holy && Holy.State && typeof Holy.State.init === "function") {
-      try {
-        Holy.State.init({ panel: "quick" });
-      } catch (err) {
-        console.warn("[QuickPanel] Holy.State.init failed", err);
-      }
+  // initialize state if available
+  if (window.Holy && Holy.State && typeof Holy.State.init === "function") {
+    try {
+      Holy.State.init({ panel: "quick" });
+    } catch (err) {
+      console.warn("[QuickPanel] Holy.State.init failed", err);
     }
+  }
 
-    installLogProxy(cs);
-    ensureHostBridge(cs);
-    disableNativeContextMenu();
-    initSnippets();
-    rebindSnippetsUI();
-    renderSnippets();
-    if (window.Holy && Holy.State && typeof Holy.State.attachPanelBindings === "function") {
-      try {
-        Holy.State.attachPanelBindings();
-      } catch (err) {
-        console.warn("[QuickPanel] Holy.State.attachPanelBindings failed", err);
-      }
+  installLogProxy(cs);
+  ensureHostBridge(cs);
+  disableNativeContextMenu();
+
+  initSnippets();
+  rebindSnippetsUI();
+  renderSnippets();
+
+  if (window.Holy && Holy.State && typeof Holy.State.attachPanelBindings === "function") {
+    try {
+      Holy.State.attachPanelBindings();
+    } catch (err) {
+      console.warn("[QuickPanel] Holy.State.attachPanelBindings failed", err);
     }
-    scheduleColdStartRecovery(cs);
-    sendWarmWake(cs);
+  }
 
- // ---------------------------------------------------------
+  scheduleColdStartRecovery(cs);
+  sendWarmWake(cs);
+
+  // ---------------------------------------------------------
   // 📍01 – Focus Rehydration Listener
   // ---------------------------------------------------------
-  window.addEventListener("focus", () => {
+  window.addEventListener("focus", function () {
     console.log("[Holy.State] Panel refocused → rehydrating state");
     if (window.Holy && Holy.State && typeof Holy.State.reload === "function") {
-      Holy.State.reload();
+      try {
+        Holy.State.reload();
+      } catch (e) {
+        console.warn("[Holy.State] reload failed", e);
+      }
     }
   });
 
-})();
+  // ---------------------------------------------------------
+// 📍V4.2 – LiveSync listener (Quick Panel)
+// ---------------------------------------------------------
+try {
+  var cs = new CSInterface();
+  cs.addEventListener("com.holy.expressor.stateChanged", function (evt) {
+    try {
+      var payload = typeof evt.data === "object" ? evt.data : JSON.parse(evt.data);
+      console.log("[QuickPanel] LiveSync event received →", payload);
 
-
-    var closeBtn = doc.getElementById("quickPanelCloseBtn");
-    if (closeBtn && cs) {
-      closeBtn.addEventListener("click", function () {
-        try {
-          cs.closeExtension();
-        } catch (err) {
-          console.error("[QuickPanel] Failed to close extension", err);
-        }
-      });
+      if (payload.type === "banksChanged" && window.Holy && Holy.SNIPPETS) {
+        Holy.SNIPPETS.init();
+      }
+    } catch (parseErr) {
+      console.warn("[QuickPanel] LiveSync parse error", parseErr);
     }
-  
-})();
+  });
+} catch (listenerErr) {
+  console.warn("[QuickPanel] Failed to attach LiveSync listener", listenerErr);
+}
+
+  // ---------------------------------------------------------
+  // 🧩 Close button behavior
+  // ---------------------------------------------------------
+  var closeBtn = doc.getElementById("quickPanelCloseBtn");
+  if (closeBtn && cs) {
+    closeBtn.addEventListener("click", function () {
+      try {
+        cs.closeExtension();
+      } catch (err) {
+        console.error("[QuickPanel] Failed to close extension", err);
+      }
+    });
+  }
+}); // closes DOMContentLoaded
+
+})(); // closes IIFE

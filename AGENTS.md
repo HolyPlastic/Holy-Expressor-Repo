@@ -249,7 +249,7 @@ Holy.UI.initTabs()
 
 ## 🪶 Agent Notes Directive
 
-- Every agent must add a short, factual entry to the **🪶 Agent Notes** section of `AGENTS.md` when finishing a task.  
+- Every agent must add a short, factual entry to the **🪶⛓️ Dev Notes** section of `AGENTS.md` when finishing a task.  
 - Each note should summarise what changed or was discovered — **1 to 3 sentences max**.  
 - Include the **date** and **agent ID** (e.g. `2025-10-30 – gpt-5-codex:`).  
 - If **no functional change** occurred, record: “no functional change – analysis only.”  
@@ -261,10 +261,83 @@ Holy.UI.initTabs()
 
 ---
 
-## 🪶 Agent Notes
+## 🪶⛓️ Dev Notes
 
 * 2025-10-29 – gpt-5-codex: Added quick panel host-bridge priming helper (see `js/quickpanel.js`) to eagerly load JSX modules and verify readiness on open. Includes timed retries alongside existing cold-start recovery.
 * 2025-10-29 – gpt-5-codex: Introduced `Holy.State` shared persistence layer syncing expression and toggle state between panels; see `js/main_STATE.js`.
+
+* 2025-10-29 – lead-dev: **Quick Panel & LiveSync Development Cycle Summary**
+
+  **Summary:**
+  Focused on resolving Quick Panel blank-load behaviour, double-click requirement, and missing LiveSync updates between panels. Investigation confirmed root cause tied to CEP panel caching and incomplete event propagation rather than logic faults.
+
+  **Phase 1 – Initialization / Visibility**
+
+  * Verified Quick Panel loaded but appeared blank on first open, only rendering on second click.
+  * Confirmed all scripts present; added “TESTING” markup to prove DOM injection.
+  * Identified asynchronous CEP load timing as core issue.
+
+  **Phase 2 – Cache / Double-Click Issue**
+
+  * Cleared AE + CEP caches, renamed extension folder, retested.
+  * Behaviour consistent: blank first open, visible second open.
+  * Determined CEP spawns before DOM bindings initialize; full reinit only on second call.
+
+  **Phase 3 – Rehydration / Focus Handling**
+
+  * Added focus-based listener to auto-reload panel state.
+  * `[Holy.State] Panel refocused → rehydrating state` confirmed firing but without UI updates.
+
+  **Phase 4 – Warm-Wake Self-Heal**
+
+  * Introduced delayed self-check (`setTimeout`) to detect blank panels and rerun `Holy.SNIPPETS.init()`.
+  * Panel redraws after short delay but still requires second trigger for full focus chain.
+
+  **Phase 5 – Holy.State Integration**
+
+  * Implemented shared persistence + CEP event broadcast across panels.
+  * Expected two-way sync between Main and Quick panels; partial success.
+
+  **Phase 6 – Testing / Verification**
+
+  * State save confirmed; cross-panel events not received.
+  * Focus logs consistent; CEP broadcast scope suspected.
+  * UI updates only after manual reload → persistence OK, propagation missing.
+
+  **Phase 7 – Diagnostics / Logging**
+
+  * Expanded logs for dispatch / listener / rehydration.
+  * ExtendScript logs confirmed invisible to DevTools; JS-side only.
+  * “Initialized for panel” logs appear only during startup.
+
+  **Current Status**
+  ✅ Persistence working
+  ✅ Warm-Wake & Focus triggers logging
+  ⚠️ Quick Panel blank on first open
+  ⚠️ LiveSync not cross-firing
+  ⚠️ UI not auto-refreshing post-edit
+
+  **Next Priorities**
+
+  * Fix initial blank-panel / double-click requirement before further sync work.
+  * Confirm broadcast scope, panel identity, and delayed render handshake.
+
+  **Research-backed Notes**
+  *Common causes of blank CEP panels and verified approaches:*
+
+  * **Initialization timing / DOM delay** → Delay UI rendering until `DOMContentLoaded` + small timeout.
+  * **CEPHtmlEngine cold start** → Programmatically trigger focus / resize / reflow after open.
+  * **Browser engine / syntax mismatch** → Check JS + CSS compatibility for target AE CEP version.
+  * **Cached instance persistence** → Kill `CEPHtmlEngine.exe` or rename extension folder for clean load.
+  * **Visibility / paint issues** → Force repaint via CSS toggle or reflow (`offsetHeight` hack).
+
+  **Recommended Test Order**
+  1️⃣ Force UI init after short delay (300–800 ms).
+  2️⃣ Trigger focus / reflow on open.
+  3️⃣ Validate syntax compatibility.
+  4️⃣ Purge cached instances.
+  5️⃣ Check for hidden DOM / paint layer issues.
+
 
 ---
 

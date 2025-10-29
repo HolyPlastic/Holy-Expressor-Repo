@@ -576,6 +576,36 @@ if (typeof Holy !== "object") {
 
     log("Editor binding active");
   }
+// ---------------------------------------------------------
+// 📍V4.1 – LiveSync dispatch after any state change (for multi-panel updates)
+// ---------------------------------------------------------
+function dispatchLiveSyncEvent(changeType) {
+  try {
+    var csInstance = safeCSInterface();
+    if (!csInstance || typeof CSEvent !== "function") return;
+
+    var evt = new CSEvent("com.holy.expressor.stateChanged", "APPLICATION");
+    evt.data = JSON.stringify({
+      type: changeType || "stateUpdated",
+      timestamp: Date.now(),
+      source: instanceId
+    });
+    csInstance.dispatchEvent(evt);
+    log("Dispatched LiveSync event", { type: changeType });
+  } catch (err) {
+    warn("Failed to dispatch LiveSync event", err);
+  }
+}
+
+// Hook into state updates – this will be called after every broadcastState()
+if (!window.__holyStateLiveSyncHooked) {
+  window.__holyStateLiveSyncHooked = true;
+  var originalBroadcast = broadcastState;
+  broadcastState = function(changedKeys) {
+    originalBroadcast.call(this, changedKeys);
+    dispatchLiveSyncEvent("banksChanged");
+  };
+}
 
   Holy.State = {
     init: init,

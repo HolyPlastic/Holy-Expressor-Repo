@@ -211,4 +211,37 @@ if (!document.body || !document.body.classList.contains("quick-panel")) {
     initTabs: initTabs,
     onTarget: onTarget
   };
+
+
+  // ---------------------------------------------------------
+// 📍01 – Focus Rehydration Listener
+// ---------------------------------------------------------
+window.addEventListener("focus", () => {
+  console.log("[Holy.State] Panel refocused → rehydrating state");
+  if (window.Holy && Holy.State && typeof Holy.State.reload === "function") {
+    Holy.State.reload();
+  }
+});
+// ---------------------------------------------------------
+// 📍V4.2 – LiveSync listener (Main Panel)
+// ---------------------------------------------------------
+try {
+
+  cs.addEventListener("com.holy.expressor.stateChanged", function (evt) {
+    try {
+      var payload = typeof evt.data === "object" ? evt.data : JSON.parse(evt.data);
+      console.log("[Holy.State] LiveSync event received →", payload);
+
+      // 💡 Re-init snippets when any other panel updates state
+      if (payload.type === "banksChanged" && window.Holy && Holy.SNIPPETS) {
+        Holy.SNIPPETS.init();
+      }
+    } catch (parseErr) {
+      console.warn("[Holy.State] LiveSync parse error", parseErr);
+    }
+  });
+} catch (listenerErr) {
+  console.warn("[Holy.State] Failed to attach LiveSync listener", listenerErr);
+}
+
 })();
