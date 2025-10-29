@@ -218,15 +218,77 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
       return false;
     }
 
-    if (row.children && row.children.length) {
-      if (row.offsetHeight === 0) {
-        forcePanelRepaint();
+    var hasChildren = !!(row.children && row.children.length);
+    if (!hasChildren) {
+      renderSnippets();
+      hasChildren = !!(row.children && row.children.length);
+    }
+
+    if (!hasChildren) {
+      return false;
+    }
+
+    var height = row.offsetHeight || 0;
+    if (typeof row.getBoundingClientRect === "function") {
+      try {
+        height = Math.max(height, row.getBoundingClientRect().height || 0);
+      } catch (err) {
+        console.warn("[QuickPanel] getBoundingClientRect failed", err);
       }
+    }
+
+    if (height > 0) {
       return true;
     }
 
-    renderSnippets();
-    return !!(row.children && row.children.length);
+    forcePanelRepaint();
+
+    height = row.offsetHeight || 0;
+    if (typeof row.getBoundingClientRect === "function") {
+      try {
+        height = Math.max(height, row.getBoundingClientRect().height || 0);
+      } catch (err2) {
+        console.warn("[QuickPanel] getBoundingClientRect retry failed", err2);
+      }
+    }
+
+    if (height > 0) {
+      return true;
+    }
+
+    console.warn("[QuickPanel] Snippet row still collapsed after repaint");
+    return false;
+  }
+
+  var layoutRetryState = {
+    attempts: 0,
+    maxAttempts: 6
+  };
+
+  function guaranteePanelLayout() {
+    if (ensurePanelPainted()) {
+      layoutRetryState.attempts = 0;
+      return true;
+    }
+
+    if (layoutRetryState.attempts >= layoutRetryState.maxAttempts) {
+      console.warn("[QuickPanel] Layout retries exhausted; panel may remain blank");
+      return false;
+    }
+
+    layoutRetryState.attempts += 1;
+
+    var raf = typeof window.requestAnimationFrame === "function"
+      ? window.requestAnimationFrame.bind(window)
+      : function (cb) {
+          return setTimeout(cb, 16);
+        };
+
+    raf(function () {
+      guaranteePanelLayout();
+    });
+
+    return false;
   }
 
   function scheduleColdStartRecovery(cs) {
@@ -237,6 +299,7 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
         renderSnippets();
         forcePanelRepaint();
         ensureHostBridge(cs);
+        guaranteePanelLayout();
       }
     }, 300);
 
@@ -247,6 +310,14 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
         renderSnippets();
         forcePanelRepaint();
         ensureHostBridge(cs);
+        if (window.Holy && Holy.State && typeof Holy.State.reload === "function") {
+          try {
+            Holy.State.reload();
+          } catch (reloadErr) {
+            console.warn("[QuickPanel] State reload during cold-start recovery failed", reloadErr);
+          }
+        }
+        guaranteePanelLayout();
       }
     }, 900);
   }
@@ -349,6 +420,13 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
             console.warn("[QuickPanel] Self-heal reinit failed", e);
           }
         }
+        guaranteePanelLayout();
+        return;
+      }
+
+      if (!row.children || !row.children.length || row.offsetHeight === 0) {
+        console.warn("[QuickPanel] Detected collapsed snippet row after init → retrying layout");
+        guaranteePanelLayout();
       }
     }, 800);
   }
@@ -379,6 +457,7 @@ document.addEventListener("DOMContentLoaded", function () {
     rebindSnippetsUI();
     renderSnippets();
     forcePanelRepaint();
+    guaranteePanelLayout();
 
     if (window.Holy && Holy.State && typeof Holy.State.attachPanelBindings === "function") {
       try {
