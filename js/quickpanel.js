@@ -257,17 +257,35 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
     }
   }
 
-  function initSnippets() {
-    if (window.Holy && Holy.SNIPPETS && typeof Holy.SNIPPETS.init === "function") {
-      try {
-        Holy.SNIPPETS.init();
-      } catch (err) {
-        console.error("[QuickPanel] Failed to initialize snippets", err);
-      }
-    } else {
-      console.warn("[QuickPanel] Holy.SNIPPETS.init is not available");
+function initSnippets() {
+  if (window.Holy && Holy.SNIPPETS && typeof Holy.SNIPPETS.init === "function") {
+    try {
+      Holy.SNIPPETS.init();
+    } catch (err) {
+      console.error("[QuickPanel] Failed to initialize snippets", err);
     }
+  } else {
+    console.warn("[QuickPanel] Holy.SNIPPETS.init not available");
   }
+
+  // ---------------------------------------------------------
+  // 📍02 – Warm-Start Self-Heal
+  // ---------------------------------------------------------
+  setTimeout(function () {
+    var row = document.querySelector("#snippetsRow");
+    if (!row) {
+      console.warn("[QuickPanel] Detected blank init → forcing redraw");
+      if (window.Holy && Holy.SNIPPETS && typeof Holy.SNIPPETS.init === "function") {
+        try {
+          Holy.SNIPPETS.init();
+        } catch (e) {
+          console.warn("[QuickPanel] Self-heal reinit failed", e);
+        }
+      }
+    }
+  }, 800);
+}
+
 
   document.addEventListener("DOMContentLoaded", function () {
     var doc = window.document;
@@ -299,6 +317,19 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
     scheduleColdStartRecovery(cs);
     sendWarmWake(cs);
 
+ // ---------------------------------------------------------
+  // 📍01 – Focus Rehydration Listener
+  // ---------------------------------------------------------
+  window.addEventListener("focus", () => {
+    console.log("[Holy.State] Panel refocused → rehydrating state");
+    if (window.Holy && Holy.State && typeof Holy.State.reload === "function") {
+      Holy.State.reload();
+    }
+  });
+
+})();
+
+
     var closeBtn = doc.getElementById("quickPanelCloseBtn");
     if (closeBtn && cs) {
       closeBtn.addEventListener("click", function () {
@@ -309,5 +340,5 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
         }
       });
     }
-  });
+  
 })();
