@@ -92,37 +92,39 @@
         </UI>
       </DispatchInfo>
     </Extension>
-    <Extension Id="com.holy.expressor.quickpanel">
-      <DispatchInfo>
-        <Resources>
-          <MainPath>./quickpanel.html</MainPath>
-          <CEFCommandLine>
-              <Parameter>--enable-nodejs</Parameter>
-            <Parameter>--enable-devtools</Parameter>
-            <Parameter>--remote-debugging-port=6904</Parameter>
-            <Parameter>--allow-file-access</Parameter>
-            <Parameter>--allow-file-access-from-files</Parameter>
-            <Parameter>--disable-web-security</Parameter>
+<Extension Id="com.holy.expressor.quickpanel">
+  <DispatchInfo>
+    <Resources>
+      <MainPath>./quickpanel.html</MainPath>
+      <CEFCommandLine>
+        <Parameter>--enable-nodejs</Parameter>
+        <Parameter>--enable-devtools</Parameter>
+        <Parameter>--remote-debugging-port=6905</Parameter>
+        <Parameter>--allow-file-access</Parameter>
+        <Parameter>--allow-file-access-from-files</Parameter>
+        <Parameter>--disable-web-security</Parameter>
+      </CEFCommandLine>
+    </Resources>
 
-          </CEFCommandLine>
-        </Resources>
+    <!-- 🧠 Force AE to create and bind the panel at startup -->
+    <Lifecycle>
+      <AutoVisible>true</AutoVisible>
+    </Lifecycle>
 
-        <Lifecycle>
-          <AutoVisible>false</AutoVisible>
-        </Lifecycle>
+    <!-- 🧩 Use ModalDialog for a reliable compositor attach test -->
+    <UI>
+      <Type>Modeless</Type>
+      <Menu>Holy Expressor Quick Access</Menu>
 
-        <UI>
-          <Type>Panel</Type>
-          <Menu>Holy Expressor Quick Access</Menu>
+      <Geometry>
+        <Size>
+          <Width>320</Width>
+          <Height>260</Height>
+        </Size>
+      </Geometry>
+    </UI>
+  </DispatchInfo>
+</Extension>
 
-          <Geometry>
-            <Size>
-              <Width>320</Width>
-              <Height>260</Height>
-            </Size>
-          </Geometry>
-        </UI>
-      </DispatchInfo>
-    </Extension>
   </DispatchInfoList>
 </ExtensionManifest>

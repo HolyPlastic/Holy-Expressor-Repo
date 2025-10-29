@@ -4,20 +4,20 @@ if (typeof Holy !== "object") Holy = {};
 (function () {
   "use strict";
 
-var cs = new CSInterface();
+  var cs = new CSInterface();
 
 
-// -----------------------------------------------------------
-// 🧭 Global log mode switch: set "verbose" or "silent"
-window.HX_LOG_MODE = "verbose";
-// -----------------------------------------------------------
-
-
-
+  // -----------------------------------------------------------
+  // 🧭 Global log mode switch: set "verbose" or "silent"
+  window.HX_LOG_MODE = "verbose";
+  // -----------------------------------------------------------
 
 
 
-// ------------- UI helpers -------------
+
+
+
+  // ------------- UI helpers -------------
   function ensureHostReady(callback, attempts = 0) {
     const maxAttempts = 15;
     const interval = 300;
@@ -49,8 +49,8 @@ window.HX_LOG_MODE = "verbose";
     clearTimeout(el._t);
     el._t = setTimeout(function () { el.style.display = "none"; }, 1600);
   }
-  
-  
+
+
   document.addEventListener("DOMContentLoaded", function () {
     // V2 — External Flyover Trigger via JSX bridge
     var flyoBtn = document.getElementById("flyoLaunchBtn");
@@ -81,24 +81,13 @@ window.HX_LOG_MODE = "verbose";
 
           setTimeout(function () {
             try {
-              var pokeEvent = new CSEvent("com.holy.expressor.quickpanel.log", "APPLICATION");
-              pokeEvent.data = JSON.stringify({
-                level: "log",
-                messages: ["[WarmWake] Triggered immediate handshake after open."]
-              });
-              cs.dispatchEvent(pokeEvent);
-              console.log("[UI] Warm-Wake signal dispatched to QuickPanel");
-              // After warm-wake dispatch
-console.log("[QuickPanel] forcing AE repaint (main UI)...");
-window.dispatchEvent(new Event("resize"));
-document.body.style.transform = "scale(1)";
-void document.body.offsetHeight;
-document.body.style.transform = "";
-console.log("[QuickPanel] repaint sequence complete (main UI).");
-
+ensureHostReady(() => {
+  cs.requestOpenExtension("com.holy.expressor.quickpanel");
+});
             } catch (e) {
               console.warn("[UI] QuickPanel Warm-Wake dispatch failed", e);
             }
+
           }, 800);
 
           cs.evalScript("app.activeViewer && app.activeViewer.setActive();");
@@ -144,42 +133,42 @@ console.log("[QuickPanel] repaint sequence complete (main UI).");
     }
   });
 
-// ✅ REWRITE – QuickPanel Log Listener (safe for object or string payload)
-function quickPanelLogListener(evt) {
-  if (!evt) return;
+  // ✅ REWRITE – QuickPanel Log Listener (safe for object or string payload)
+  function quickPanelLogListener(evt) {
+    if (!evt) return;
 
-  let payload = evt.data;
-  try {
-    // CEP >=6.1 sends already-parsed objects; handle both cases
-    if (typeof payload === "string") {
-      payload = JSON.parse(payload || "{}");
-    } else if (typeof payload !== "object" || payload === null) {
-      payload = {};
+    let payload = evt.data;
+    try {
+      // CEP >=6.1 sends already-parsed objects; handle both cases
+      if (typeof payload === "string") {
+        payload = JSON.parse(payload || "{}");
+      } else if (typeof payload !== "object" || payload === null) {
+        payload = {};
+      }
+    } catch (err) {
+      console.warn("[Holy.UI] Failed to parse quick panel log payload", err, evt.data);
+      return;
     }
-  } catch (err) {
-    console.warn("[Holy.UI] Failed to parse quick panel log payload", err, evt.data);
-    return;
+
+    const level = payload.level || "log";
+    const messages = payload.messages || [];
+    const target = console[level] || console.log;
+
+    try {
+      target.apply(console, ["[QuickPanel]"].concat(messages));
+    } catch (dispatchErr) {
+      console.log.apply(console, ["[QuickPanel]"].concat(messages));
+      console.warn("[Holy.UI] Quick panel log relay failed", dispatchErr);
+    }
   }
 
-  const level = payload.level || "log";
-  const messages = payload.messages || [];
-  const target = console[level] || console.log;
-
-  try {
-    target.apply(console, ["[QuickPanel]"].concat(messages));
-  } catch (dispatchErr) {
-    console.log.apply(console, ["[QuickPanel]"].concat(messages));
-    console.warn("[Holy.UI] Quick panel log relay failed", dispatchErr);
+  // ✅ Keep listener registration as-is
+  if (!document.body || !document.body.classList.contains("quick-panel")) {
+    cs.addEventListener("com.holy.expressor.quickpanel.log", quickPanelLogListener);
   }
-}
-
-// ✅ Keep listener registration as-is
-if (!document.body || !document.body.classList.contains("quick-panel")) {
-  cs.addEventListener("com.holy.expressor.quickpanel.log", quickPanelLogListener);
-}
 
 
-  
+
   // ------------- Tabs -------------
   function initTabs() {
     allDOM(".tab-btn").forEach(function (btn) {
@@ -203,12 +192,12 @@ if (!document.body || !document.body.classList.contains("quick-panel")) {
   }
 
 
-  
+
   // ------------- TARGET -------------
   function onTarget() {
     cs.evalScript("he_U_SS_getSelectionSummary()", function (raw) {
       var r = {};
-      try { r = JSON.parse(raw || "{}"); } catch (e) {}
+      try { r = JSON.parse(raw || "{}"); } catch (e) { }
       var out = DOM("#TargetList");
       if (!out) return;
 
@@ -246,34 +235,34 @@ if (!document.body || !document.body.classList.contains("quick-panel")) {
 
 
   // ---------------------------------------------------------
-// 📍01 – Focus Rehydration Listener
-// ---------------------------------------------------------
-window.addEventListener("focus", () => {
-  console.log("[Holy.State] Panel refocused → rehydrating state");
-  if (window.Holy && Holy.State && typeof Holy.State.reload === "function") {
-    Holy.State.reload();
-  }
-});
-// ---------------------------------------------------------
-// 📍V4.2 – LiveSync listener (Main Panel)
-// ---------------------------------------------------------
-try {
-
-  cs.addEventListener("com.holy.expressor.stateChanged", function (evt) {
-    try {
-      var payload = typeof evt.data === "object" ? evt.data : JSON.parse(evt.data);
-      console.log("[Holy.State] LiveSync event received →", payload);
-
-      // 💡 Re-init snippets when any other panel updates state
-      if (payload.type === "banksChanged" && window.Holy && Holy.SNIPPETS) {
-        Holy.SNIPPETS.init();
-      }
-    } catch (parseErr) {
-      console.warn("[Holy.State] LiveSync parse error", parseErr);
+  // 📍01 – Focus Rehydration Listener
+  // ---------------------------------------------------------
+  window.addEventListener("focus", () => {
+    console.log("[Holy.State] Panel refocused → rehydrating state");
+    if (window.Holy && Holy.State && typeof Holy.State.reload === "function") {
+      Holy.State.reload();
     }
   });
-} catch (listenerErr) {
-  console.warn("[Holy.State] Failed to attach LiveSync listener", listenerErr);
-}
+  // ---------------------------------------------------------
+  // 📍V4.2 – LiveSync listener (Main Panel)
+  // ---------------------------------------------------------
+  try {
+
+    cs.addEventListener("com.holy.expressor.stateChanged", function (evt) {
+      try {
+        var payload = typeof evt.data === "object" ? evt.data : JSON.parse(evt.data);
+        console.log("[Holy.State] LiveSync event received →", payload);
+
+        // 💡 Re-init snippets when any other panel updates state
+        if (payload.type === "banksChanged" && window.Holy && Holy.SNIPPETS) {
+          Holy.SNIPPETS.init();
+        }
+      } catch (parseErr) {
+        console.warn("[Holy.State] LiveSync parse error", parseErr);
+      }
+    });
+  } catch (listenerErr) {
+    console.warn("[Holy.State] Failed to attach LiveSync listener", listenerErr);
+  }
 
 })();
