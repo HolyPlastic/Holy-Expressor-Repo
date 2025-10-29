@@ -5,6 +5,26 @@ if (typeof window.Holy !== "object" || window.Holy === null) {
 (function () {
   "use strict";
 
+  // ===== 🔍 QuickPanel DOM Timing Trace – added for diagnostics (2025-10-29) =====
+  document.addEventListener("DOMContentLoaded", function () {
+    console.log("[QuickPanel] DOMContentLoaded fired at", performance.now());
+  });
+
+  window.addEventListener("load", function () {
+    console.log("[QuickPanel] window.load fired at", performance.now());
+  });
+
+  window.addEventListener("focus", function () {
+    console.log("[QuickPanel] focus fired at", performance.now());
+  });
+
+  setTimeout(function () {
+    console.log(
+      "[QuickPanel] post-load timeout reached, panel offsetHeight:",
+      document.documentElement.offsetHeight
+    );
+  }, 1500);
+
   function safeNewCSInterface() {
     try {
       return new CSInterface();

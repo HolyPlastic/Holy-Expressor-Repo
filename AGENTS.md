@@ -341,6 +341,7 @@ Holy.UI.initTabs()
 * 2025-10-29 – gpt-5-codex: Added readiness gating and repaint fallback in quick panel bootstrap to eliminate blank-first-open/double-click behaviour. Design Intent: Defer quick panel init until Holy modules are ready and force a repaint when the snippet row fails to draw. Risks / Concerns: Polling timeout now proceeds with degraded init, so monitor for cases where modules never hydrate and UI still stalls.
 * 2025-10-30 – gpt-5-codex: Hardened quick panel paint verification with layout retries, warm-wake fallbacks, and state reload to surface snippets on the first open. Design Intent: Detect collapsed snippet rows and keep re-rendering/repainting until layout reports a non-zero height. Risks / Concerns: Extra retries and reloads may add minor startup delay or hide deeper lifecycle issues if the root cause persists.
 * 2025-10-30 – gpt-5-codex: Added host-bridge readiness fencing and a double-RAF paint kick so the quick panel renders after the CEP bridge is live and snippet rows report height before binding handlers. Design Intent: Ensure initial open waits for bridge readiness and forces a fresh paint to avoid blank loads. Risks / Concerns: Bridge polling timeout falls back to degraded init, so persistent bridge failures may still need manual intervention.
+* 2025-10-29 – gpt-5-codex: Added QuickPanel DOM Timing Trace (DOMContentLoaded/load/focus/timeout) to diagnose initialization order on cold start. No functional change.
 
 
 
