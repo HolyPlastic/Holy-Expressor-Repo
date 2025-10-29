@@ -338,6 +338,9 @@ Holy.UI.initTabs()
   4️⃣ Purge cached instances.
   5️⃣ Check for hidden DOM / paint layer issues.
 
+* 2025-10-29 – gpt-5-codex: Added readiness gating and repaint fallback in quick panel bootstrap to eliminate blank-first-open/double-click behaviour. Design Intent: Defer quick panel init until Holy modules are ready and force a repaint when the snippet row fails to draw. Risks / Concerns: Polling timeout now proceeds with degraded init, so monitor for cases where modules never hydrate and UI still stalls.
+
+
 
 ---
 
