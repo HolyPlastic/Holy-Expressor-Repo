@@ -70,10 +70,23 @@ html.theme-default .cm-editor .cm-lineNumbers .cm-gutterElement {
 
 /* 🌟 Active line gutter */
 html.theme-default .cm-editor .cm-activeLineGutter {
-  background-color: #353535 !important;
-  margin: 0 -0.1em 0 -0.35em;
-  padding: 0 0.1em 0 0.35em;
+  position: relative;
+  z-index: 0;
+  background-color: transparent !important;
+  margin: 0 -0.04em 0 -0.35em;
+  padding: 0 0.04em 0 0.35em;
   box-sizing: border-box;
+}
+
+html.theme-default .cm-editor .cm-activeLineGutter::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+  left: calc(-0.35em);
+  right: calc(-0.04em);
+  background-color: #353535;
 }
 /*
 .cm-gutterElement {
@@ -100,14 +113,14 @@ html.theme-default .cm-editor.cm-focused {
 /* 🧠 Dynamic gutter scaling — Holy Expressor tweak */
 html.theme-default .cm-editor .cm-gutters {
   width: auto !important;
-  min-width: calc(1ch + 0.35em);
-  padding: 0 0.1em 0 0.35em;
+  min-width: calc(1ch + 0.3em);
+  padding: 0 0.04em 0 0.35em;
   transition: width 0.12s ease;
 }
 
 html.theme-default .cm-editor .cm-gutterElement {
   width: auto !important;      /* remove fixed width */
-  min-width: calc(1ch + 0.2em);
+  min-width: calc(1ch + 0.1em);
   text-align: right;
   white-space: nowrap;
   padding: 0;
