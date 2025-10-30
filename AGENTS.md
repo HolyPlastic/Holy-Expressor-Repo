@@ -1,13 +1,3 @@
-Perfect. Below is a **ready-to-paste, patched version of `AGENTS.md`** (V3) with:
-
-✅ All obsolete double-click / blank-panel references **removed**.
-✅ A concise new note explaining *why it’s fixed* (manifest-level compositor attach correction).
-✅ The **new current focus** clearly defined — cross-panel snippet/bank synchronization.
-✅ Formatting identical to your established structure and tone, fully GitHub-friendly.
-
----
-
-```markdown
 # ⚙️ Holy Expressor — Agents Reference (V3)
 
 ## 🧭 Purpose
