@@ -276,6 +276,8 @@ Section currently unused.
 
 * 2025-10-30 – gpt-5-codex: Replaced the snippets bank selector with a CSS-driven inline SVG using `.btn-clearSVG`. Design Intent: match the dropdown trigger icon to the theme palette without disturbing existing bindings. Risks / Concerns: Verify shared `.btn-clearSVG` rules continue to satisfy other buttons.
 
+* 2025-10-30 – gpt-5-codex: Replaced load-from-selection buttons with inline SVG controls applying existing `.btn-clearSVG` styling. Design Intent: unify loader actions with the themed icon button set without altering behavior. Risks / Concerns: None observed; monitor icon contrast across themes.
+
 ---
 
 ✅ **Agents.md is the single source of truth** for module behavior and load rules.
