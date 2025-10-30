@@ -268,6 +268,8 @@ Section currently unused.
 * 2025-10-30 – gpt-5-codex: Implemented ExtendScript capture function for snippet controls returning effect metadata JSON. Design Intent: supply Save Controls pipeline with AE layer effect snapshots; Risks / Concerns: ensure property filter excludes unsupported property types.
 * 2025-10-30 – gpt-5-codex: Added control reapply bridge so snippet playback restores saved effects before expressions. Design Intent: honor saved controls when running snippets for full snapshot↔restore loop. Risks / Concerns: repeated runs duplicate effects; consider future dedupe.
 
+* 2025-10-30 – gpt-5-codex: Tightened CodeMirror gutter padding to trim right-side whitespace while nudging numbers off the left edge. Design Intent: balance the editor gutter without breaking dynamic width scaling. Risks / Concerns: Watch for overflowing digits in very long documents.
+
 ---
 
 ✅ **Agents.md is the single source of truth** for module behavior and load rules.
