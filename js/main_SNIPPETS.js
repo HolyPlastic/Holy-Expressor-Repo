@@ -543,6 +543,7 @@ Holy.SNIPPETS.banks = [
 
         <div class="snippet-editor-buttons">
           <button id="fgSaveSnip" class="btn snippet-editor-save">Save</button>
+          <button id="fgSaveControls" class="button">Save Controls</button>
           <button id="fgCancelSnip" class="button">Cancel</button>
         </div>
       </div>
