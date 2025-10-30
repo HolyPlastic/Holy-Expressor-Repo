@@ -1444,39 +1444,38 @@ button.btn-discreet:focus {
    🧩 Clear Button (SVG version)
    ================================================== */
 .btn-clearSVG {
-    border: none;
-    background: none;
-    width: 25px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
- shape-rendering: geometricPrecision; 
-  vector-effect: non-scaling-stroke; 
-
-    color: var(--G-color-1-mid);
-    stroke: var(--G-color-1);
-
- transition: color 0.2s ease-out, transform 0.2s ease-out;
-  transform: translateZ(0); 
+  border: none;
+  background: none;
+  width: 25px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  shape-rendering: geometricPrecision;
+  vector-effect: non-scaling-stroke;
+  color: var(--G-color-1-mid);
+  transition: color 0.2s ease-out, transform 0.2s ease-out;
+  transform: translateZ(0);
 }
 
 .btn-clearSVG:hover {
   color: var(--G-color-1);
-  stroke: var(--G-color-1-midlight2);
-
-  transform: scale(1.05);
-   transform: translateZ(0); 
+  transform: scale(1.05) translateZ(0);
 }
 
 .btn-clearSVG:active {
-  transform: scale(0.95);
+  transform: scale(0.95) translateZ(0);
 }
 
 .btn-clearSVG .btn-icon {
   width: 100%;
   height: 100%;
+}
+
+#bankSelectBtn .btn-icon * {
+  stroke: currentColor;
+  vector-effect: non-scaling-stroke;
 }
 
 button.btn-discreet:focus-visible {
