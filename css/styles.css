@@ -83,7 +83,11 @@ var(--G-color-1-S),
   calc(var(--G-color-1-L) *2 * 0.3)
 );
 
-
+--G-color-1-midup: hsl(
+  var(--G-color-1-H),
+  calc(var(--G-color-1-S) * 0.75),
+  calc(var(--G-color-1-L) *2 * 0.2)
+);
   
   --G-colour-1-opac-75: rgba(var(--G-colour-1-RGB), 0.75);
   --G-colour-1-opac-50: rgba(var(--G-colour-1-RGB), 0.5);
@@ -554,7 +558,8 @@ h4 {
 /*---------------------------------\-----*/
 /*#endregion* checkbox-------------\----*/
 
-
+/*#region* - Global styles,,? ============================== */
+/*____________________________________________________*/
 /* =============================
    🔧 Base Resets & Global Styles
    ============================= */
@@ -592,6 +597,30 @@ body {
   border-radius: inherit;
   pointer-events: none;
 }
+
+/*---------------------------------\-----*/
+/*#endregion global styles,?-------------\----*/
+
+/*#region -💳💨QUICK Panel ============================== */
+/*____________________________________________________*/
+
+
+/* Panel styling */
+.quick-panel {
+background-color: inherit;
+transform: translateY(-7px) translateX(-3px);
+}
+
+
+.quickpanel-header {
+background-color: inherit;
+}
+
+/*---------------------------------\-----*/
+/*#endregion* 💳💨----------------------\----*/
+
+
+
 
 /*#region -🔲🟪Panels ============================== */
 /*____________________________________________________*/
@@ -944,51 +973,10 @@ textarea { width: 100%; }
   transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-.btn-smallpop:hover,
-.btn-smallpop:focus {
-  border-color: var(--G-color-1-light);
-  background: none;
-  color: var(--G-color-1-light);
-  outline: none;
-}
-
-.btn-smallpop:focus-visible {
-  box-shadow: 0 0 0 2px rgba(var(--G-colour-1-RGB), 0.35);
-}
-
-.btn-smallpop svg {
-  width: 16px;
-  height: 16px;
-  fill: currentColor;
-  stroke: currentColor;
-  transition: inherit;
-}
-
-.btn-smallpop .icon-collapse {
-  display: none;
-}
-
-.btn-smallpop.is-active .icon-expand {
-  display: none;
-}
-
-.btn-smallpop.is-active .icon-collapse {
-  display: inline;
-}
-
-#editorMaximizeBtn {
-  border-radius: 6px;
-}
-
-
-#editorMaximizeBtn:hover {
-  border-radius: 6px;
-  margin-left: auto;
-}
 .express-controls {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0px;
   margin-top: 12px;
 }
 
@@ -1430,6 +1418,61 @@ button.tab-btn {
 
 
 button:disabled { opacity: 0.5; cursor: default; }
+
+
+
+
+button.btn-discreet{
+    border: none;
+  background: none;
+  color: var(--G-color-1);
+  outline: none;
+}
+
+
+button.btn-discreet:hover,
+button.btn-discreet:focus {
+  border-color: var(--G-color-1-light);
+  background: none;
+  color: var(--G-color-1-light);
+  outline: none;
+}
+
+button.btn-discreet:focus-visible {
+  box-shadow: 0 0 0 2px rgba(var(--G-colour-1-RGB), 0.35);
+}
+
+button.btn-discreet svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  stroke: currentColor;
+  transition: inherit;
+}
+
+button.btn-discreet .icon-collapse {
+  display: none;
+}
+
+button.btn-discreet.is-active .icon-expand {
+  display: none;
+}
+
+button.btn-discreet.is-active .icon-collapse {
+  display: inline;
+}
+
+#editorMaximizeBtn {
+  border-radius: 6px;
+}
+
+
+#editorMaximizeBtn:hover {
+  border-radius: 6px;
+  margin-left: auto;
+}
+
+
 
 /* Wrapper keeps circle + label together */
 .target-btn-wrapper {

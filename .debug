@@ -5,4 +5,10 @@
             <Host Name="AEFT" Port="6904" />
         </HostList>
     </Extension>
+
+    <Extension Id="com.holy.expressor.quickpanel">
+        <HostList>
+            <Host Name="AEFT" Port="6905" />
+        </HostList>
+    </Extension>
 </ExtensionList>
