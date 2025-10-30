@@ -277,6 +277,7 @@ This includes saving, renaming, or deleting snippet banks — all updates must p
 
 * 2025-10-30 - Manifest-level fix confirmed for Quick Panel compositor attach issue. `<AutoVisible>true</AutoVisible>` + `<Type>Modeless</Type>` resolve blank-first-open behaviour. Design Intent: ensure stable compositor binding on AE startup. Risks / Concerns: none observed; monitor over long sessions.
 * 2025-10-30 – lead-dev: Current focus shifted to cross-panel snippet/bank synchronization. Next agents to implement shared event-driven sync layer or direct Holy.State persistence mirror between Main and Quick panels.
+* 2025-10-30 – gpt-5-codex: Added snippet-controls scaffolding and active-snippet helper. Design Intent: normalize snippet records so future AE control snapshots can persist with banks. Risks / Concerns: Monitor for legacy banks missing `id` fields; normalization assumes each record carries a stable identifier.
 
 ---
 
