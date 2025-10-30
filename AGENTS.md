@@ -271,6 +271,8 @@ Section currently unused.
 * 2025-10-30 – gpt-5-codex: Tightened CodeMirror gutter padding to trim right-side whitespace while nudging numbers off the left edge. Design Intent: balance the editor gutter without breaking dynamic width scaling. Risks / Concerns: Watch for overflowing digits in very long documents.
 * 2025-10-30 – gpt-5-codex: Further narrowed gutter padding and extended the active-line highlight to span the gutter width. Design Intent: keep focus styling aligned while halving the right-side gap. Risks / Concerns: Ensure negative gutter margins render cleanly across themes.
 
+* 2025-10-30 – gpt-5-codex: Swapped the clear-editor control to an inline SVG button tied to theme variables. Design Intent: align the clear control with the new iconography system while keeping existing editor-clear logic intact. Risks / Concerns: None observed; monitor for any theming overrides that expect `.btn-discreet`.
+
 ---
 
 ✅ **Agents.md is the single source of truth** for module behavior and load rules.
