@@ -266,6 +266,7 @@ Section currently unused.
 * 2025-10-30 – gpt-5-codex: Wired Save Controls button to invoke JSX capture stub and persist snippet controls JSON. Design Intent: enable snippet editors to store AE control snapshots ahead of Step 3 host implementation. Risks / Concerns: Depends on upcoming `holy_captureControlsJSON` returning valid payloads; legacy contexts without CSInterface support may warn.
 
 * 2025-10-30 – gpt-5-codex: Implemented ExtendScript capture function for snippet controls returning effect metadata JSON. Design Intent: supply Save Controls pipeline with AE layer effect snapshots; Risks / Concerns: ensure property filter excludes unsupported property types.
+* 2025-10-30 – gpt-5-codex: Added control reapply bridge so snippet playback restores saved effects before expressions. Design Intent: honor saved controls when running snippets for full snapshot↔restore loop. Risks / Concerns: repeated runs duplicate effects; consider future dedupe.
 
 ---
 

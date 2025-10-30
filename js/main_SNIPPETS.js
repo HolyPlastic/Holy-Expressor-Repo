@@ -421,6 +421,44 @@ Holy.SNIPPETS.banks = [
 
       // 🖱 Left-click → apply expression
       btn.addEventListener("click", () => {
+        const loadCheckbox = doc.getElementById("snipLoadControls");
+        const shouldApplyControls = !!(loadCheckbox && loadCheckbox.checked);
+
+        if (shouldApplyControls && cs && typeof cs.evalScript === "function") {
+          const idLiteral = typeof snippetId === "number" && isFinite(snippetId)
+            ? snippetId
+            : JSON.stringify(String(snippetId));
+
+          const jsxCommand = `holy_applyControlsJSON(${idLiteral}, true)`;
+          cs.evalScript(jsxCommand, (response) => {
+            if (typeof response !== "string" || !response.trim()) {
+              console.warn("[Holy.SNIPPETS] Apply Controls returned empty response", response);
+              return;
+            }
+
+            let payload = null;
+            try {
+              payload = JSON.parse(response);
+            } catch (err) {
+              console.warn("[Holy.SNIPPETS] Apply Controls invalid JSON", err, response);
+              return;
+            }
+
+            if (payload && payload.error) {
+              console.warn(`[Holy.SNIPPETS] Apply Controls error for snippet ${snippet.name}:`, payload.error);
+              return;
+            }
+
+            if (payload && payload.ok) {
+              console.log(`[Holy.SNIPPETS] Applied controls for snippet "${snippet.name}"`);
+            } else if (payload && payload.skipped) {
+              console.log(`[Holy.SNIPPETS] Apply Controls skipped for snippet "${snippet.name}"`);
+            }
+          });
+        } else if (shouldApplyControls) {
+          console.warn("[Holy.SNIPPETS] Apply Controls skipped: CSInterface unavailable");
+        }
+
         cy_evalApplyExpression(snippet.expr, (res) => {
           if (Holy.BUTTONS && typeof Holy.BUTTONS.updateApplyReport === "function") {
             Holy.BUTTONS.updateApplyReport(`Snippet: ${snippet.name}`, res);

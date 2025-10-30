@@ -382,4 +382,86 @@ try {
   logToPanel("✅ host_APPLY.jsx Loaded ⛓️");
 } catch (e) {}
 
+function holy_applyControlsJSON(snippetId, shouldApply) {
+  var result = {};
+  var undoOpen = false;
+  try {
+    if (!shouldApply) return JSON.stringify({ skipped: true });
+
+    var comp = app.project.activeItem;
+    if (!(comp && comp instanceof CompItem)) throw "No active comp";
+    if (!comp.selectedLayers || comp.selectedLayers.length === 0) throw "No layer selected";
+    var layer = comp.selectedLayers[0];
+
+    var bankFile = new File(Folder.userData.fullName + "/HolyExpressor/banks.json");
+    if (!bankFile.exists) throw "banks.json not found";
+    if (!bankFile.open("r")) throw "Unable to open banks.json";
+    var raw = bankFile.read();
+    bankFile.close();
+    var data = JSON.parse(raw || "{}");
+
+    if (!data || !data.banks) throw "Invalid banks payload";
+    var banks = data.banks;
+    var activeBank = null;
+    for (var b = 0; b < banks.length; b++) {
+      var bankEntry = banks[b];
+      if (bankEntry && bankEntry.id === data.activeBankId) {
+        activeBank = bankEntry;
+        break;
+      }
+    }
+    if (!activeBank) throw "active bank missing";
+
+    var snip = null;
+    var snippets = activeBank.snippets || [];
+    for (var i = 0; i < snippets.length; i++) {
+      var candidate = snippets[i];
+      if (candidate && String(candidate.id) === String(snippetId)) {
+        snip = candidate;
+        break;
+      }
+    }
+    if (!snip || !snip.controls) throw "snippet controls missing";
+
+    var effects = snip.controls.effects || [];
+
+    app.beginUndoGroup("HolyExpressor - Apply Controls");
+    undoOpen = true;
+
+    var fxGroup = layer.property("ADBE Effect Parade");
+    for (var e = 0; e < effects.length; e++) {
+      var fxData = effects[e];
+      if (!fxData || !fxGroup || !fxData.matchName) continue;
+      var fx = fxGroup.addProperty(fxData.matchName);
+      if (!fx) continue;
+      if (fxData.name) fx.name = fxData.name;
+
+      var props = fxData.properties || [];
+      for (var p = 0; p < props.length; p++) {
+        var propData = props[p];
+        if (!propData || !propData.matchName) continue;
+        var prop = fx.property(propData.matchName);
+        if (!prop) continue;
+        if (propData.hasOwnProperty("value")) {
+          prop.setValue(propData.value);
+        }
+        if (propData.expression) {
+          prop.expression = propData.expression;
+          prop.expressionEnabled = true;
+        }
+      }
+    }
+
+    app.endUndoGroup();
+    undoOpen = false;
+    result.ok = true;
+  } catch (err) {
+    if (undoOpen) {
+      try { app.endUndoGroup(); } catch (_) {}
+    }
+    result.error = String(err);
+  }
+  return JSON.stringify(result);
+}
+
 
