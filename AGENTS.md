@@ -272,6 +272,8 @@ Section currently unused.
 * 2025-10-30 – gpt-5-codex: Further narrowed gutter padding and extended the active-line highlight to span the gutter width. Design Intent: keep focus styling aligned while halving the right-side gap. Risks / Concerns: Ensure negative gutter margins render cleanly across themes.
 * 2025-10-30 – gpt-5-codex: Tightened gutter padding again and replaced the active-line highlight with a full-width pseudo-element. Design Intent: eliminate remaining gutter gap and ensure the focus stripe matches standard rows. Risks / Concerns: Verify pseudo-element layering in legacy themes.
 
+* 2025-10-30 – gpt-5-codex: Swapped the clear-editor control to an inline SVG button tied to theme variables. Design Intent: align the clear control with the new iconography system while keeping existing editor-clear logic intact. Risks / Concerns: None observed; monitor for any theming overrides that expect `.btn-discreet`.
+
 ---
 
 ✅ **Agents.md is the single source of truth** for module behavior and load rules.
