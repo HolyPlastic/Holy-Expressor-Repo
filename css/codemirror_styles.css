@@ -71,7 +71,9 @@ html.theme-default .cm-editor .cm-lineNumbers .cm-gutterElement {
 /* 🌟 Active line gutter */
 html.theme-default .cm-editor .cm-activeLineGutter {
   background-color: #353535 !important;
-
+  margin: 0 -0.1em 0 -0.35em;
+  padding: 0 0.1em 0 0.35em;
+  box-sizing: border-box;
 }
 /*
 .cm-gutterElement {
@@ -98,14 +100,15 @@ html.theme-default .cm-editor.cm-focused {
 /* 🧠 Dynamic gutter scaling — Holy Expressor tweak */
 html.theme-default .cm-editor .cm-gutters {
   width: auto !important;
-  min-width: 2ch;
-  padding-right: 0em;
+  min-width: calc(1ch + 0.35em);
+  padding: 0 0.1em 0 0.35em;
   transition: width 0.12s ease;
 }
 
 html.theme-default .cm-editor .cm-gutterElement {
   width: auto !important;      /* remove fixed width */
-  min-width: 2ch;              /* allows 1–2 digits comfortably */
+  min-width: calc(1ch + 0.2em);
   text-align: right;
   white-space: nowrap;
+  padding: 0;
 }
