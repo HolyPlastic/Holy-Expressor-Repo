@@ -1398,14 +1398,10 @@ button {
 }
 
 
-button:hover {
-  background: #00a303;
-  border-color: #1aff00;
-}
 
 button.primary {
   background: #4c7ef3;
-  border-color: #4c7ef3;
+
 }
 button.tab-btn {
   background: #221325;
@@ -1442,18 +1438,26 @@ button.btn-discreet:focus {
    🧩 Clear Button (SVG version)
    ================================================== */
 .btn-clearSVG {
-  width: 28px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: var(--G-accent); /* main colour from theme */
-  transition: color 0.2s ease, transform 0.15s ease;
+    border: none;
+    background: none;
+    width: 25px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+
+    color: var(--G-color-1-mid);
+    stroke: var(--G-color-1);
+
+    transition: color 0.2s ease, transform 0.15s ease;
 }
 
 .btn-clearSVG:hover {
-  color: var(--G-accent-bright);
+  color: var(--G-color-1);
+  stroke: var(--G-color-1-light);
+
   transform: scale(1.05);
 }
 
