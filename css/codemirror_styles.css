@@ -71,7 +71,9 @@ html.theme-default .cm-editor .cm-lineNumbers .cm-gutterElement {
 /* 🌟 Active line gutter */
 html.theme-default .cm-editor .cm-activeLineGutter {
   background-color: #353535 !important;
-
+  margin: 0 -0.1em 0 -0.35em;
+  padding: 0 0.1em 0 0.35em;
+  box-sizing: border-box;
 }
 /*
 .cm-gutterElement {
@@ -99,7 +101,7 @@ html.theme-default .cm-editor.cm-focused {
 html.theme-default .cm-editor .cm-gutters {
   width: auto !important;
   min-width: calc(1ch + 0.35em);
-  padding: 0 0.2em 0 0.35em;
+  padding: 0 0.1em 0 0.35em;
   transition: width 0.12s ease;
 }
 
