@@ -9,8 +9,10 @@ Only agents explicitly authorized as Archival Agents may modify anything outside
 ---
 
 ## 📜 Development Timeline
-
 ---
+---
+---
+
 
 ## ⚗️ QUICK PANEL LOAD ISSUE ERA
 
@@ -25,13 +27,13 @@ Ultimately it was the wrong type in manifest, but plenty was done along the way 
 Added quick panel host-bridge priming helper (see `js/quickpanel.js`) to eagerly load JSX modules and verify readiness on open.  
 Includes timed retries alongside existing cold-start recovery.
 
----
+
 
 **2025-10-29 – gpt-5-codex:**  
 Introduced `Holy.State` shared persistence layer syncing expression and toggle state between panels.  
 See `js/main_STATE.js`.
 
----
+
 
 **2025-10-29 – lead-dev:**  
 **Quick Panel & LiveSync Development Cycle Summary**  
@@ -184,7 +186,7 @@ Examined Flow’s CEP bundle to compare its working multi-panel system:
 ### ⚙️ Changes Implemented
 **Updated `manifest.xml` for `com.holy.expressor.quickpanel`:**
 
-```xml
+
 <AutoVisible>true</AutoVisible>
 <Type>Modeless</Type>
 <Geometry>
@@ -228,3 +230,5 @@ Panel type still functional but retains title chrome and brief flash.
 Keep single install per Extension ID; duplicates can reintroduce race.
 
 ## ⚗️ END OF QUICK PANEL LOAD ISSUE ERA <3
+---
+---
