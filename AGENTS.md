@@ -236,25 +236,7 @@ Holy.UI.initTabs()
 
 ## 🧩 12. Current Development Era
 
-### 12.1 Fixed Quirk (Historical)
-
-**Quick Panel Compositor Attach Issue — Resolved**
-
-* Root cause was an **After Effects compositor attach race** preventing the Quick Panel surface from binding on first open.
-* Resolved at manifest level:
-
-  * `<AutoVisible>true</AutoVisible>` ensures AE creates and binds the surface during UI startup.
-  * `<Type>Modeless</Type>` maintains non-blocking interactivity and prevents UI lockout.
-* Previous warm-wake and double-click workarounds have been removed.
-* No further action required; issue confirmed stable under multiple sessions.
-
-### 12.2 Objective
-
-Develop and refine **Quick Panel ↔ Main Panel synchronicity**.
-Both panels must stay in sync when snippet banks or snippet button sets are edited in either.
-This includes saving, renaming, or deleting snippet banks — all updates must propagate instantly to the opposite panel through the event bus or shared state layer.
-
-
+Section currently unused.
 
 ---
 
@@ -275,8 +257,11 @@ This includes saving, renaming, or deleting snippet banks — all updates must p
 
 ## 🪶⛓️ Dev Notes
 
-* 2025-10-30 - Manifest-level fix confirmed for Quick Panel compositor attach issue. `<AutoVisible>true</AutoVisible>` + `<Type>Modeless</Type>` resolve blank-first-open behaviour. Design Intent: ensure stable compositor binding on AE startup. Risks / Concerns: none observed; monitor over long sessions.
-* 2025-10-30 – lead-dev: Current focus shifted to cross-panel snippet/bank synchronization. Next agents to implement shared event-driven sync layer or direct Holy.State persistence mirror between Main and Quick panels.
+* 2025-10-29 - Manifest-level fix confirmed for Quick Panel compositor attach issue. `<AutoVisible>true</AutoVisible>` + `<Type>Modeless</Type>` resolve blank-first-open behaviour. Design Intent: ensure stable compositor binding on AE startup. Risks / Concerns: none observed; monitor over long sessions.
+* 2025-10-29 – lead-dev: Current focus shifted to cross-panel snippet/bank synchronization. Next agents to implement shared event-driven sync layer or direct Holy.State persistence mirror between Main and Quick panels.
+
+*pausing syncronisity dev. while we implement snippet controls (sliders etc) saving/loading.
+
 * 2025-10-30 – gpt-5-codex: Added snippet-controls scaffolding and active-snippet helper. Design Intent: normalize snippet records so future AE control snapshots can persist with banks. Risks / Concerns: Monitor for legacy banks missing `id` fields; normalization assumes each record carries a stable identifier.
 
 ---
