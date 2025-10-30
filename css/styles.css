@@ -83,6 +83,12 @@ var(--G-color-1-S),
   calc(var(--G-color-1-L) *2 * 0.3)
 );
 
+--G-color-1-midlight2: hsl(
+  var(--G-color-1-H),
+var(--G-color-1-S),
+  calc(var(--G-color-1-L) *2 *0.65)
+);
+
 --G-color-1-midup: hsl(
   var(--G-color-1-H),
   calc(var(--G-color-1-S) * 0.75),
@@ -1446,19 +1452,22 @@ button.btn-discreet:focus {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-
+ shape-rendering: geometricPrecision; 
+  vector-effect: non-scaling-stroke; 
 
     color: var(--G-color-1-mid);
     stroke: var(--G-color-1);
 
-    transition: color 0.2s ease, transform 0.15s ease;
+ transition: color 0.2s ease-out, transform 0.2s ease-out;
+  transform: translateZ(0); 
 }
 
 .btn-clearSVG:hover {
   color: var(--G-color-1);
-  stroke: var(--G-color-1-light);
+  stroke: var(--G-color-1-midlight2);
 
   transform: scale(1.05);
+   transform: translateZ(0); 
 }
 
 .btn-clearSVG:active {
