@@ -274,6 +274,8 @@ Section currently unused.
 
 * 2025-10-30 – gpt-5-codex: Swapped the clear-editor control to an inline SVG button tied to theme variables. Design Intent: align the clear control with the new iconography system while keeping existing editor-clear logic intact. Risks / Concerns: None observed; monitor for any theming overrides that expect `.btn-discreet`.
 
+* 2025-10-30 – gpt-5-codex: Replaced the snippets bank selector with a CSS-driven inline SVG using `.btn-clearSVG`. Design Intent: match the dropdown trigger icon to the theme palette without disturbing existing bindings. Risks / Concerns: Verify shared `.btn-clearSVG` rules continue to satisfy other buttons.
+
 ---
 
 ✅ **Agents.md is the single source of truth** for module behavior and load rules.
