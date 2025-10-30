@@ -838,16 +838,22 @@ function holy_captureControlsJSON(snippetId) {
         properties: []
       };
 
-      for (var p = 1; p <= fx.numProperties; p++) {
-        var prop = fx.property(p);
-        if (prop.canSetExpression || prop.propertyValueType === PropertyValueType.OneD) {
-          entry.properties.push({
+for (var p = 1; p <= fx.numProperties; p++) {
+    var prop = fx.property(p);
+    if (prop.canSetExpression || prop.propertyValueType === PropertyValueType.OneD) {
+        var propData = {
             name: prop.name,
             matchName: prop.matchName,
             value: prop.value
-          });
+        };
+
+        if (prop.canSetExpression && prop.expressionEnabled && prop.expression !== "") {
+            propData.expression = prop.expression;
         }
-      }
+
+        entry.properties.push(propData);
+    }
+}
 
       controls.push(entry);
     }
