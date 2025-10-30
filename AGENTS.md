@@ -263,6 +263,7 @@ Section currently unused.
 *pausing syncronisity dev. while we implement snippet controls (sliders etc) saving/loading.
 
 * 2025-10-30 – gpt-5-codex: Added snippet-controls scaffolding and active-snippet helper. Design Intent: normalize snippet records so future AE control snapshots can persist with banks. Risks / Concerns: Monitor for legacy banks missing `id` fields; normalization assumes each record carries a stable identifier.
+* 2025-10-30 – gpt-5-codex: Wired Save Controls button to invoke JSX capture stub and persist snippet controls JSON. Design Intent: enable snippet editors to store AE control snapshots ahead of Step 3 host implementation. Risks / Concerns: Depends on upcoming `holy_captureControlsJSON` returning valid payloads; legacy contexts without CSInterface support may warn.
 
 ---
 

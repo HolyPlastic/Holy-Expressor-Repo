@@ -599,6 +599,76 @@ Holy.SNIPPETS.banks = [
     `
     });
 
+    const saveControlsBtn = panel.querySelector("#fgSaveControls");
+    if (saveControlsBtn && !saveControlsBtn.dataset.cyBound) {
+      saveControlsBtn.dataset.cyBound = "true";
+      saveControlsBtn.addEventListener("click", function () {
+        const snippetResolver = Holy?.SNIPPETS?.cy_getActiveSnippet;
+        if (typeof snippetResolver !== "function") {
+          console.warn("[Holy.SNIPPETS] Save Controls aborted: resolver missing");
+          return;
+        }
+
+        const snippet = snippetResolver();
+        if (!snippet) {
+          console.warn("[Holy.SNIPPETS] Save Controls aborted: no active snippet");
+          return;
+        }
+
+        if (!cs || typeof cs.evalScript !== "function") {
+          console.warn("[Holy.SNIPPETS] Save Controls aborted: CSInterface unavailable");
+          return;
+        }
+
+        const rawId = snippet.id;
+        if (rawId === undefined || rawId === null) {
+          console.warn("[Holy.SNIPPETS] Save Controls aborted: snippet missing id", snippet);
+          return;
+        }
+
+        const idLiteral = (typeof rawId === "number" && isFinite(rawId))
+          ? rawId
+          : JSON.stringify(String(rawId));
+
+        const jsxCommand = `holy_captureControlsJSON(${idLiteral})`;
+
+        cs.evalScript(jsxCommand, function (response) {
+          if (typeof response !== "string" || !response.trim() || response === "undefined") {
+            console.warn("[Holy.SNIPPETS] Save Controls returned empty response", response);
+            return;
+          }
+
+          let payload = null;
+          try {
+            payload = JSON.parse(response);
+          } catch (err) {
+            console.warn("[Holy.SNIPPETS] Save Controls invalid JSON", err, response);
+            return;
+          }
+
+          if (!payload || typeof payload !== "object") {
+            console.warn("[Holy.SNIPPETS] Save Controls returned non-object payload", payload);
+            return;
+          }
+
+          if (payload.error) {
+            console.warn("[Holy.SNIPPETS] Save Controls reported error:", payload.error);
+            return;
+          }
+
+          snippet.controls = payload;
+
+          if (typeof Holy?.SNIPPETS?.cy_saveBanksToDisk === "function") {
+            Holy.SNIPPETS.cy_saveBanksToDisk();
+          } else {
+            cy_saveBanksToDisk();
+          }
+
+          console.log(`[Holy.SNIPPETS] Saved controls for snippet: ${snippet.name}`);
+        });
+      });
+    }
+
     // 🧩 Retrieve field references
     const nameInput = panel.querySelector("#fgSnipName");
     const exprInput = panel.querySelector("#fgSnipExpr");
