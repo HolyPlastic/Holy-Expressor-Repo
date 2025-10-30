@@ -1391,7 +1391,7 @@ body.editor-maximized #toast {
 
 button {
       margin: 0px;
-    padding: 4px 5px;
+    padding: 0px 0px;
    
     border: 1px solid var(--G-colour-1-opac-30); 
   
