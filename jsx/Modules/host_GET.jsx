@@ -817,6 +817,48 @@ function he_P_GS3_findPropsByTokenPath(anchor, tokens, depth, out) {
 
 
 
+function holy_captureControlsJSON(snippetId) {
+  var result = {};
+  try {
+    var comp = app.project.activeItem;
+    if (!(comp && comp instanceof CompItem)) throw "No active comp";
+    if (comp.selectedLayers.length === 0) throw "No layer selected";
+
+    var layer = comp.selectedLayers[0];
+    var fxGroup = layer.property("ADBE Effect Parade");
+    if (!fxGroup || fxGroup.numProperties === 0) throw "No effects found";
+
+    var controls = [];
+
+    for (var i = 1; i <= fxGroup.numProperties; i++) {
+      var fx = fxGroup.property(i);
+      var entry = {
+        name: fx.name,
+        matchName: fx.matchName,
+        properties: []
+      };
+
+      for (var p = 1; p <= fx.numProperties; p++) {
+        var prop = fx.property(p);
+        if (prop.canSetExpression || prop.propertyValueType === PropertyValueType.OneD) {
+          entry.properties.push({
+            name: prop.name,
+            matchName: prop.matchName,
+            value: prop.value
+          });
+        }
+      }
+
+      controls.push(entry);
+    }
+
+    result.effects = controls;
+  } catch (err) {
+    result.error = String(err);
+  }
+  return JSON.stringify(result);
+}
+
 try {
     logToPanel("✅ host_GET.jsx Loaded ⛓️");
 } catch (e) {}
