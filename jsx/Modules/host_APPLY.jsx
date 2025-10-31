@@ -467,14 +467,41 @@ function holy_applyControlsJSON(snippetId, shouldApply) {
 
 
 function he_EX_applyExpressionBatch(jsonStr) {
-  var result = { ok: false, applied: 0, errors: [], total: 0 };
+  var result = { ok: false, applied: 0, errors: [], total: 0, unhidLayers: 0 };
   var undoOpen = false;
+  var trackedLayers = [];
+  var toggledHiddenCount = 0;
+  function he_EX_trackLayerVisibility(prop) {
+    if (!prop) return;
+    var layer = null;
+    try { layer = prop.propertyGroup(prop.propertyDepth); } catch (_) { layer = null; }
+    if (!layer) return;
+
+    var hasEnabledFlag = false;
+    try { hasEnabledFlag = (typeof layer.enabled !== "undefined"); } catch (_) { hasEnabledFlag = false; }
+    if (!hasEnabledFlag) return;
+
+    for (var li = 0; li < trackedLayers.length; li++) {
+      if (trackedLayers[li] && trackedLayers[li].layer === layer) {
+        return;
+      }
+    }
+
+    var wasEnabled = true;
+    try { wasEnabled = !!layer.enabled; } catch (_) { wasEnabled = true; }
+    trackedLayers.push({ layer: layer, wasEnabled: wasEnabled });
+
+    if (!wasEnabled) {
+      try { layer.enabled = true; toggledHiddenCount++; } catch (_) {}
+    }
+  }
+
   try {
     var data = {};
     try { data = JSON.parse(jsonStr || "{}"); } catch (_) { data = {}; }
 
     var entries = data.entries || [];
-    var undoLabel = data.undoLabel || "Holy Search Replace";
+    var undoLabel = "Holy Search Replace (Hidden-Safe)";
 
     if (!entries || entries.length === 0) {
       result.ok = true;
@@ -497,6 +524,8 @@ function he_EX_applyExpressionBatch(jsonStr) {
         result.errors.push({ path: entry.path, err: "Path not found" });
         continue;
       }
+
+      he_EX_trackLayerVisibility(prop);
 
       if (he_U_Ls_1_isLayerStyleProp(prop) && !he_U_Ls_2_styleEnabledForLeaf(prop)) {
         continue;
@@ -525,14 +554,26 @@ function he_EX_applyExpressionBatch(jsonStr) {
       }
     }
 
-    app.endUndoGroup();
-    undoOpen = false;
     result.ok = true;
   } catch (err) {
+    result.err = String(err);
+  } finally {
+    for (var r = 0; r < trackedLayers.length; r++) {
+      var record = trackedLayers[r];
+      if (!record || !record.layer) continue;
+      try {
+        if (typeof record.layer.enabled !== "undefined") {
+          record.layer.enabled = record.wasEnabled;
+        }
+      } catch (_) {}
+    }
+
+    result.unhidLayers = toggledHiddenCount;
+
     if (undoOpen) {
       try { app.endUndoGroup(); } catch (_) {}
+      undoOpen = false;
     }
-    result.err = String(err);
   }
   return JSON.stringify(result);
 }
