@@ -187,6 +187,185 @@ function buildExpressionForSearch(searchTerm, cb) {
   })
 }
 
+function cy_collectExprTargets(layerInfo) {
+  return new Promise(function (resolve, reject) {
+    if (!layerInfo) {
+      reject({ err: "No layer info", userMessage: "Layer metadata missing" });
+      return;
+    }
+
+    try {
+      var payload = JSON.stringify({
+        layerIndex: layerInfo.index,
+        layerId: layerInfo.id
+      });
+      var escaped = payload.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+      cs.evalScript('he_EX_collectExpressionsForLayer("' + escaped + '")', function (raw) {
+        var result = {};
+        try {
+          result = JSON.parse(raw || "{}");
+        } catch (parseErr) {
+          reject({ err: parseErr, userMessage: "Failed to parse layer expressions" });
+          return;
+        }
+
+        if (!result || !result.ok) {
+          var err = (result && result.err) ? result.err : "Expression collection failed";
+          reject({ err: err, userMessage: err });
+          return;
+        }
+
+        resolve(result);
+      });
+    } catch (err) {
+      reject({ err: err, userMessage: "Expression collection failed" });
+    }
+  });
+}
+
+function cy_safeApplyExpressionBatch(entries, opts) {
+  return new Promise(function (resolve, reject) {
+    if (!entries || !entries.length) {
+      resolve({ ok: true, applied: 0, errors: [] });
+      return;
+    }
+
+    try {
+      var payload = JSON.stringify({
+        entries: entries,
+        undoLabel: opts && opts.undoLabel ? opts.undoLabel : "Holy Search Replace"
+      });
+      var escaped = payload.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+      cs.evalScript('he_EX_applyExpressionBatch("' + escaped + '")', function (raw) {
+        var result = {};
+        try {
+          result = JSON.parse(raw || "{}");
+        } catch (parseErr) {
+          reject({ err: parseErr, userMessage: "Failed to parse apply result" });
+          return;
+        }
+
+        if (!result || !result.ok) {
+          var err = (result && result.err) ? result.err : "Expression apply failed";
+          reject({ err: err, userMessage: err, details: result });
+          return;
+        }
+
+        resolve(result);
+      });
+    } catch (err) {
+      reject({ err: err, userMessage: "Expression apply failed" });
+    }
+  });
+}
+
+function cy_replaceInExpressions(searchStr, replaceStr) {
+  var search = (searchStr === undefined || searchStr === null) ? "" : String(searchStr);
+  var replace = (replaceStr === undefined || replaceStr === null) ? "" : String(replaceStr);
+
+  if (search === "") {
+    return Promise.reject({ userMessage: "Enter a Search term" });
+  }
+
+  function countOccurrences(haystack, needle) {
+    if (!needle || !needle.length) return 0;
+    var idx = haystack.indexOf(needle);
+    var count = 0;
+    while (idx !== -1) {
+      count++;
+      idx = haystack.indexOf(needle, idx + needle.length);
+    }
+    return count;
+  }
+
+  return Holy.UTILS.cy_getSelectedLayers().then(function (layers) {
+    if (!layers || !layers.length) {
+      throw { userMessage: "Select at least one layer" };
+    }
+
+    var reports = [];
+    var tasks = layers.map(function (layer) {
+      return cy_collectExprTargets(layer).then(function (data) {
+        var entries = (data && data.entries) ? data.entries : [];
+        var updates = [];
+        var replacements = 0;
+
+        for (var i = 0; i < entries.length; i++) {
+          var entry = entries[i];
+          if (!entry || !entry.expression || !entry.path) continue;
+          if (entry.expression.indexOf(search) === -1) continue;
+
+          var replacedExpr = entry.expression.split(search).join(replace);
+          if (replacedExpr === entry.expression) continue;
+
+          replacements += countOccurrences(entry.expression, search);
+          updates.push({
+            path: entry.path,
+            expression: replacedExpr,
+            expressionEnabled: entry.expressionEnabled,
+            layerName: layer.name,
+            propertyName: entry.name
+          });
+        }
+
+        reports.push({
+          layer: layer,
+          updates: updates,
+          replacements: replacements
+        });
+      }).catch(function (err) {
+        console.error('[Holy.SEARCH] Failed to scan layer', layer && layer.name, err);
+        reports.push({ layer: layer, updates: [], replacements: 0, error: err });
+      });
+    });
+
+    return Promise.all(tasks).then(function () {
+      var batch = [];
+      var totalReplacements = 0;
+      var affectedLayers = 0;
+
+      for (var r = 0; r < reports.length; r++) {
+        var rep = reports[r];
+        if (rep && rep.updates && rep.updates.length) {
+          affectedLayers++;
+          totalReplacements += rep.replacements;
+          for (var u = 0; u < rep.updates.length; u++) {
+            batch.push(rep.updates[u]);
+          }
+        }
+      }
+
+      if (!batch.length) {
+        var noneMsg = '[Holy.SEARCH] No matches for "' + search + '" across ' + layers.length + ' layer(s).';
+        console.log(noneMsg);
+        return {
+          ok: true,
+          replacements: 0,
+          layersChanged: 0,
+          layersCount: layers.length,
+          message: noneMsg
+        };
+      }
+
+      return cy_safeApplyExpressionBatch(batch, { undoLabel: 'Holy Search Replace' }).then(function (applyReport) {
+        var msg = '[Holy.SEARCH] ' + totalReplacements + ' replacements made across ' + affectedLayers + ' layer(s).';
+        console.log(msg);
+        if (applyReport && applyReport.errors && applyReport.errors.length) {
+          console.warn('[Holy.SEARCH] Apply errors', applyReport.errors);
+        }
+        return {
+          ok: true,
+          replacements: totalReplacements,
+          layersChanged: affectedLayers,
+          layersCount: layers.length,
+          message: msg,
+          applyReport: applyReport
+        };
+      });
+    });
+  });
+}
+
 
 
 
@@ -210,6 +389,9 @@ Holy.EXPRESS = {
   HE_applyByStrictSearch: HE_applyByStrictSearch,
   buildExpressionForSelection: buildExpressionForSelection,
   buildExpressionForSearch: buildExpressionForSearch,
-  initPresets: initPresets
+  initPresets: initPresets,
+  cy_collectExprTargets: cy_collectExprTargets,
+  cy_safeApplyExpression: cy_safeApplyExpressionBatch,
+  cy_replaceInExpressions: cy_replaceInExpressions
 };
 })();
