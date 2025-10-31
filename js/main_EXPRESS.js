@@ -259,28 +259,38 @@ function cy_safeApplyExpressionBatch(entries, opts) {
   });
 }
 
-function cy_replaceInExpressions(searchStr, replaceStr) {
+function cy_replaceInExpressions(searchStr, replaceStr, options) {
   var search = (searchStr === undefined || searchStr === null) ? "" : String(searchStr);
   var replace = (replaceStr === undefined || replaceStr === null) ? "" : String(replaceStr);
+  var opts = options || {};
+  var matchCase = typeof opts.matchCase === "boolean" ? opts.matchCase : true;
+  var literalSafe = !!opts.literalSafe;
 
   if (search === "") {
     return Promise.reject({ userMessage: "Enter a Search term" });
   }
 
-  function countOccurrences(haystack, needle) {
-    if (!needle || !needle.length) return 0;
-    var idx = haystack.indexOf(needle);
-    var count = 0;
-    while (idx !== -1) {
-      count++;
-      idx = haystack.indexOf(needle, idx + needle.length);
-    }
-    return count;
+  function escapeRegExp(str) {
+    return str.replace(/[\\^$*+?.()|{}\[\]-]/g, "\\$&");
   }
 
   return Holy.UTILS.cy_getSelectedLayers().then(function (layers) {
     if (!layers || !layers.length) {
       throw { userMessage: "Select at least one layer" };
+    }
+
+    var escapedSearch = escapeRegExp(search);
+    var replacementValue = replace;
+
+    if (literalSafe) {
+      var trimmed = replacementValue;
+      var isWrapped = /^(['"]).*\1$/.test(trimmed);
+      if (!isWrapped) {
+        var safeContent = trimmed
+          .replace(/\\/g, "\\\\")
+          .replace(/"/g, '\\"');
+        replacementValue = '"' + safeContent + '"';
+      }
     }
 
     var reports = [];
@@ -289,16 +299,22 @@ function cy_replaceInExpressions(searchStr, replaceStr) {
         var entries = (data && data.entries) ? data.entries : [];
         var updates = [];
         var replacements = 0;
+        var patternFlags = matchCase ? "g" : "gi";
 
         for (var i = 0; i < entries.length; i++) {
           var entry = entries[i];
           if (!entry || !entry.expression || !entry.path) continue;
-          if (entry.expression.indexOf(search) === -1) continue;
+          var expr = String(entry.expression);
+          var pattern = new RegExp(escapedSearch, patternFlags);
+          var localCount = 0;
+          var replacedExpr = expr.replace(pattern, function () {
+            localCount++;
+            return replacementValue;
+          });
 
-          var replacedExpr = entry.expression.split(search).join(replace);
-          if (replacedExpr === entry.expression) continue;
+          if (!localCount || replacedExpr === expr) continue;
 
-          replacements += countOccurrences(entry.expression, search);
+          replacements += localCount;
           updates.push({
             path: entry.path,
             expression: replacedExpr,
@@ -308,10 +324,14 @@ function cy_replaceInExpressions(searchStr, replaceStr) {
           });
         }
 
+        var layerMsg = '[Holy.SEARCH] Layer "' + layer.name + '" – ' + replacements + ' replacement(s).';
+        console.log(layerMsg);
+
         reports.push({
           layer: layer,
           updates: updates,
-          replacements: replacements
+          replacements: replacements,
+          message: layerMsg
         });
       }).catch(function (err) {
         console.error('[Holy.SEARCH] Failed to scan layer', layer && layer.name, err);
@@ -349,6 +369,7 @@ function cy_replaceInExpressions(searchStr, replaceStr) {
 
       return cy_safeApplyExpressionBatch(batch, { undoLabel: 'Holy Search Replace' }).then(function (applyReport) {
         var msg = '[Holy.SEARCH] ' + totalReplacements + ' replacements made across ' + affectedLayers + ' layer(s).';
+        msg += ' (matchCase=' + matchCase + ', literalSafe=' + literalSafe + ')';
         console.log(msg);
         if (applyReport && applyReport.errors && applyReport.errors.length) {
           console.warn('[Holy.SEARCH] Apply errors', applyReport.errors);
