@@ -1,4 +1,12 @@
 
+function he_P_EX_findPropertiesByPath(comp, pathString) {
+  return he_U_EX_findPropertiesByPath(comp, pathString);
+}
+
+function he_P_EX_findPropertyByPath(comp, pathString) {
+  var matches = he_U_EX_findPropertiesByPath(comp, pathString);
+  return matches.length ? matches[0] : null;
+}
 
 
 // TYPE PEEKER: Peek the type of the first selected animatable property
@@ -209,41 +217,51 @@ function he_S_LS_applyExpressionToTargetList(jsonStr) {
       var pathString = paths[i];
       he_U_L_log("Target path: " + pathString);
 
-      
-      var prop = he_P_EX_findPropertyByPath(comp, pathString);
-      if (!prop) {
+      var props = he_P_EX_findPropertiesByPath(comp, pathString) || [];
+      if (!props.length) {
         skipped++;
         errors.push({ path: pathString, err: "No exact path match" });
         continue;
       }
 
-      // Silent ignore for LS styles that aren't enabled
-      if (he_U_Ls_1_isLayerStyleProp(prop) && !he_U_Ls_2_styleEnabledForLeaf(prop)) {
-        continue; // not counted as skipped, not reported
-      }
+      for (var pi = 0; pi < props.length; pi++) {
+        var prop = props[pi];
+        if (!prop) continue;
 
-      if (!prop.canSetExpression
-          || !prop.enabled
-          || !prop.active
-          || he_U_PB_isPhantomLayerStyleProp(prop)
-          || he_U_VS_isTrulyHidden(prop)) {
-        skipped++;
-        errors.push({
-          path: pathString,
-          err: "Property not valid (hidden/inactive/phantom LayerStyle / parent disabled)"
-        });
-        continue;
-      }
-
-      try {
-        prop.expression = expr;
-        if (prop.expressionError && prop.expressionError.length) {
-          errors.push({ path: pathString, err: prop.expressionError });
-        } else {
-          applied++;
+        // Silent ignore for LS styles that aren't enabled
+        if (he_U_Ls_1_isLayerStyleProp(prop) && !he_U_Ls_2_styleEnabledForLeaf(prop)) {
+          continue; // not counted as skipped, not reported
         }
-      } catch (ex) {
-        errors.push({ path: pathString, err: String(ex) });
+
+        if (!prop.canSetExpression
+            || !prop.enabled
+            || !prop.active
+            || he_U_PB_isPhantomLayerStyleProp(prop)
+            || he_U_VS_isTrulyHidden(prop)) {
+          skipped++;
+          var invalidPath = "";
+          try { invalidPath = he_P_MM_getExprPath(prop); } catch (_) { invalidPath = pathString; }
+          errors.push({
+            path: invalidPath || pathString,
+            err: "Property not valid (hidden/inactive/phantom LayerStyle / parent disabled)"
+          });
+          continue;
+        }
+
+        try {
+          prop.expression = expr;
+          if (prop.expressionError && prop.expressionError.length) {
+            var errPath = "";
+            try { errPath = he_P_MM_getExprPath(prop); } catch (_) { errPath = pathString; }
+            errors.push({ path: errPath || pathString, err: prop.expressionError });
+          } else {
+            applied++;
+          }
+        } catch (ex) {
+          var catchPath = "";
+          try { catchPath = he_P_MM_getExprPath(prop); } catch (_) { catchPath = pathString; }
+          errors.push({ path: catchPath || pathString, err: String(ex) });
+        }
       }
     }
 
@@ -467,11 +485,12 @@ function holy_applyControlsJSON(snippetId, shouldApply) {
 
 
 function he_EX_applyExpressionBatch(jsonStr) {
-  var result = { ok: false, applied: 0, errors: [], total: 0, unhidLayers: 0 };
+  var result = { ok: false, applied: 0, errors: [], total: 0, unhidLayers: 0, revealedProps: 0 };
   var undoOpen = false;
   var trackedLayers = [];
   var toggledHiddenCount = 0;
   var toReveal = [];
+  var revealExecuted = false;
   function he_EX_trackLayerVisibility(prop) {
     if (!prop) return;
     var layer = null;
@@ -502,7 +521,7 @@ function he_EX_applyExpressionBatch(jsonStr) {
     try { data = JSON.parse(jsonStr || "{}"); } catch (_) { data = {}; }
 
     var entries = data.entries || [];
-    var undoLabel = "Holy Search Replace (Hidden-Safe)";
+    var undoLabel = "Holy Search Replace (Indexed Safe)";
 
     if (!entries || entries.length === 0) {
       result.ok = true;
@@ -520,55 +539,113 @@ function he_EX_applyExpressionBatch(jsonStr) {
       if (!entry || !entry.path) continue;
       result.total++;
 
-      var prop = he_P_EX_findPropertyByPath(comp, entry.path);
-      if (!prop) {
+      var props = he_P_EX_findPropertiesByPath(comp, entry.path) || [];
+      if (!props.length) {
         result.errors.push({ path: entry.path, err: "Path not found" });
         continue;
       }
 
-      he_EX_trackLayerVisibility(prop);
+      for (var pi = 0; pi < props.length; pi++) {
+        var prop = props[pi];
+        if (!prop) continue;
 
-      if (he_U_Ls_1_isLayerStyleProp(prop) && !he_U_Ls_2_styleEnabledForLeaf(prop)) {
-        continue;
-      }
+        he_EX_trackLayerVisibility(prop);
 
-      if (!prop.canSetExpression || !prop.enabled || !prop.active || he_U_PB_isPhantomLayerStyleProp(prop) || he_U_VS_isTrulyHidden(prop)) {
-        result.errors.push({ path: entry.path, err: "Property not valid for expressions" });
-        continue;
-      }
-
-      try {
-        prop.expression = entry.expression || "";
-        if (entry.hasOwnProperty("expressionEnabled")) {
-          prop.expressionEnabled = !!entry.expressionEnabled;
-        } else {
-          prop.expressionEnabled = true;
+        if (he_U_Ls_1_isLayerStyleProp(prop) && !he_U_Ls_2_styleEnabledForLeaf(prop)) {
+          continue;
         }
 
-        if (prop.expressionError && prop.expressionError.length) {
-          result.errors.push({ path: entry.path, err: prop.expressionError });
-        } else {
-          result.applied++;
-          toReveal.push(prop);
+        var resolvedPath = "";
+        try { resolvedPath = he_P_MM_getExprPath(prop); } catch (_) { resolvedPath = entry.path; }
+
+        var canUse = true;
+        try { if (!prop.canSetExpression) canUse = false; } catch (_) { canUse = false; }
+        if (canUse) {
+          try {
+            if (typeof prop.enabled !== "undefined" && !prop.enabled) {
+              canUse = false;
+            }
+          } catch (_) {}
         }
-      } catch (errApply) {
-        result.errors.push({ path: entry.path, err: String(errApply) });
+        if (canUse) {
+          try {
+            if (typeof prop.active !== "undefined" && !prop.active) {
+              canUse = false;
+            }
+          } catch (_) {}
+        }
+        if (canUse) {
+          try { if (he_U_PB_isPhantomLayerStyleProp(prop)) canUse = false; } catch (_) {}
+        }
+        if (canUse) {
+          try { if (he_U_VS_isTrulyHidden(prop)) canUse = false; } catch (_) {}
+        }
+
+        if (!canUse) {
+          result.errors.push({ path: resolvedPath || entry.path, err: "Property not valid for expressions" });
+          continue;
+        }
+
+        try {
+          prop.expression = entry.expression || "";
+          if (entry.hasOwnProperty("expressionEnabled")) {
+            prop.expressionEnabled = !!entry.expressionEnabled;
+          } else {
+            prop.expressionEnabled = true;
+          }
+
+          if (prop.expressionError && prop.expressionError.length) {
+            result.errors.push({ path: resolvedPath || entry.path, err: prop.expressionError });
+          } else {
+            result.applied++;
+            he_U_EX_pushUnique(toReveal, prop);
+          }
+        } catch (errApply) {
+          result.errors.push({ path: resolvedPath || entry.path, err: String(errApply) });
+        }
       }
     }
 
-    for (var r = 0; r < toReveal.length; r++) {
-      try {
-        toReveal[r].selected = true;
-      } catch (_) {}
-    }
     if (toReveal.length) {
-      try {
-        var revealCommandId = app.findMenuCommandId("Reveal Expression");
-        if (revealCommandId) {
-          app.executeCommand(revealCommandId);
+      var revealCommandId = 0;
+      try { revealCommandId = app.findMenuCommandId("Reveal Expression"); } catch (_) { revealCommandId = 0; }
+      if (revealCommandId) {
+        var previousSelection = [];
+        try {
+          var currentSelection = comp.selectedProperties;
+          if (currentSelection && currentSelection.length) {
+            for (var ps = 0; ps < currentSelection.length; ps++) {
+              var selProp = currentSelection[ps];
+              if (!selProp) continue;
+              he_U_EX_pushUnique(previousSelection, selProp);
+            }
+          }
+        } catch (_) { previousSelection = []; }
+
+        for (var ps2 = 0; ps2 < previousSelection.length; ps2++) {
+          try { previousSelection[ps2].selected = false; } catch (_) {}
         }
-      } catch (_) {}
+
+        for (var rv = 0; rv < toReveal.length; rv++) {
+          try { toReveal[rv].selected = true; } catch (_) {}
+        }
+
+        try {
+          app.executeCommand(revealCommandId);
+          revealExecuted = true;
+        } catch (_) {}
+
+        for (var rv2 = 0; rv2 < toReveal.length; rv2++) {
+          try { toReveal[rv2].selected = false; } catch (_) {}
+        }
+
+        for (var ps3 = 0; ps3 < previousSelection.length; ps3++) {
+          try { previousSelection[ps3].selected = true; } catch (_) {}
+        }
+      }
     }
+
+    result.revealedProps = revealExecuted ? toReveal.length : 0;
 
     result.ok = true;
   } catch (err) {
