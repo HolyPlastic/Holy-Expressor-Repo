@@ -264,7 +264,6 @@ function cy_replaceInExpressions(searchStr, replaceStr, options) {
   var replace = (replaceStr === undefined || replaceStr === null) ? "" : String(replaceStr);
   var opts = options || {};
   var matchCase = typeof opts.matchCase === "boolean" ? opts.matchCase : true;
-  var literalSafe = !!opts.literalSafe;
 
   if (search === "") {
     return Promise.reject({ userMessage: "Enter a Search term" });
@@ -274,6 +273,32 @@ function cy_replaceInExpressions(searchStr, replaceStr, options) {
     return str.replace(/[\\^$*+?.()|{}\[\]-]/g, "\\$&");
   }
 
+  function categorizeApplyErrors(errors) {
+    var result = { critical: [], suppressed: [] };
+    if (!errors || !errors.length) return result;
+
+    for (var i = 0; i < errors.length; i++) {
+      var entry = errors[i];
+      if (!entry) continue;
+      var message = entry.err != null ? String(entry.err) : "";
+      var lower = message.toLowerCase();
+      var isBenign = false;
+      if (lower.indexOf("expression disabled") !== -1) {
+        isBenign = true;
+      } else if (lower.indexOf("referenceerror") !== -1) {
+        isBenign = true;
+      }
+
+      if (isBenign) {
+        result.suppressed.push(entry);
+      } else {
+        result.critical.push(entry);
+      }
+    }
+
+    return result;
+  }
+
   return Holy.UTILS.cy_getSelectedLayers().then(function (layers) {
     if (!layers || !layers.length) {
       throw { userMessage: "Select at least one layer" };
@@ -281,17 +306,6 @@ function cy_replaceInExpressions(searchStr, replaceStr, options) {
 
     var escapedSearch = escapeRegExp(search);
     var replacementValue = replace;
-
-    if (literalSafe) {
-      var trimmed = replacementValue;
-      var isWrapped = /^(['"]).*\1$/.test(trimmed);
-      if (!isWrapped) {
-        var safeContent = trimmed
-          .replace(/\\/g, "\\\\")
-          .replace(/"/g, '\\"');
-        replacementValue = '"' + safeContent + '"';
-      }
-    }
 
     var reports = [];
     var tasks = layers.map(function (layer) {
@@ -369,10 +383,13 @@ function cy_replaceInExpressions(searchStr, replaceStr, options) {
 
       return cy_safeApplyExpressionBatch(batch, { undoLabel: 'Holy Search Replace' }).then(function (applyReport) {
         var msg = '[Holy.SEARCH] ' + totalReplacements + ' replacements made across ' + affectedLayers + ' layer(s).';
-        msg += ' (matchCase=' + matchCase + ', literalSafe=' + literalSafe + ')';
+        msg += ' (matchCase=' + matchCase + ')';
         console.log(msg);
-        if (applyReport && applyReport.errors && applyReport.errors.length) {
-          console.warn('[Holy.SEARCH] Apply errors', applyReport.errors);
+        var categorizedErrors = categorizeApplyErrors(applyReport && applyReport.errors);
+        if (categorizedErrors.critical.length) {
+          console.warn('[Holy.SEARCH] Apply errors', categorizedErrors.critical);
+        } else if (window.HX_LOG_MODE === "verbose" && categorizedErrors.suppressed.length) {
+          console.debug('[Holy.SEARCH] Suppressed expression warnings', categorizedErrors.suppressed);
         }
         return {
           ok: true,
@@ -380,7 +397,8 @@ function cy_replaceInExpressions(searchStr, replaceStr, options) {
           layersChanged: affectedLayers,
           layersCount: layers.length,
           message: msg,
-          applyReport: applyReport
+          applyReport: applyReport,
+          suppressedExpressionWarnings: categorizedErrors.suppressed
         };
       });
     });
