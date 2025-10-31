@@ -98,6 +98,7 @@ ____________________ -------->
   <script defer src="js/main_EXPRESS.js"></script>
   <script defer src="js/main_BUTTON_LOGIC_1.js"></script>
   <script defer src="js/main_SNIPPETS.js"></script>
+  <script defer src="js/main_SEARCH_REPLACE.js"></script>
   <script defer src="js/main_DEV_INIT.js"></script>
 
   <!-- 🚀 Final entrypoint -->
@@ -458,13 +459,17 @@ ____________________ -------->
  <!----_-_-_-_-_-_-_---------------------------------------\--\--->
 <!-- #endregion ^^^ End Misc ⚪ ^^^ -->
 
-</div>
+  </div>
 
+  <div id="searchReplacePanel" class="panel search-replace-panel hide-when-editor-maximized">
+    <label for="searchField" class="text-sm block-label">Search</label>
+    <input type="text" id="searchField" class="text-input" />
+    <label for="replaceField" class="text-sm block-label">Replace</label>
+    <input type="text" id="replaceField" class="text-input" />
+    <button id="runSearchReplace" class="tab-btn">Run Search &amp; Replace</button>
+  </div>
 
-
-
-
- </div> <!-- end appRoot --> 
+  </div> <!-- end appRoot -->
 
 
  <script>

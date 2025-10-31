@@ -465,3 +465,74 @@ function holy_applyControlsJSON(snippetId, shouldApply) {
 }
 
 
+
+function he_EX_applyExpressionBatch(jsonStr) {
+  var result = { ok: false, applied: 0, errors: [], total: 0 };
+  var undoOpen = false;
+  try {
+    var data = {};
+    try { data = JSON.parse(jsonStr || "{}"); } catch (_) { data = {}; }
+
+    var entries = data.entries || [];
+    var undoLabel = data.undoLabel || "Holy Search Replace";
+
+    if (!entries || entries.length === 0) {
+      result.ok = true;
+      return JSON.stringify(result);
+    }
+
+    var comp = app.project.activeItem;
+    if (!comp || !(comp instanceof CompItem)) throw "No active comp";
+
+    app.beginUndoGroup(undoLabel);
+    undoOpen = true;
+
+    for (var i = 0; i < entries.length; i++) {
+      var entry = entries[i];
+      if (!entry || !entry.path) continue;
+      result.total++;
+
+      var prop = he_P_EX_findPropertyByPath(comp, entry.path);
+      if (!prop) {
+        result.errors.push({ path: entry.path, err: "Path not found" });
+        continue;
+      }
+
+      if (he_U_Ls_1_isLayerStyleProp(prop) && !he_U_Ls_2_styleEnabledForLeaf(prop)) {
+        continue;
+      }
+
+      if (!prop.canSetExpression || !prop.enabled || !prop.active || he_U_PB_isPhantomLayerStyleProp(prop) || he_U_VS_isTrulyHidden(prop)) {
+        result.errors.push({ path: entry.path, err: "Property not valid for expressions" });
+        continue;
+      }
+
+      try {
+        prop.expression = entry.expression || "";
+        if (entry.hasOwnProperty("expressionEnabled")) {
+          prop.expressionEnabled = !!entry.expressionEnabled;
+        } else {
+          prop.expressionEnabled = true;
+        }
+
+        if (prop.expressionError && prop.expressionError.length) {
+          result.errors.push({ path: entry.path, err: prop.expressionError });
+        } else {
+          result.applied++;
+        }
+      } catch (errApply) {
+        result.errors.push({ path: entry.path, err: String(errApply) });
+      }
+    }
+
+    app.endUndoGroup();
+    undoOpen = false;
+    result.ok = true;
+  } catch (err) {
+    if (undoOpen) {
+      try { app.endUndoGroup(); } catch (_) {}
+    }
+    result.err = String(err);
+  }
+  return JSON.stringify(result);
+}

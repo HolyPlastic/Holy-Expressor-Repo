@@ -7,6 +7,8 @@ if (typeof Holy !== "object") Holy = {};
 (function () {
   "use strict";
 
+  var cs = new CSInterface();
+
 
 
 // ---------------------------------------------------------
@@ -108,6 +110,34 @@ function cy_getThemeVars() {
 }
 
 
+// V1 — Selected layer descriptors (name + index + id)
+function cy_getSelectedLayers() {
+  return new Promise(function (resolve, reject) {
+    try {
+      cs.evalScript('he_EX_getSelectedLayers()', function (raw) {
+        var payload = {};
+        try {
+          payload = JSON.parse(raw || "{}");
+        } catch (parseErr) {
+          reject({ err: parseErr, userMessage: "Could not read selection data" });
+          return;
+        }
+
+        if (!payload || !payload.ok) {
+          var err = (payload && payload.err) ? payload.err : "Selection lookup failed";
+          reject({ err: err, userMessage: err });
+          return;
+        }
+
+        resolve(payload.layers || []);
+      });
+    } catch (err) {
+      reject({ err: err, userMessage: "Selection lookup failed" });
+    }
+  });
+}
+
+
   // ---------------------------------------------------------
   // 🚀 MODULE EXPORT
   // ---------------------------------------------------------
@@ -116,6 +146,7 @@ Holy.UTILS = {
   cy_readJSONFile: cy_readJSONFile,
   cy_writeJSONFile: cy_writeJSONFile,
   cy_createForegroundPanel: cy_createForegroundPanel,
-  cy_getThemeVars: cy_getThemeVars
+  cy_getThemeVars: cy_getThemeVars,
+  cy_getSelectedLayers: cy_getSelectedLayers
 };
 })();

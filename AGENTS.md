@@ -284,3 +284,5 @@ Section currently unused.
 If conflicts arise, assume this file overrides individual code comments.
 
 ---
+
+* 2025-10-30 – gpt-5-codex: Implemented literal Search & Replace across selected-layer expressions using new Holy.EXPRESS helpers and host batch apply bridge. Design Intent: reuse selection traversal and safe-apply infrastructure for expression rewrites triggered from the panel. Risks / Concerns: Batch updates rely on expression path resolution; unexpected path misses will be reported but skip replacements.
