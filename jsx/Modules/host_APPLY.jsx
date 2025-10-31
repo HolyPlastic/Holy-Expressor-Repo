@@ -471,6 +471,7 @@ function he_EX_applyExpressionBatch(jsonStr) {
   var undoOpen = false;
   var trackedLayers = [];
   var toggledHiddenCount = 0;
+  var toReveal = [];
   function he_EX_trackLayerVisibility(prop) {
     if (!prop) return;
     var layer = null;
@@ -548,10 +549,25 @@ function he_EX_applyExpressionBatch(jsonStr) {
           result.errors.push({ path: entry.path, err: prop.expressionError });
         } else {
           result.applied++;
+          toReveal.push(prop);
         }
       } catch (errApply) {
         result.errors.push({ path: entry.path, err: String(errApply) });
       }
+    }
+
+    for (var r = 0; r < toReveal.length; r++) {
+      try {
+        toReveal[r].selected = true;
+      } catch (_) {}
+    }
+    if (toReveal.length) {
+      try {
+        var revealCommandId = app.findMenuCommandId("Reveal Expression");
+        if (revealCommandId) {
+          app.executeCommand(revealCommandId);
+        }
+      } catch (_) {}
     }
 
     result.ok = true;
