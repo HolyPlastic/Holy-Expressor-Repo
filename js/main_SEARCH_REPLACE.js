@@ -8,6 +8,12 @@ if (typeof Holy !== "object") Holy = {};
     return el ? el.value : "";
   }
 
+  function getCheckboxState(selector, defaultValue) {
+    var el = document.querySelector(selector);
+    if (!el) return !!defaultValue;
+    return !!el.checked;
+  }
+
   function setButtonState(btn, isBusy) {
     if (!btn) return;
     btn.disabled = !!isBusy;
@@ -17,11 +23,16 @@ if (typeof Holy !== "object") Holy = {};
   function runSearchReplace() {
     var searchVal = getFieldValue("#searchField");
     var replaceVal = getFieldValue("#replaceField");
+    var literalSafe = getCheckboxState("#literalSafe", false);
+    var matchCase = getCheckboxState("#matchCase", true);
     var button = document.querySelector("#runSearchReplace");
 
     setButtonState(button, true);
 
-    return Holy.EXPRESS.cy_replaceInExpressions(searchVal, replaceVal)
+    return Holy.EXPRESS.cy_replaceInExpressions(searchVal, replaceVal, {
+      literalSafe: literalSafe,
+      matchCase: matchCase
+    })
       .then(function (summary) {
         setButtonState(button, false);
         if (summary && summary.message) {

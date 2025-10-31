@@ -933,6 +933,73 @@ function he_EX_collectExpressionsForLayer(jsonStr) {
 
     var entries = [];
 
+    function buildResolvablePath(prop) {
+      if (!prop) return "";
+
+      var nameChain = [];
+      var matchChain = [];
+      var depth = 0;
+
+      try { depth = prop.propertyDepth || 0; } catch (_) { depth = 0; }
+
+      for (var d = 1; d <= depth; d++) {
+        var grp = null;
+        try { grp = prop.propertyGroup(d); } catch (_) { grp = null; }
+        if (!grp) continue;
+
+        var gName = "";
+        var gMatch = "";
+        try { gName = grp.name || ""; } catch (_) {}
+        try { gMatch = grp.matchName || ""; } catch (_) {}
+
+        if (gName || gMatch) {
+          nameChain.push(gName || gMatch);
+          matchChain.push(gMatch || gName);
+        }
+      }
+
+      var leafName = "";
+      var leafMatch = "";
+      try { leafName = prop.name || ""; } catch (_) {}
+      try { leafMatch = prop.matchName || ""; } catch (_) {}
+      if (!leafName && leafMatch) leafName = leafMatch;
+
+      var nameParts = nameChain.length ? nameChain.slice().reverse() : [];
+      if (!nameParts.length || nameParts[0] !== layer.name) {
+        nameParts.unshift(layer.name);
+      }
+      nameParts.push(leafName);
+      var candidate = nameParts.join(" > ");
+
+      try {
+        var resolved = he_P_EX_findPropertyByPath(comp, candidate);
+        if (resolved === prop) return candidate;
+      } catch (_) {}
+
+      var matchParts = matchChain.length ? matchChain.slice().reverse() : [];
+      if (!matchParts.length || matchParts[0] !== layer.name) {
+        matchParts.unshift(layer.name);
+      }
+      matchParts.push(leafMatch || leafName);
+      var candidateMatch = matchParts.join(" > ");
+
+      try {
+        var resolvedMatch = he_P_EX_findPropertyByPath(comp, candidateMatch);
+        if (resolvedMatch === prop) return candidateMatch;
+      } catch (_) {}
+
+      var fallback = "";
+      try { fallback = he_P_MM_getExprPath(prop); } catch (_) { fallback = ""; }
+      if (fallback) {
+        try {
+          var resolvedFallback = he_P_EX_findPropertyByPath(comp, fallback);
+          if (resolvedFallback === prop) return fallback;
+        } catch (_) {}
+      }
+
+      return candidate;
+    }
+
     function scanGroup(group) {
       for (var p = 1; p <= group.numProperties; p++) {
         var child = group.property(p);
@@ -951,7 +1018,7 @@ function he_EX_collectExpressionsForLayer(jsonStr) {
           if (!enabled || !expr || expr === "") continue;
 
           var path = "";
-          try { path = he_P_MM_getExprPath(child); } catch (_) { path = ""; }
+          try { path = buildResolvablePath(child); } catch (_) { path = ""; }
           if (!path) continue;
 
           var name = "";
