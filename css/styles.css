@@ -1456,6 +1456,7 @@ button.btn-discreet:focus {
     cursor: pointer;
  shape-rendering: geometricPrecision; 
   vector-effect: non-scaling-stroke; 
+stroke-width: 0.35px;
 
     color: var(--G-color-1-mid);
     stroke: var(--G-color-1);
