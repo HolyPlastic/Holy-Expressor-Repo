@@ -251,6 +251,10 @@ function cy_safeApplyExpressionBatch(entries, opts) {
           return;
         }
 
+        if (result && typeof result.unhidLayers === "number" && result.unhidLayers > 0) {
+          console.log('[Holy.SEARCH] Temporarily unhid ' + result.unhidLayers + ' layer(s) for safe expression apply.');
+        }
+
         resolve(result);
       });
     } catch (err) {
