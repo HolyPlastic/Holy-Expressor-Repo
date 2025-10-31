@@ -865,6 +865,126 @@ for (var p = 1; p <= fx.numProperties; p++) {
   return JSON.stringify(result);
 }
 
+function he_EX_getSelectedLayers() {
+  var result = { ok: false, layers: [] };
+  try {
+    var comp = app.project.activeItem;
+    if (!comp || !(comp instanceof CompItem)) {
+      result.err = "No active comp";
+      return JSON.stringify(result);
+    }
+
+    var sel = comp.selectedLayers;
+    if (!sel || sel.length === 0) {
+      result.err = "Select at least one layer";
+      return JSON.stringify(result);
+    }
+
+    var layers = [];
+    for (var i = 0; i < sel.length; i++) {
+      var layer = sel[i];
+      if (!layer) continue;
+      layers.push({
+        name: layer.name,
+        index: layer.index,
+        id: layer.id
+      });
+    }
+
+    result.ok = true;
+    result.layers = layers;
+  } catch (err) {
+    result.err = String(err);
+  }
+  return JSON.stringify(result);
+}
+
+function he_EX_collectExpressionsForLayer(jsonStr) {
+  var result = { ok: false, entries: [] };
+  try {
+    var data = {};
+    try { data = JSON.parse(jsonStr || "{}"); } catch (_) { data = {}; }
+
+    var comp = app.project.activeItem;
+    if (!comp || !(comp instanceof CompItem)) throw "No active comp";
+
+    var layer = null;
+    var targetId = data.layerId;
+    var targetIndex = data.layerIndex;
+
+    if (targetId) {
+      for (var i = 1; i <= comp.numLayers; i++) {
+        var candidate = comp.layer(i);
+        if (candidate && candidate.id === targetId) {
+          layer = candidate;
+          break;
+        }
+      }
+    }
+
+    if (!layer && targetIndex) {
+      try { layer = comp.layer(targetIndex); } catch (_) { layer = null; }
+    }
+
+    if (!layer) throw "Layer not found";
+
+    result.layerName = layer.name;
+    result.layerIndex = layer.index;
+
+    var entries = [];
+
+    function scanGroup(group) {
+      for (var p = 1; p <= group.numProperties; p++) {
+        var child = group.property(p);
+        if (!child) continue;
+
+        if (child.propertyType === PropertyType.PROPERTY) {
+          if (!child.canSetExpression) continue;
+          var enabled = false;
+          var expr = "";
+          try {
+            enabled = child.expressionEnabled;
+            expr = child.expression;
+          } catch (_) {
+            expr = "";
+          }
+          if (!enabled || !expr || expr === "") continue;
+
+          var path = "";
+          try { path = he_P_MM_getExprPath(child); } catch (_) { path = ""; }
+          if (!path) continue;
+
+          var name = "";
+          var matchName = "";
+          try { name = child.name || ""; } catch (_) {}
+          try { matchName = child.matchName || ""; } catch (_) {}
+
+          entries.push({
+            path: path,
+            expression: expr,
+            expressionEnabled: enabled,
+            name: name,
+            matchName: matchName
+          });
+        } else if (
+          child.propertyType === PropertyType.INDEXED_GROUP ||
+          child.propertyType === PropertyType.NAMED_GROUP
+        ) {
+          scanGroup(child);
+        }
+      }
+    }
+
+    scanGroup(layer);
+
+    result.ok = true;
+    result.entries = entries;
+  } catch (err) {
+    result.err = String(err);
+  }
+  return JSON.stringify(result);
+}
+
 try {
     logToPanel("✅ host_GET.jsx Loaded ⛓️");
 } catch (e) {}
