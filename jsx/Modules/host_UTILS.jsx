@@ -535,6 +535,227 @@ function he_P_MM_classifyProperty(metaPath) {
 
 
 
+function he_U_EX_pushUnique(list, prop) {
+  if (!list || !prop) return;
+  for (var i = 0; i < list.length; i++) {
+    if (list[i] === prop) return;
+  }
+  list.push(prop);
+}
+
+function he_U_EX_stripIndexSuffix(raw) {
+  var result = { text: "", index: null };
+  var value = String(raw || "");
+  var trimmed = value.replace(/^\s+|\s+$/g, "");
+  var rx;
+  var match;
+
+  rx = /\s*\[#?(\d+)\]\s*$/;
+  match = rx.exec(trimmed);
+  if (match) {
+    result.index = parseInt(match[1], 10);
+    trimmed = trimmed.substring(0, trimmed.length - match[0].length);
+    trimmed = trimmed.replace(/\s+$/g, "");
+    result.text = trimmed;
+    return result;
+  }
+
+  rx = /\s+#(\d+)\s*$/;
+  match = rx.exec(trimmed);
+  if (match) {
+    result.index = parseInt(match[1], 10);
+    trimmed = trimmed.substring(0, trimmed.length - match[0].length);
+    trimmed = trimmed.replace(/\s+$/g, "");
+    result.text = trimmed;
+    return result;
+  }
+
+  rx = /\s*\((\d+)\)\s*$/;
+  match = rx.exec(trimmed);
+  if (match) {
+    result.index = parseInt(match[1], 10);
+    trimmed = trimmed.substring(0, trimmed.length - match[0].length);
+    trimmed = trimmed.replace(/\s+$/g, "");
+    result.text = trimmed;
+    return result;
+  }
+
+  result.text = trimmed;
+  return result;
+}
+
+function he_U_EX_parsePathToken(raw) {
+  var token = {
+    raw: String(raw || ""),
+    name: "",
+    matchName: "",
+    index: null,
+    hasExplicitMatchName: false
+  };
+
+  var trimmed = token.raw.replace(/^\s+|\s+$/g, "");
+  var sepIndex = trimmed.indexOf("::");
+  var namePart = sepIndex >= 0 ? trimmed.substring(0, sepIndex) : trimmed;
+  var matchPart = sepIndex >= 0 ? trimmed.substring(sepIndex + 2) : "";
+
+  var nameStrip = he_U_EX_stripIndexSuffix(namePart);
+  var matchStrip = he_U_EX_stripIndexSuffix(matchPart);
+
+  token.name = nameStrip.text.replace(/^\s+|\s+$/g, "");
+  token.index = nameStrip.index;
+
+  if (matchStrip.index !== null && token.index === null) {
+    token.index = matchStrip.index;
+  }
+
+  token.matchName = matchStrip.text.replace(/^\s+|\s+$/g, "");
+  if (token.matchName.length) {
+    token.hasExplicitMatchName = true;
+  }
+
+  if (!token.name.length && !token.hasExplicitMatchName) {
+    token.name = trimmed;
+  }
+
+  return token;
+}
+
+function he_U_EX_tokenMatchesCandidate(token, candidate) {
+  if (!candidate) return false;
+
+  var candidateName = "";
+  var candidateMatch = "";
+  var candidateIndex = null;
+
+  try { candidateName = candidate.name || ""; } catch (_) { candidateName = ""; }
+  try { candidateMatch = candidate.matchName || ""; } catch (_) { candidateMatch = ""; }
+
+  if (token.index !== null) {
+    try {
+      if (typeof candidate.propertyIndex !== "undefined" && candidate.propertyIndex !== null) {
+        candidateIndex = candidate.propertyIndex;
+      } else if (typeof candidate.index !== "undefined" && candidate.index !== null) {
+        candidateIndex = candidate.index;
+      }
+    } catch (_) { candidateIndex = null; }
+  }
+
+  if (token.hasExplicitMatchName && candidateMatch === token.matchName) {
+    return true;
+  }
+
+  if (token.name && token.name.length) {
+    if (candidateName === token.name) return true;
+    if (!token.hasExplicitMatchName && candidateMatch === token.name) return true;
+  }
+
+  if (token.index !== null && candidateIndex === token.index) {
+    return true;
+  }
+
+  if (!token.hasExplicitMatchName && token.matchName && token.matchName.length && candidateMatch === token.matchName) {
+    return true;
+  }
+
+  return false;
+}
+
+function he_U_EX_collectMatchingLayers(comp, token) {
+  var matches = [];
+  if (!comp) return matches;
+
+  if (token.index !== null) {
+    try {
+      var byIndex = comp.layer(token.index);
+      if (byIndex) he_U_EX_pushUnique(matches, byIndex);
+    } catch (_) {}
+  }
+
+  var total = 0;
+  try { total = comp.numLayers || 0; } catch (_) { total = 0; }
+
+  for (var i = 1; i <= total; i++) {
+    var layer = null;
+    try { layer = comp.layer(i); } catch (_) { layer = null; }
+    if (!layer) continue;
+    if (he_U_EX_tokenMatchesCandidate(token, layer)) {
+      he_U_EX_pushUnique(matches, layer);
+    }
+  }
+
+  return matches;
+}
+
+function he_U_EX_collectMatchingChildren(parent, token) {
+  var matches = [];
+  if (!parent) return matches;
+
+  var total = 0;
+  try { total = parent.numProperties || 0; } catch (_) { total = 0; }
+
+  if (token.index !== null) {
+    try {
+      var indexed = parent.property(token.index);
+      if (indexed && he_U_EX_tokenMatchesCandidate(token, indexed)) {
+        he_U_EX_pushUnique(matches, indexed);
+      }
+    } catch (_) {}
+  }
+
+  for (var i = 1; i <= total; i++) {
+    var child = null;
+    try { child = parent.property(i); } catch (_) { child = null; }
+    if (!child) continue;
+    if (he_U_EX_tokenMatchesCandidate(token, child)) {
+      he_U_EX_pushUnique(matches, child);
+    }
+  }
+
+  return matches;
+}
+
+function he_U_EX_findPropertiesByPath(comp, pathString) {
+  var resolved = [];
+  try {
+    if (!comp || !(comp instanceof CompItem)) return resolved;
+  } catch (e) {
+    return resolved;
+  }
+
+  if (!pathString) return resolved;
+
+  var rawParts = pathString.split(" > ");
+  if (!rawParts || rawParts.length < 2) return resolved;
+
+  var tokens = [];
+  for (var t = 0; t < rawParts.length; t++) {
+    tokens.push(he_U_EX_parsePathToken(rawParts[t]));
+  }
+
+  var current = he_U_EX_collectMatchingLayers(comp, tokens[0]);
+  if (!current.length) return resolved;
+
+  for (var p = 1; p < tokens.length; p++) {
+    var token = tokens[p];
+    var nextLevel = [];
+    for (var c = 0; c < current.length; c++) {
+      var node = current[c];
+      var matches = he_U_EX_collectMatchingChildren(node, token);
+      for (var m = 0; m < matches.length; m++) {
+        he_U_EX_pushUnique(nextLevel, matches[m]);
+      }
+    }
+    current = nextLevel;
+    if (!current.length) break;
+  }
+
+  for (var r = 0; r < current.length; r++) {
+    he_U_EX_pushUnique(resolved, current[r]);
+  }
+
+  return resolved;
+}
+
 try {
   logToPanel("✅ host_UTILS.jsx Loaded ⛓️");
 } catch (e) {}
