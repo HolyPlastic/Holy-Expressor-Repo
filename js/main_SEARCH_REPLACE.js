@@ -23,14 +23,12 @@ if (typeof Holy !== "object") Holy = {};
   function runSearchReplace() {
     var searchVal = getFieldValue("#searchField");
     var replaceVal = getFieldValue("#replaceField");
-    var literalSafe = getCheckboxState("#literalSafe", false);
     var matchCase = getCheckboxState("#matchCase", true);
     var button = document.querySelector("#runSearchReplace");
 
     setButtonState(button, true);
 
     return Holy.EXPRESS.cy_replaceInExpressions(searchVal, replaceVal, {
-      literalSafe: literalSafe,
       matchCase: matchCase
     })
       .then(function (summary) {
