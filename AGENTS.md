@@ -294,6 +294,8 @@ If conflicts arise, assume this file overrides individual code comments.
 * 2025-11-01 – gpt-5-codex: Added UI-sync delay and timeline focus for reliable visual Reveal Expression twizzling.
 * 2025-11-02 – gpt-5-codex: Normalized `.btn-clearSVG` hitboxes by tightening SVG viewBoxes and centralizing stroke width variable. Design Intent: align all clear buttons on consistent stroke sizing with icon-bound click targets. Risks / Concerns: confirm expanded viewBox padding covers hover-scale strokes.
 
+* 2025-11-02 – gpt-5-codex: Floated clear/path/expression load buttons on an overlay anchored to the Express panel. Design Intent: keep quick actions visually attached to the editor while tracking dynamic height changes. Risks / Concerns: Monitor the panel’s `overflow` override for any unexpected bleed with other layered elements.
+
 🧱 Verified Architectural Notes (2025-11)
 
 The entire codebase operates under a single global namespace:
