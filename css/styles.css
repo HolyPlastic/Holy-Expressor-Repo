@@ -1423,6 +1423,10 @@ button:disabled { opacity: 0.5; cursor: default; }
 .btn-clearSVG {
   /* 🔧 Core sizing controlled by a variable for unified scaling */
   --size: 25px;
+  --stroke-width: 1.5px;
+  --icon-scale: 1;
+  --icon-offset-x: 0;
+  --icon-offset-y: 0;
   width: var(--size);
   height: var(--size);
 
@@ -1432,6 +1436,9 @@ button:disabled { opacity: 0.5; cursor: default; }
   display: inline-flex; /* 🔧 changed from flex to inline-flex so it doesn’t stretch rows */
   align-items: center;
   justify-content: center;
+
+  padding: 0;
+  line-height: 0;
 
   cursor: pointer;
 
@@ -1469,9 +1476,27 @@ button:disabled { opacity: 0.5; cursor: default; }
   height: 100%;
   display: block;
 
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  transform: translate(var(--icon-offset-x), var(--icon-offset-y))
+    scale(var(--icon-scale));
+
   shape-rendering: geometricPrecision;
   vector-effect: non-scaling-stroke;
-  stroke-width: 0.35px; /* 🔧 moved from button so it actually applies to strokes */
+}
+
+.btn-clearSVG .btn-icon,
+.btn-clearSVG .btn-icon * {
+  vector-effect: non-scaling-stroke;
+  stroke-width: var(--stroke-width);
+}
+
+#bankSelectBtn {
+  --size: 32px;
+}
+
+#editorClearBtn {
+  --size: 20px;
 }
 
 /* ==================================================
