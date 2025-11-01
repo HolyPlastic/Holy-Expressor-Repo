@@ -626,11 +626,10 @@ function he_EX_applyExpressionBatch(jsonStr) {
           try { previousSelection[ps2].selected = false; } catch (_) {}
         }
 
-        for (var rv = 0; rv < toReveal.length; rv++) {
-          try { toReveal[rv].selected = true; } catch (_) {}
-        }
-
         try {
+          app.activeViewer.setActive();
+          comp.selectedProperties = toReveal;
+          $.sleep(100);
           app.executeCommand(revealCommandId);
           revealExecuted = true;
         } catch (_) {}
