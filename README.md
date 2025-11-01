@@ -133,3 +133,25 @@ main.js
 ## 🧭 Summary
 Holy Expressor is a modular **CEP-based After Effects extension** centered on maintainable, expression-driven workflows.  
 Electron, SDK, and legacy components are retired.  
+
+🧱 Verified Architectural Notes (2025-11)
+
+The entire codebase operates under a single global namespace:
+Holy.<MODULE> (e.g., Holy.SNIPPETS, Holy.EXPRESS, Holy.UTILS).
+
+Each main_*.js file is wrapped in an IIFE that attaches exports to this global namespace.
+
+The front-end (CEP) communicates with the host side (ExtendScript) exclusively through cs.evalScript().
+
+No ESModules, imports, or bundlers are used anywhere in the runtime.
+
+Host-side scripts follow a strict naming convention:
+
+he_P_ → Apply layer functions
+
+he_U_ → Utility layer functions
+
+This naming structure is consistent across all JSX host modules (host_APPLY.jsx, host_UTILS.jsx, host_GET.jsx, etc.).
+
+These points are deductively verified from the codebase and reflect core structural truths of the project.
+

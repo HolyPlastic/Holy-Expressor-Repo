@@ -292,3 +292,25 @@ If conflicts arise, assume this file overrides individual code comments.
 * 2025-10-31 – gpt-5-codex: Queued applied properties for post-batch "Reveal Expression" twizzle so users immediately see updated expressions without repeatedly firing menu commands. Design Intent: mirror manual EE reveal only for successful updates. Risks / Concerns: Large selections could still momentarily flash selection highlights; monitor for UI lag on very large batches.
 * 2025-11-01 – gpt-5-codex: Added index-safe duplicate-name resolver and post-batch Reveal Expression routine to improve search & replace visibility.
 * 2025-11-01 – gpt-5-codex: Added UI-sync delay and timeline focus for reliable visual Reveal Expression twizzling.
+
+🧱 Verified Architectural Notes (2025-11)
+
+The entire codebase operates under a single global namespace:
+Holy.<MODULE> (e.g., Holy.SNIPPETS, Holy.EXPRESS, Holy.UTILS).
+
+Each main_*.js file is wrapped in an IIFE that attaches exports to this global namespace.
+
+The front-end (CEP) communicates with the host side (ExtendScript) exclusively through cs.evalScript().
+
+No ESModules, imports, or bundlers are used anywhere in the runtime.
+
+Host-side scripts follow a strict naming convention:
+
+he_P_ → Apply layer functions
+
+he_U_ → Utility layer functions
+
+This naming structure is consistent across all JSX host modules (host_APPLY.jsx, host_UTILS.jsx, host_GET.jsx, etc.).
+
+These points are deductively verified from the codebase and reflect core structural truths of the project.
+
