@@ -942,6 +942,7 @@ textarea { width: 100%; }
   background: transparent !important;
 
   box-sizing: border-box;
+  overflow: visible; /* allow overlay buttons to float over the panel edge */
 }
 
 #expressArea.panel {
@@ -961,6 +962,41 @@ textarea { width: 100%; }
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+/* Overlay button group that floats on the panel border */
+.express-editor-overlay {
+  position: absolute;
+  right: 12px;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border-radius: 999px;
+  background: rgba(16, 16, 16, 0.92);
+  border: 1px solid var(--G-colour-1-opac-30);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  transform: translateY(50%);
+  pointer-events: none; /* prevent the wrapper from blocking editor clicks */
+  z-index: 5;
+}
+
+.express-editor-overlay-btn {
+  pointer-events: auto;
+}
+
+.express-editor-overlay-btn + .express-editor-overlay-btn {
+  margin-left: 0;
+}
+
+#editorClearBtn.express-editor-overlay-btn {
+  --size: 20px;
+}
+
+#loadPathFromSelectionBtn,
+#loadFromSelectionBtn {
+  --size: 24px;
 }
 
 .express-panel-btn {
