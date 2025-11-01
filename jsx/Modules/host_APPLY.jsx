@@ -626,13 +626,21 @@ function he_EX_applyExpressionBatch(jsonStr) {
           try { previousSelection[ps2].selected = false; } catch (_) {}
         }
 
-        try {
-          app.activeViewer.setActive();
-          comp.selectedProperties = toReveal;
-          $.sleep(100);
-          app.executeCommand(revealCommandId);
-          revealExecuted = true;
-        } catch (_) {}
+   try {
+  // ✅ Focus the Timeline panel instead of the Comp Viewer
+  var focusPanel = app.project.activeItem;
+  if (focusPanel && focusPanel.openInViewer) {
+    focusPanel.openInViewer(); // forces timeline context
+  }
+
+  // ✅ Assign selection and give AE time to register
+  comp.selectedProperties = toReveal;
+  $.sleep(250);
+
+  // ✅ Execute reveal under timeline focus
+  app.executeCommand(revealCommandId);
+  revealExecuted = true;
+} catch (_) {}
 
         for (var rv2 = 0; rv2 < toReveal.length; rv2++) {
           try { toReveal[rv2].selected = false; } catch (_) {}
