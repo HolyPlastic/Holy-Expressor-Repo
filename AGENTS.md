@@ -296,6 +296,8 @@ If conflicts arise, assume this file overrides individual code comments.
 
 * 2025-11-02 – gpt-5-codex: Floated clear/path/expression load buttons on an overlay anchored to the Express panel. Design Intent: keep quick actions visually attached to the editor while tracking dynamic height changes. Risks / Concerns: Monitor the panel’s `overflow` override for any unexpected bleed with other layered elements.
 
+* 2025-11-03 – gpt-5-codex: Added Theme button and live color picker modal to let users retune `--G-color-1` from the panel footer. Design Intent: expose quick theme tweaks without leaving the Expressor UI. Risks / Concerns: Canvas gradient rendering may tax very old CEP runtimes; watch for pointer-capture quirks on high-DPI displays.
+
 🧱 Verified Architectural Notes (2025-11)
 
 The entire codebase operates under a single global namespace:

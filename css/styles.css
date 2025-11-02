@@ -109,6 +109,10 @@ var(--G-color-1-S),
 
 /*#endregion 🌐🎨 */
 
+.is-hidden {
+  display: none !important;
+}
+
 /*#region - 🔠 FONT ✒️✒️🆔 */
 /* =============================
          💬 TEXT Stuff
@@ -2092,7 +2096,9 @@ button.target-btn { border: 2px solid #ff7415; }
    🔔 Apply Log button
    ============================= */
 
-#openApplyLog {
+#openApplyLog,
+.btn-theme,
+.holy-color-modal .picker-actions button {
   padding: 4px 12px;
   font-size: 10px;
   letter-spacing: 1px;
@@ -2105,14 +2111,120 @@ button.target-btn { border: 2px solid #ff7415; }
   transition: background 0.2s ease, border-color 0.2s ease;
 }
 
-#openApplyLog:hover {
+#openApplyLog:hover,
+.btn-theme:hover,
+.holy-color-modal .picker-actions button:hover {
   background: linear-gradient(180deg, #4a4a4a 0%, #2f2f2f 100%);
   border-color: #777;
 }
 
-#openApplyLog:active {
+#openApplyLog:active,
+.btn-theme:active,
+.holy-color-modal .picker-actions button:active {
   background: linear-gradient(180deg, #2f2f2f 0%, #1c1c1c 100%);
   border-color: #666;
+}
+
+.btn-theme {
+  margin-left: 8px;
+}
+
+.holy-color-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.15);
+  z-index: 9998;
+  cursor: pointer;
+}
+
+.holy-color-modal {
+  position: absolute;
+  bottom: 60px;
+  right: 20px;
+  background: var(--G-color-1-deepdark-bg);
+  border: 1px solid var(--G-colour-1-opac-30);
+  border-radius: 8px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+  width: 260px;
+  padding: 12px;
+  z-index: 9999;
+  backdrop-filter: blur(6px);
+}
+
+.holy-color-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.holy-color-modal .color-input {
+  width: 100%;
+  text-align: center;
+  background: #111;
+  border: 1px solid #333;
+  color: #fff;
+  border-radius: 4px;
+  padding: 6px 8px;
+  text-transform: uppercase;
+}
+
+.holy-color-modal .color-area {
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  border: 1px solid var(--G-colour-1-opac-30);
+  cursor: crosshair;
+  background: #222;
+  touch-action: none;
+}
+
+.holy-color-modal .hue-slider {
+  width: 100%;
+  accent-color: var(--G-color-1);
+  height: 16px;
+  background: linear-gradient(90deg, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
+  border-radius: 999px;
+  border: 1px solid var(--G-colour-1-opac-30);
+  outline: none;
+}
+
+.holy-color-modal .hue-slider::-webkit-slider-thumb,
+.holy-color-modal .hue-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #111;
+  background: #fff;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+}
+
+.holy-color-modal .picker-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.holy-color-modal .picker-actions button {
+  flex: 1;
+}
+
+.holy-color-modal .btn-apply {
+  background: linear-gradient(180deg, var(--G-color-1-midlight2) 0%, var(--G-color-1-mid) 100%);
+  border-color: var(--G-colour-1-opac-50);
+  color: #041410;
+  font-weight: 600;
+}
+
+.holy-color-modal .btn-apply:hover {
+  background: linear-gradient(180deg, var(--G-color-1-midlight2) 0%, var(--G-color-1-midup) 100%);
+  border-color: var(--G-colour-1-opac-75);
+}
+
+.holy-color-modal .btn-apply:active {
+  background: linear-gradient(180deg, var(--G-color-1-mid) 0%, var(--G-color-1-dark-bg) 100%);
+  border-color: var(--G-colour-1-opac-50);
 }
 
 /* =============================
