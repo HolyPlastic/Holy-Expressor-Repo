@@ -974,10 +974,12 @@ textarea { width: 100%; }
   gap: 6px;
   padding: 4px 6px;
   border-radius: 999px;
-  background: rgba(16, 16, 16, 0.92);
-  border: 1px solid var(--G-colour-1-opac-30);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
-  transform: translateY(50%);
+    background: none;
+    border: none;
+
+  transform: 
+  translateY(50%)
+ translateX(17px);
   pointer-events: none; /* prevent the wrapper from blocking editor clicks */
   z-index: 5;
 }
@@ -990,14 +992,6 @@ textarea { width: 100%; }
   margin-left: 0;
 }
 
-#editorClearBtn.express-editor-overlay-btn {
-  --size: 20px;
-}
-
-#loadPathFromSelectionBtn,
-#loadFromSelectionBtn {
-  --size: 24px;
-}
 
 .express-panel-btn {
   width: 26px;
@@ -1459,7 +1453,7 @@ button:disabled { opacity: 0.5; cursor: default; }
 .btn-clearSVG {
   /* 🔧 Core sizing controlled by a variable for unified scaling */
   --size: 25px;
-  --stroke-width: 1.5px;
+  --stroke-width: 0.8px;
   --icon-scale: 1;
   --icon-offset-x: 0;
   --icon-offset-y: 0;
@@ -1528,11 +1522,36 @@ button:disabled { opacity: 0.5; cursor: default; }
 }
 
 #bankSelectBtn {
-  --size: 32px;
+  --size: 16px;
+    margin-top: 4px;
+        margin-right: 2px;
 }
 
 #editorClearBtn {
+  height: 45px !important;
+  width: auto !important;
+  aspect-ratio: unset !important;
+}
+
+
+#editorClearBtn.express-editor-overlay-btn {
   --size: 20px;
+    transform: translateY(-7px);
+}
+
+#loadPathFromSelectionBtn,
+#loadFromSelectionBtn {
+  --size: 20px;
+
+}
+
+#loadFromSelectionBtn {
+  transform: translateX(6px);
+}
+
+#loadPathFromSelectionBtn {
+transform: translateX(18px);
+  z-index: 10;
 }
 
 /* ==================================================
