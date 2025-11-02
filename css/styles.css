@@ -2282,3 +2282,37 @@ button.target-btn { border: 2px solid #ff7415; }
 
 
 
+
+/* V1 – Tabs for Express | Search */
+.tab-bar {
+  display: flex;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.tab-bar .tab-btn.active {
+  background-color: var(--G-color-1, #3a3a3a);
+  color: #fff;
+}
+
+.tab-content {
+  position: relative;
+}
+
+/* Safe hide for CEP without collapsing layout or breaking CodeMirror */
+.tab-content .panel.hidden {
+  visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Optional micro fade for polish */
+.tab-content .panel {
+  transition: opacity 0.15s ease-in-out;
+  opacity: 1;
+}

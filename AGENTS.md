@@ -298,6 +298,8 @@ If conflicts arise, assume this file overrides individual code comments.
 
 * 2025-11-03 – gpt-5-codex: Added Theme button and live color picker modal to let users retune `--G-color-1` from the panel footer. Design Intent: expose quick theme tweaks without leaving the Expressor UI. Risks / Concerns: Canvas gradient rendering may tax very old CEP runtimes; watch for pointer-capture quirks on high-DPI displays.
 
+* 2025-11-03 – gpt-5-codex: Introduced Express/Search top-level tabs with hidden-panel CSS to preserve editor state while switching views. Design Intent: Provide a primary toggle between editing and search utilities without reinitializing CodeMirror. Risks / Concerns: Verify hidden panels stay non-interactive so overlays don't accidentally capture clicks.
+
 🧱 Verified Architectural Notes (2025-11)
 
 The entire codebase operates under a single global namespace:

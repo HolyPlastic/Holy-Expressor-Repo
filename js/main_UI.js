@@ -131,6 +131,36 @@ ensureHostReady(() => {
         applyMaximizeState(nextState);
       });
     }
+
+    var tabBar = document.getElementById("mainTabBar");
+    var tabContent = document.getElementById("mainTabContent");
+    if (tabBar && tabContent) {
+      var tabButtons = tabBar.querySelectorAll("[data-tab]");
+      var tabPanels = tabContent.querySelectorAll(".panel");
+
+      function activateTab(targetId) {
+        Array.prototype.forEach.call(tabButtons, function (btn) {
+          var isTarget = btn.getAttribute("data-tab") === targetId;
+          btn.classList.toggle("active", isTarget);
+          btn.setAttribute("aria-selected", isTarget ? "true" : "false");
+        });
+
+        Array.prototype.forEach.call(tabPanels, function (panel) {
+          var isTarget = panel.id === targetId;
+          panel.classList.toggle("hidden", !isTarget);
+        });
+      }
+
+      Array.prototype.forEach.call(tabButtons, function (btn) {
+        btn.addEventListener("click", function () {
+          var target = btn.getAttribute("data-tab");
+          if (!target) return;
+          activateTab(target);
+        });
+      });
+
+      activateTab("expressArea");
+    }
   });
 
   // ✅ REWRITE – QuickPanel Log Listener (safe for object or string payload)
