@@ -426,6 +426,20 @@ ____________________ -------->
 <div id="expressMisc" class="express-misc">
     <div class="row">
       <button id="openApplyLog" class="log-button text-sm" title="Open Apply Log">Log</button>
+      <button id="openThemePicker" class="btn-theme text-sm" title="Adjust Theme Color">Theme</button>
+    </div>
+
+    <div id="colorPickerOverlay" class="holy-color-overlay is-hidden" tabindex="-1" aria-hidden="true"></div>
+    <div id="colorPickerModal" class="holy-color-modal is-hidden" role="dialog" aria-modal="true" aria-label="Theme Color Picker">
+      <div class="holy-color-picker">
+        <input type="text" class="color-input" id="themeColorInput" value="#1EFFD6" maxlength="7" autocomplete="off" spellcheck="false" />
+        <canvas class="color-area" id="themeColorCanvas" width="220" height="140"></canvas>
+        <input type="range" class="hue-slider" id="themeHueSlider" min="0" max="360" value="0" />
+        <div class="picker-actions">
+          <button type="button" class="btn-apply">Apply</button>
+          <button type="button" class="btn-cancel">Cancel</button>
+        </div>
+      </div>
     </div>
 
 
@@ -469,6 +483,409 @@ ____________________ -------->
 
   </div> <!-- end appRoot -->
 
+
+ <script>
+(function holyThemePicker() {
+  'use strict';
+
+  const themeButton = document.getElementById('openThemePicker');
+  const modal = document.getElementById('colorPickerModal');
+  const overlay = document.getElementById('colorPickerOverlay');
+  const colorInput = document.getElementById('themeColorInput');
+  const hueSlider = document.getElementById('themeHueSlider');
+  const canvas = document.getElementById('themeColorCanvas');
+  if (!themeButton || !modal || !overlay || !colorInput || !hueSlider || !canvas) {
+    return;
+  }
+
+  const applyButton = modal.querySelector('.btn-apply');
+  const cancelButton = modal.querySelector('.btn-cancel');
+  const ctx = canvas.getContext('2d');
+  if (!applyButton || !cancelButton || !ctx) {
+    return;
+  }
+  const root = document.documentElement;
+
+  const CANVAS_WIDTH = canvas.width;
+  const CANVAS_HEIGHT = canvas.height;
+
+  let gradientImageData = null;
+  let lastValidHex = '#1EFFD6';
+  let initialHex = '#1EFFD6';
+  let isDragging = false;
+  let activePointerId = null;
+
+  const state = {
+    h: 180,
+    s: 100,
+    l: 50
+  };
+
+  function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+  }
+
+  function componentToHex(component) {
+    const hex = clamp(Math.round(component), 0, 255).toString(16).padStart(2, '0');
+    return hex.toUpperCase();
+  }
+
+  function rgbToHex(r, g, b) {
+    return `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`;
+  }
+
+  function hexToRgb(hex) {
+    if (typeof hex !== 'string') {
+      return { r: 0, g: 0, b: 0 };
+    }
+    const normalized = hex.trim().replace('#', '');
+    if (!normalized) {
+      return { r: 0, g: 0, b: 0 };
+    }
+    const expanded = normalized.length === 3
+      ? normalized.split('').map((c) => c + c).join('')
+      : normalized.padEnd(6, '0');
+    const value = parseInt(expanded, 16);
+    const r = (value >> 16) & 255;
+    const g = (value >> 8) & 255;
+    const b = value & 255;
+    return { r, g, b };
+  }
+
+  function rgbToHsl(r, g, b) {
+    r /= 255;
+    g /= 255;
+    b /= 255;
+
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h = 0;
+    let s = 0;
+    const l = (max + min) / 2;
+
+    if (max !== min) {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r:
+          h = (g - b) / d + (g < b ? 6 : 0);
+          break;
+        case g:
+          h = (b - r) / d + 2;
+          break;
+        case b:
+          h = (r - g) / d + 4;
+          break;
+        default:
+          h = 0;
+      }
+      h /= 6;
+    }
+
+    return {
+      h: Math.round(h * 360),
+      s: Math.round(s * 100),
+      l: Math.round(l * 100)
+    };
+  }
+
+  function hslToRgb(h, s, l) {
+    const hue = ((h % 360) + 360) % 360;
+    const sat = clamp(s / 100, 0, 1);
+    const lig = clamp(l / 100, 0, 1);
+
+    if (sat === 0) {
+      const gray = Math.round(lig * 255);
+      return { r: gray, g: gray, b: gray };
+    }
+
+    const c = (1 - Math.abs(2 * lig - 1)) * sat;
+    const x = c * (1 - Math.abs(((hue / 60) % 2) - 1));
+    const m = lig - c / 2;
+
+    let r1 = 0;
+    let g1 = 0;
+    let b1 = 0;
+
+    if (hue < 60) {
+      r1 = c; g1 = x; b1 = 0;
+    } else if (hue < 120) {
+      r1 = x; g1 = c; b1 = 0;
+    } else if (hue < 180) {
+      r1 = 0; g1 = c; b1 = x;
+    } else if (hue < 240) {
+      r1 = 0; g1 = x; b1 = c;
+    } else if (hue < 300) {
+      r1 = x; g1 = 0; b1 = c;
+    } else {
+      r1 = c; g1 = 0; b1 = x;
+    }
+
+    const r = Math.round((r1 + m) * 255);
+    const g = Math.round((g1 + m) * 255);
+    const b = Math.round((b1 + m) * 255);
+
+    return { r, g, b };
+  }
+
+  function normalizeHex(value) {
+    if (typeof value !== 'string') {
+      return null;
+    }
+    const trimmed = value.trim();
+    const sixMatch = trimmed.match(/^#?([0-9a-fA-F]{6})$/);
+    if (sixMatch) {
+      return `#${sixMatch[1].toUpperCase()}`;
+    }
+    const shortMatch = trimmed.match(/^#?([0-9a-fA-F]{3})$/);
+    if (shortMatch) {
+      const shortHex = shortMatch[1];
+      const expanded = shortHex.split('').map((ch) => ch + ch).join('').toUpperCase();
+      return `#${expanded}`;
+    }
+    const rgbMatch = trimmed.match(/rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})/i);
+    if (rgbMatch) {
+      const r = clamp(parseInt(rgbMatch[1], 10), 0, 255);
+      const g = clamp(parseInt(rgbMatch[2], 10), 0, 255);
+      const b = clamp(parseInt(rgbMatch[3], 10), 0, 255);
+      return rgbToHex(r, g, b);
+    }
+    return null;
+  }
+
+  function getCurrentCssColor() {
+    const value = getComputedStyle(root).getPropertyValue('--G-color-1');
+    return normalizeHex(value) || '#1EFFD6';
+  }
+
+  function updateDerivedVariables(hex) {
+    const { r, g, b } = hexToRgb(hex);
+    const { h, s, l } = rgbToHsl(r, g, b);
+    root.style.setProperty('--G-colour-1-RGB', `${r}, ${g}, ${b}`);
+    root.style.setProperty('--G-color-1-H', h);
+    root.style.setProperty('--G-color-1-S', `${s}%`);
+    root.style.setProperty('--G-color-1-L', `${l}%`);
+  }
+
+  function applyColor(hex) {
+    const normalized = normalizeHex(hex) || '#1EFFD6';
+    root.style.setProperty('--G-color-1', normalized);
+    updateDerivedVariables(normalized);
+  }
+
+  function rebuildGradient() {
+    const imageData = ctx.createImageData(CANVAS_WIDTH, CANVAS_HEIGHT);
+    const hue = state.h;
+
+    for (let y = 0; y < CANVAS_HEIGHT; y += 1) {
+      const lightness = 100 - (y / (CANVAS_HEIGHT - 1)) * 100;
+      for (let x = 0; x < CANVAS_WIDTH; x += 1) {
+        const saturation = (x / (CANVAS_WIDTH - 1)) * 100;
+        const { r, g, b } = hslToRgb(hue, saturation, lightness);
+        const index = (y * CANVAS_WIDTH + x) * 4;
+        imageData.data[index] = r;
+        imageData.data[index + 1] = g;
+        imageData.data[index + 2] = b;
+        imageData.data[index + 3] = 255;
+      }
+    }
+
+    gradientImageData = imageData;
+  }
+
+  function drawIndicator() {
+    const indicatorX = (state.s / 100) * (CANVAS_WIDTH - 1);
+    const indicatorY = (1 - state.l / 100) * (CANVAS_HEIGHT - 1);
+
+    ctx.beginPath();
+    ctx.arc(indicatorX, indicatorY, 6, 0, Math.PI * 2);
+    ctx.fillStyle = '#00000055';
+    ctx.fill();
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.stroke();
+  }
+
+  function renderCanvas() {
+    if (!gradientImageData) {
+      rebuildGradient();
+    }
+    if (gradientImageData) {
+      ctx.putImageData(gradientImageData, 0, 0);
+    }
+    drawIndicator();
+  }
+
+  function getCurrentHex() {
+    const { r, g, b } = hslToRgb(state.h, state.s, state.l);
+    return rgbToHex(r, g, b);
+  }
+
+  function updateColorFromState() {
+    const hex = getCurrentHex();
+    lastValidHex = hex;
+    colorInput.value = hex;
+    renderCanvas();
+    applyColor(hex);
+  }
+
+  function setStateFromHex(hex) {
+    const normalized = normalizeHex(hex);
+    if (!normalized) {
+      return;
+    }
+    const { r, g, b } = hexToRgb(normalized);
+    const { h, s, l } = rgbToHsl(r, g, b);
+    state.h = h;
+    state.s = s;
+    state.l = l;
+    hueSlider.value = String(h);
+    gradientImageData = null;
+    updateColorFromState();
+  }
+
+  function handlePointerUpdate(event) {
+    const rect = canvas.getBoundingClientRect();
+    const xRatio = clamp((event.clientX - rect.left) / rect.width, 0, 1);
+    const yRatio = clamp((event.clientY - rect.top) / rect.height, 0, 1);
+    state.s = xRatio * 100;
+    state.l = 100 - yRatio * 100;
+    updateColorFromState();
+  }
+
+  function handleCanvasPointerDown(event) {
+    event.preventDefault();
+    isDragging = true;
+    activePointerId = event.pointerId;
+    canvas.setPointerCapture(activePointerId);
+    handlePointerUpdate(event);
+  }
+
+  function handleCanvasPointerMove(event) {
+    if (!isDragging || event.pointerId !== activePointerId) {
+      return;
+    }
+    handlePointerUpdate(event);
+  }
+
+  function handleCanvasPointerUp(event) {
+    if (event.pointerId === activePointerId) {
+      isDragging = false;
+      canvas.releasePointerCapture(activePointerId);
+      activePointerId = null;
+    }
+  }
+
+  function openModal() {
+    initialHex = getCurrentCssColor();
+    lastValidHex = initialHex;
+    setStateFromHex(initialHex);
+
+    overlay.classList.remove('is-hidden');
+    overlay.setAttribute('aria-hidden', 'false');
+    modal.classList.remove('is-hidden');
+    modal.setAttribute('aria-hidden', 'false');
+    themeButton.setAttribute('aria-expanded', 'true');
+
+    requestAnimationFrame(() => {
+      colorInput.focus();
+      colorInput.select();
+    });
+
+    document.addEventListener('keydown', handleKeydown, true);
+  }
+
+  function closeModal(options) {
+    const { revert = false } = options || {};
+    if (revert) {
+      setStateFromHex(initialHex);
+    }
+
+    if (activePointerId !== null) {
+      try {
+        canvas.releasePointerCapture(activePointerId);
+      } catch (err) {
+        /* noop */
+      }
+    }
+    isDragging = false;
+    activePointerId = null;
+
+    overlay.classList.add('is-hidden');
+    overlay.setAttribute('aria-hidden', 'true');
+    modal.classList.add('is-hidden');
+    modal.setAttribute('aria-hidden', 'true');
+    themeButton.setAttribute('aria-expanded', 'false');
+    colorInput.blur();
+
+    document.removeEventListener('keydown', handleKeydown, true);
+  }
+
+  function handleKeydown(event) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeModal({ revert: true });
+    } else if (event.key === 'Enter' && event.target === colorInput) {
+      event.preventDefault();
+      applyButton.click();
+    }
+  }
+
+  function toggleModal() {
+    if (modal.classList.contains('is-hidden')) {
+      openModal();
+    } else {
+      closeModal({ revert: true });
+    }
+  }
+
+  themeButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    toggleModal();
+  });
+
+  overlay.addEventListener('click', () => {
+    closeModal({ revert: true });
+  });
+
+  applyButton.addEventListener('click', () => {
+    initialHex = lastValidHex;
+    closeModal({ revert: false });
+  });
+
+  cancelButton.addEventListener('click', () => {
+    closeModal({ revert: true });
+  });
+
+  hueSlider.addEventListener('input', () => {
+    state.h = parseFloat(hueSlider.value) || 0;
+    gradientImageData = null;
+    updateColorFromState();
+  });
+
+  colorInput.addEventListener('input', () => {
+    const normalized = normalizeHex(colorInput.value);
+    if (normalized) {
+      setStateFromHex(normalized);
+    }
+  });
+
+  colorInput.addEventListener('blur', () => {
+    colorInput.value = lastValidHex;
+  });
+
+  canvas.addEventListener('pointerdown', handleCanvasPointerDown);
+  canvas.addEventListener('pointermove', handleCanvasPointerMove);
+  canvas.addEventListener('pointerup', handleCanvasPointerUp);
+  canvas.addEventListener('pointercancel', handleCanvasPointerUp);
+  canvas.addEventListener('pointerleave', handleCanvasPointerUp);
+
+  // Initialize modal state without opening it so controls match the current theme.
+  initialHex = getCurrentCssColor();
+  lastValidHex = initialHex;
+  setStateFromHex(initialHex);
+})();
+</script>
 
  <script>
   document.addEventListener('DOMContentLoaded', () => {
