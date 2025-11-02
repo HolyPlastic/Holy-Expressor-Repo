@@ -2187,7 +2187,7 @@ button.target-btn { border: 2px solid #ff7415; }
   text-transform: uppercase;
 }
 
-.holy-color-modal .color-area {
+.holy-color-picker .color-area {
   width: 100%;
   height: auto;
   border-radius: 6px;
@@ -2197,18 +2197,30 @@ button.target-btn { border: 2px solid #ff7415; }
   touch-action: none;
 }
 
-.holy-color-modal .hue-slider {
+.holy-color-picker .hue-slider,
+.hue-slider {
   width: 100%;
   accent-color: var(--G-color-1);
   height: 16px;
-  background: linear-gradient(90deg, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
+  background: linear-gradient(
+    90deg,
+    hsl(0, 100%, 50%),
+    hsl(60, 100%, 50%),
+    hsl(120, 100%, 50%),
+    hsl(180, 100%, 50%),
+    hsl(240, 100%, 50%),
+    hsl(300, 100%, 50%),
+    hsl(360, 100%, 50%)
+  );
   border-radius: 999px;
   border: 1px solid var(--G-colour-1-opac-30);
   outline: none;
 }
 
-.holy-color-modal .hue-slider::-webkit-slider-thumb,
-.holy-color-modal .hue-slider::-moz-range-thumb {
+.holy-color-picker .hue-slider::-webkit-slider-thumb,
+.holy-color-picker .hue-slider::-moz-range-thumb,
+.hue-slider::-webkit-slider-thumb,
+.hue-slider::-moz-range-thumb {
   width: 14px;
   height: 14px;
   border-radius: 50%;
@@ -2218,25 +2230,25 @@ button.target-btn { border: 2px solid #ff7415; }
   cursor: pointer;
 }
 
-.holy-color-modal .picker-actions {
+.holy-color-picker .picker-actions {
   display: flex;
   justify-content: space-between;
   gap: 8px;
   margin-top: 4px;
 }
 
-.holy-color-modal .picker-actions button {
+.holy-color-picker .picker-actions button {
   flex: 1;
 }
 
-.holy-color-modal .btn-apply {
+.holy-color-picker .btn-apply {
   background: linear-gradient(180deg, var(--G-color-1-midlight2) 0%, var(--G-color-1-mid) 100%);
   border-color: var(--G-colour-1-opac-50);
   color: #041410;
   font-weight: 600;
 }
 
-.holy-color-modal .btn-apply:hover {
+.holy-color-picker .btn-apply:hover {
   background: linear-gradient(180deg, var(--G-color-1-midlight2) 0%, var(--G-color-1-midup) 100%);
   border-color: var(--G-colour-1-opac-75);
 }
