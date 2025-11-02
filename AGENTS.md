@@ -300,6 +300,8 @@ If conflicts arise, assume this file overrides individual code comments.
 
 * 2025-11-03 – gpt-5-codex: Introduced Express/Search top-level tabs with hidden-panel CSS to preserve editor state while switching views. Design Intent: Provide a primary toggle between editing and search utilities without reinitializing CodeMirror. Risks / Concerns: Verify hidden panels stay non-interactive so overlays don't accidentally capture clicks.
 
+* 2025-11-03 – gpt-5-codex: Added modeless color picker panel plus shared panel_state persistence for color and quick panels. Design Intent: deliver a floating hue picker with window memory and live theme syncing. Risks / Concerns: CEP may block move/resize persistence on some hosts; monitor for permission warnings.
+
 🧱 Verified Architectural Notes (2025-11)
 
 The entire codebase operates under a single global namespace:

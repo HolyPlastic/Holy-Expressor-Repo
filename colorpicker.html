@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Holy Expressor – Color Picker</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+  <script>
+    (function STYLE_boot() {
+      try {
+        var theme = localStorage.getItem('he_theme') || 'default';
+        document.documentElement.classList.add('theme-' + theme);
+      } catch (err) {
+        console.warn('[ColorPicker] Failed to set theme', err);
+      }
+    })();
+  </script>
+  <script src="./js/panel_state.js"></script>
+</head>
+<body class="theme-default">
+  <div class="holy-color-picker">
+    <input type="text" id="themeColorInput" class="color-input" maxlength="7" autocomplete="off" spellcheck="false" />
+    <canvas id="themeColorCanvas" class="color-area" width="220" height="140"></canvas>
+    <input type="range" id="themeHueSlider" class="hue-slider" min="0" max="360" value="180" />
+    <div class="picker-actions">
+      <button type="button" class="btn-apply">Apply</button>
+      <button type="button" class="btn-cancel">Cancel</button>
+    </div>
+  </div>
+
+  <script src="./js/colorpicker.js"></script>
+</body>
+</html>

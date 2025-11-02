@@ -10,6 +10,7 @@
     <Extension Id="com.holy.expressor.panel" />
     <Extension Id="com.holy.expressor.log" />
     <Extension Id="com.holy.expressor.quickpanel" />
+    <Extension Id="com.holy.expressor.colorpicker" />
   </ExtensionList>
 
   <ExecutionEnvironment>
@@ -92,47 +93,79 @@
         </UI>
       </DispatchInfo>
     </Extension>
-<Extension Id="com.holy.expressor.quickpanel">
-  <DispatchInfo>
-    <Resources>
-      <MainPath>./quickpanel.html</MainPath>
-      <CEFCommandLine>
-        <Parameter>--enable-nodejs</Parameter>
-        <Parameter>--enable-devtools</Parameter>
-        <Parameter>--remote-debugging-port=6905</Parameter>
-        <Parameter>--allow-file-access</Parameter>
-        <Parameter>--allow-file-access-from-files</Parameter>
-        <Parameter>--disable-web-security</Parameter>
-      </CEFCommandLine>
-    </Resources>
+    <Extension Id="com.holy.expressor.quickpanel">
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./quickpanel.html</MainPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--enable-devtools</Parameter>
+            <Parameter>--remote-debugging-port=6905</Parameter>
+            <Parameter>--allow-file-access</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+            <Parameter>--disable-web-security</Parameter>
+          </CEFCommandLine>
+        </Resources>
 
-    <!-- 🧠 Force AE to create and bind the panel at startup -->
-    <Lifecycle>
-      <AutoVisible>true</AutoVisible>
-    </Lifecycle>
+        <!-- 🧠 Force AE to create and bind the panel at startup -->
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
 
-    <!-- 🧩 Use ModalDialog for a reliable compositor attach test -->
-    <UI>
-      <Type>Panel</Type>
-<Menu>Holy Quick Panel</Menu>
+        <!-- 🧩 Use ModalDialog for a reliable compositor attach test -->
+        <UI>
+          <Type>Panel</Type>
+          <Menu>Holy Quick Panel</Menu>
 
-      <Geometry>
-        <Size>
-          <Width>320</Width>
-          <Height>150</Height>
-        </Size>
+          <Geometry>
+            <Size>
+              <Width>320</Width>
+              <Height>150</Height>
+            </Size>
             <MinSize>
-      <Width>150</Width>
-      <Height>100</Height>
-    </MinSize>
-    <MaxSize>
-      <Width>200</Width>
-      <Height>200</Height>
-    </MaxSize>
-      </Geometry>
-    </UI>
-  </DispatchInfo>
-</Extension>
+              <Width>150</Width>
+              <Height>100</Height>
+            </MinSize>
+            <MaxSize>
+              <Width>200</Width>
+              <Height>200</Height>
+            </MaxSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+
+    <!-- ====================================================== -->
+    <!-- 🔵 Holy Expressor Color Picker (Modeless Window) -->
+    <!-- ====================================================== -->
+    <Extension Id="com.holy.expressor.colorpicker">
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./colorpicker.html</MainPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--enable-devtools</Parameter>
+            <Parameter>--remote-debugging-port=6910</Parameter>
+            <Parameter>--allow-file-access</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+            <Parameter>--disable-web-security</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>false</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Modeless</Type>
+          <Menu>Holy Expressor Color Picker</Menu>
+          <Geometry>
+            <Size>
+              <Width>300</Width>
+              <Height>240</Height>
+            </Size>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
 
   </DispatchInfoList>
 </ExtensionManifest>
