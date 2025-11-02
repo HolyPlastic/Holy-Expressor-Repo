@@ -11,6 +11,9 @@ ____________________ -------->
   <!-- 🧩 CSS FIRST: ensures styled paint before JS -->
   <link rel="stylesheet" href="css/styles.css" />
 
+  <!-- ⚙️ Core CEP dependencies (MUST stay synchronous) -->
+  <script src="./js/libs/CSInterface.js"></script>
+
 <!-- #region 🎨⚙️⚙️ CSS STYLE FUNCTION ===================================------------------>
 
 <script>
@@ -81,8 +84,6 @@ ____________________ -------->
 
   
 
-  <!-- ⚙️ Core CEP dependencies (MUST stay synchronous) -->
-  <script src="js/libs/CSInterface.js"></script>
   <script src="js/json2.js"></script>
 
   <!-- 🧠 Core editor bundle (CodeMirror) -->
@@ -475,9 +476,7 @@ ____________________ -------->
   'use strict';
 
   const button = document.getElementById('openThemePicker');
-  if (!button) {
-    return;
-  }
+  if (!button) return;
 
   button.addEventListener('click', (event) => {
     event.preventDefault();
