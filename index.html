@@ -471,30 +471,25 @@ ____________________ -------->
   </div> <!-- end appRoot -->
 
 
- <script>
-(function initThemePickerPanel() {
+<script>
+document.addEventListener('DOMContentLoaded', () => {
   'use strict';
-
   const button = document.getElementById('openThemePicker');
   if (!button) return;
 
   button.addEventListener('click', (event) => {
     event.preventDefault();
     try {
-      const cs = new CSInterface();
-      cs.openExtension('com.holy.expressor.colorpicker', 'Modeless');
+const cs = new CSInterface();
+cs.openExtension('com.holy.expressor.colorpicker');
+
     } catch (err) {
       console.warn('Failed to open color picker panel', err);
     }
   });
-})();
+});
 </script>
 
- <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    console.log('Holy Expressor Base Path →', window.location.href);
-  });
-</script>
 
 </body>
 

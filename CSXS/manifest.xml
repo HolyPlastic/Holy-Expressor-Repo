@@ -28,6 +28,10 @@
   </ExecutionEnvironment>
 
   <DispatchInfoList>
+    
+    
+    
+    
     <Extension Id="com.holy.expressor.panel">
       <DispatchInfo>
         <Resources>
@@ -61,6 +65,12 @@
         </UI>
       </DispatchInfo>
     </Extension>
+   
+   
+   
+   
+   
+   
     <Extension Id="com.holy.expressor.log">
       <DispatchInfo>
         <Resources>
@@ -77,7 +87,7 @@
         </Resources>
 
         <Lifecycle>
-          <AutoVisible>false</AutoVisible>
+          <AutoVisible>true</AutoVisible>
         </Lifecycle>
 
         <UI>
@@ -93,6 +103,11 @@
         </UI>
       </DispatchInfo>
     </Extension>
+    
+    
+    
+    
+    
     <Extension Id="com.holy.expressor.quickpanel">
       <DispatchInfo>
         <Resources>
@@ -152,7 +167,7 @@
           </CEFCommandLine>
         </Resources>
         <Lifecycle>
-          <AutoVisible>false</AutoVisible>
+          <AutoVisible>true</AutoVisible>
         </Lifecycle>
         <UI>
           <Type>Modeless</Type>
