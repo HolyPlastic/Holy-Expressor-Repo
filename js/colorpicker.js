@@ -299,6 +299,14 @@ function broadcastHexToMain(hex) {
     applyBtn.addEventListener('click', function () {
       var normalized = normalizeHex(input.value);
       if (normalized) {
+        // persist in localStorage so picker remembers last choice
+        try {
+          localStorage.setItem('he_themeColor', normalized);
+          console.log('[ColorPicker] Saved theme color to localStorage', normalized);
+        } catch (errLocal) {
+          console.warn('[ColorPicker] Failed to persist theme color locally', errLocal);
+        }
+
         // local preview + CSEvent broadcast already happen inside applyColor
         applyColor(normalized);
 
