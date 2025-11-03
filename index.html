@@ -105,6 +105,33 @@ ____________________ -------->
   }
 })();
 </script>
+<!-- V1.0 – Persist color to localStorage -->
+<script>
+/* 📍01 – apply saved theme color on startup if present */
+(function APPLY_SAVED_THEME_COLOR() {
+  try {
+    var savedColor;
+    try {
+      var cs = new CSInterface();
+      savedColor = cs.getPersistentData('he_themeColor');
+    } catch (errCS) {
+      console.warn('[Main] Persistent store unavailable, fallback to localStorage', errCS);
+      savedColor = localStorage.getItem('he_themeColor');
+    }
+    if (savedColor) {
+      var root = document.documentElement;
+      root.style.setProperty('--G-color-1', savedColor);
+      if (typeof window.updateDerivedVariables === 'function') {
+        // 📍02 – ensure derived vars get recalculated if function exists
+        window.updateDerivedVariables(root, savedColor);
+      }
+      console.log('[Main] Applied saved theme color', savedColor);
+    }
+  } catch (err) {
+    console.warn('[Main] Failed to apply saved theme color', err);
+  }
+})();
+</script>
 <!----_-_-_-_-_-_-_---------------------------------------\--\--->
 <!-- #endregion ^^^ end🎨⚙️⚙️ ^^^ -->
 
@@ -118,17 +145,31 @@ ____________________ -------->
       return;
     }
     cs.addEventListener('holy.color.change', function(e) {
+      // 📍03 – event handler snippet to apply color and persist
       try {
-var data = (typeof e.data === 'string') ? JSON.parse(e.data || '{}') : e.data;
-
+        var data = (typeof e.data === 'string') ? JSON.parse(e.data || '{}') : e.data;
         if (data && typeof data.hex === 'string') {
           var root = document.documentElement;
           root.style.setProperty('--G-color-1', data.hex);
+
+          // persist selection via CEP persistent data (fallback to localStorage)
+          try {
+            cs.setPersistentData('he_themeColor', data.hex);
+            console.log('[Main] Saved theme color via CSInterface persistent data', data.hex);
+          } catch (errCS) {
+            console.warn('[Main] Failed to persist theme color via CSInterface', errCS);
+            try {
+              localStorage.setItem('he_themeColor', data.hex);
+            } catch (errLocal) {
+              console.warn('[Main] Fallback persist via localStorage failed', errLocal);
+            }
+          }
+
           if (typeof window.updateDerivedVariables === 'function') {
             window.updateDerivedVariables(root, data.hex);
           }
         }
-      } catch(err) {
+      } catch (err) {
         console.warn('[Main] Failed to apply color event', err);
       }
     });
@@ -609,13 +650,22 @@ window.__HolyExpressorColorChange = function(hex) {
   try {
     var cs = new CSInterface();
     var handler = function(evt) {
+      // 📍03 – event handler snippet to apply color and persist
       try {
-            console.log('[HolyExpressor] Incoming evt.data =', evt.data);
-var data = (typeof evt.data === 'string') ? JSON.parse(evt.data || '{}') : evt.data;
-
+        console.log('[HolyExpressor] Incoming evt.data =', evt.data);
+        var data = (typeof evt.data === 'string') ? JSON.parse(evt.data || '{}') : evt.data;
         if (data && typeof data.hex === 'string') {
           var root = document.documentElement;
           root.style.setProperty('--G-color-1', data.hex);
+
+          // persist selection to localStorage so it survives reloads
+          try {
+            localStorage.setItem('he_themeColor', data.hex);
+            console.log('[Main] Saved theme color to localStorage', data.hex);
+          } catch (errLocal) {
+            console.warn('[Main] Failed to persist theme color', errLocal);
+          }
+
           if (typeof window.updateDerivedVariables === 'function') {
             window.updateDerivedVariables(root, data.hex);
           }
