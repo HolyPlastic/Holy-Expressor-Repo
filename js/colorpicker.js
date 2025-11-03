@@ -166,6 +166,21 @@
       root.style.setProperty('--G-color-1-L', hsl.l + '%');
     }
 
+    // V7.3 broadcast color to main panel
+    function broadcastHexToMain(hex) {
+      try {
+        if (typeof CSInterface !== 'function') {
+          throw new Error('CSInterface unavailable');
+        }
+        var cs = new CSInterface();
+        var evt = new CSEvent('holy.color.change', 'APPLICATION');
+        evt.data = JSON.stringify({ hex: hex });
+        cs.dispatchEvent(evt);
+      } catch (err) {
+        console.warn('[ColorPicker] Failed to dispatch color event', err);
+      }
+    }
+
     function applyColor(hex) {
       var normalized = normalizeHex(hex);
       if (!normalized) {
@@ -177,6 +192,10 @@
       }
       localRoot.style.setProperty('--G-color-1', normalized);
       updateDerivedVariables(localRoot, normalized);
+
+      // send to main panel (authoritative theme owner)
+      broadcastHexToMain(normalized);
+
       input.value = normalized;
     }
 
@@ -317,10 +336,6 @@
 
     init();
     buildCanvas();
-    // V2 – correct hue gradient inline fallback
-    hueSlider.style.background = 'linear-gradient(90deg,' +
-      'hsl(0,100%,50%), hsl(60,100%,50%), hsl(120,100%,50%), ' +
-      'hsl(180,100%,50%), hsl(240,100%,50%), hsl(300,100%,50%), hsl(360,100%,50%))';
   }
 
   if (document.readyState === 'loading') {

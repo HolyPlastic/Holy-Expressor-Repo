@@ -59,19 +59,46 @@ ____________________ -------->
       };
     }
 
+    function assignDerivedVariables(rootEl, explicitHex) {
+      if (!rootEl || !rootEl.style) {
+        return;
+      }
+      var nextHex = typeof explicitHex === 'string' ? explicitHex.trim() : '';
+      if (!nextHex) {
+        nextHex = getComputedStyle(rootEl).getPropertyValue('--G-color-1').trim();
+      }
+      if (!nextHex) {
+        return;
+      }
+      if (nextHex[0] !== '#') {
+        nextHex = '#' + nextHex;
+      }
+      if (!/^#?[0-9a-fA-F]{6}$/.test(nextHex)) {
+        return;
+      }
+      var rgb = hexToRgb(nextHex);
+      if (!rgb) {
+        return;
+      }
+      var r = rgb.r;
+      var g = rgb.g;
+      var b = rgb.b;
+      if (![r, g, b].every(function (channel) { return typeof channel === 'number' && isFinite(channel); })) {
+        return;
+      }
+      var hsl = rgbToHsl(r, g, b);
+      rootEl.style.setProperty('--G-colour-1-RGB', r + ', ' + g + ', ' + b);
+      rootEl.style.setProperty('--G-color-1-H', hsl.h);
+      rootEl.style.setProperty('--G-color-1-S', hsl.s + '%');
+      rootEl.style.setProperty('--G-color-1-L', hsl.l + '%');
+    }
+
+    window.updateDerivedVariables = window.updateDerivedVariables || assignDerivedVariables;
+
     // 🧮 Read CSS var, convert, and reassign
     const root = document.documentElement;
     const hex = getComputedStyle(root).getPropertyValue('--G-color-1').trim();
-    const { r, g, b } = hexToRgb(hex);
-    const { h, s, l } = rgbToHsl(r, g, b);
-
-    // ✅ Preserve existing RGB pipeline (for opacity borders etc.)
-    root.style.setProperty('--G-colour-1-RGB', `${r}, ${g}, ${b}`);
-
-    // ✅ Add new HSL variables for CSS-controlled modifiers
-    root.style.setProperty('--G-color-1-H', h);
-    root.style.setProperty('--G-color-1-S', s + '%');
-    root.style.setProperty('--G-color-1-L', l + '%');
+    assignDerivedVariables(root, hex);
 
   } catch (e) {
     console.warn('cy_styleBoot failed', e);
@@ -80,6 +107,32 @@ ____________________ -------->
 </script>
 <!----_-_-_-_-_-_-_---------------------------------------\--\--->
 <!-- #endregion ^^^ end🎨⚙️⚙️ ^^^ -->
+
+<script>
+  (function(){
+    var cs;
+    try {
+      cs = new CSInterface();
+    } catch (err) {
+      console.warn('[Main] CSInterface unavailable for color sync', err);
+      return;
+    }
+    cs.addEventListener('holy.color.change', function(e) {
+      try {
+        var data = JSON.parse(e.data || '{}');
+        if (data && typeof data.hex === 'string') {
+          var root = document.documentElement;
+          root.style.setProperty('--G-color-1', data.hex);
+          if (typeof window.updateDerivedVariables === 'function') {
+            window.updateDerivedVariables(root, data.hex);
+          }
+        }
+      } catch(err) {
+        console.warn('[Main] Failed to apply color event', err);
+      }
+    });
+  })();
+</script>
 
 
 
