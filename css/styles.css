@@ -935,6 +935,7 @@ textarea { width: 100%; }
   flex-direction: column;
   gap: 4px;
   background: transparent !important;
+  position: relative; /* anchor overlay controls to the panel */
 
   box-sizing: border-box;
   overflow: visible; /* allow overlay buttons to float over the panel edge */
@@ -1019,6 +1020,26 @@ color: var(--G-color-1);
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.express-editor-top-overlay {
+  position: absolute;
+  right: 12px;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border-radius: 999px;
+  background: none;
+  border: none;
+  transform: translateY(-50%) translateX(17px);
+  pointer-events: none; /* allow editor interactions beneath the wrapper */
+  z-index: 6;
+}
+
+.express-editor-top-overlay > * {
+  pointer-events: auto;
 }
 
 /* Overlay button group that floats on the panel border */
