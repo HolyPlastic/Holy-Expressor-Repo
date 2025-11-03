@@ -1015,12 +1015,6 @@ textarea { width: 100%; }
 color: var(--G-color-1);
 }  
 
-#expressArea.rewrite-active .express-panel-header,
-#expressArea.rewrite-active #codeEditor,
-#expressArea.rewrite-active .express-editor-overlay {
-  display: none;
-}
-
 .express-panel-actions {
   display: flex;
   align-items: center;

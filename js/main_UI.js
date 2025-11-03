@@ -143,12 +143,19 @@ ensureHostReady(() => {
       var tabSearchBtn = document.getElementById("tab-search");
       var btnExpressMode = tabExpressBtn;
       var btnRewriteMode = tabSearchBtn;
+      var modeSwitchBar = document.querySelector(".modeSwitchBar");
 
       function applyModeState(isExpress) {
         if (!expressArea) return;
 
         expressArea.classList.toggle("express-active", isExpress);
         expressArea.classList.toggle("rewrite-active", !isExpress);
+        expressArea.style.display = isExpress ? "" : "none";
+
+        if (modeSwitchBar) {
+          modeSwitchBar.classList.toggle("express-active", isExpress);
+          modeSwitchBar.classList.toggle("rewrite-active", !isExpress);
+        }
 
         if (btnExpressMode) {
           btnExpressMode.classList.toggle("active", isExpress);
