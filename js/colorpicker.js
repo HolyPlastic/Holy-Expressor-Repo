@@ -299,12 +299,17 @@ function broadcastHexToMain(hex) {
     applyBtn.addEventListener('click', function () {
       var normalized = normalizeHex(input.value);
       if (normalized) {
-        // persist in localStorage so picker remembers last choice
         try {
-          localStorage.setItem('he_themeColor', normalized);
-          console.log('[ColorPicker] Saved theme color to localStorage', normalized);
-        } catch (errLocal) {
-          console.warn('[ColorPicker] Failed to persist theme color locally', errLocal);
+          var cs = new CSInterface();
+          cs.setPersistentData('he_themeColor', normalized);
+          console.log('[ColorPicker] Saved theme color via CSInterface persistent data', normalized);
+        } catch (errCS) {
+          console.warn('[ColorPicker] Failed to persist theme color via CSInterface', errCS);
+          try {
+            localStorage.setItem('he_themeColor', normalized);
+          } catch (errLocal) {
+            console.warn('[ColorPicker] Fallback persist via localStorage failed', errLocal);
+          }
         }
 
         // local preview + CSEvent broadcast already happen inside applyColor
@@ -347,6 +352,24 @@ function broadcastHexToMain(hex) {
     }
 
     function init() {
+      var persistedHex = null;
+      try {
+        var cs = new CSInterface();
+        persistedHex = cs.getPersistentData('he_themeColor');
+        if (persistedHex) {
+          var normalizedPersisted = normalizeHex(persistedHex);
+          if (normalizedPersisted) {
+            initialHex = normalizedPersisted;
+            input.value = normalizedPersisted;
+            syncStateFromHex(normalizedPersisted);
+            console.log('[ColorPicker] Loaded persisted color', normalizedPersisted);
+            return;
+          }
+        }
+      } catch (errPersist) {
+        console.warn('[ColorPicker] Failed to load persisted color', errPersist);
+      }
+
       var hex = readInitialHex();
       input.value = hex;
       syncStateFromHex(hex);

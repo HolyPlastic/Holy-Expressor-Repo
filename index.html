@@ -110,7 +110,14 @@ ____________________ -------->
 /* 📍01 – apply saved theme color on startup if present */
 (function APPLY_SAVED_THEME_COLOR() {
   try {
-    var savedColor = localStorage.getItem('he_themeColor');
+    var savedColor;
+    try {
+      var cs = new CSInterface();
+      savedColor = cs.getPersistentData('he_themeColor');
+    } catch (errCS) {
+      console.warn('[Main] Persistent store unavailable, fallback to localStorage', errCS);
+      savedColor = localStorage.getItem('he_themeColor');
+    }
     if (savedColor) {
       var root = document.documentElement;
       root.style.setProperty('--G-color-1', savedColor);
@@ -145,12 +152,17 @@ ____________________ -------->
           var root = document.documentElement;
           root.style.setProperty('--G-color-1', data.hex);
 
-          // persist selection to localStorage so it survives reloads
+          // persist selection via CEP persistent data (fallback to localStorage)
           try {
-            localStorage.setItem('he_themeColor', data.hex);
-            console.log('[Main] Saved theme color to localStorage', data.hex);
-          } catch (errLocal) {
-            console.warn('[Main] Failed to persist theme color', errLocal);
+            cs.setPersistentData('he_themeColor', data.hex);
+            console.log('[Main] Saved theme color via CSInterface persistent data', data.hex);
+          } catch (errCS) {
+            console.warn('[Main] Failed to persist theme color via CSInterface', errCS);
+            try {
+              localStorage.setItem('he_themeColor', data.hex);
+            } catch (errLocal) {
+              console.warn('[Main] Fallback persist via localStorage failed', errLocal);
+            }
           }
 
           if (typeof window.updateDerivedVariables === 'function') {
