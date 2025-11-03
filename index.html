@@ -276,9 +276,19 @@ ____________________ -------->
 </div>
 
 <!-- Tab content wrapper that holds both panels -->
-<div id="mainTabContent" class="tab-content">
+  <div id="mainTabContent" class="tab-content">
   <!-- Express panel -->
-  <div id="expressArea" class="panel" role="tabpanel" aria-labelledby="tab-express">
+  <div id="expressArea" class="panel express-active" role="tabpanel" aria-labelledby="tab-express">
+    <div class="modeSwitchBar f18-c" role="group" aria-label="Choose between Express and Rewrite modes">
+      <button id="btnExpress" class="mode-btn" type="button" aria-pressed="true">Express</button>
+      <button id="btnModeSwitch" class="mode-switch-btn" type="button" aria-label="Switch to rewrite mode" title="Switch to rewrite mode">
+        <svg class="mode-switch-svg" width="18" height="12" viewBox="0 0 8.48 5.29" aria-hidden="true" focusable="false">
+          <g class="diamond-right"><polygon points="4.24 0 8.48 2.74 4.23 5.29 4.24 0"/></g>
+          <g class="diamond-left"><polygon points="4.24 0 0 2.74 4.25 5.29 4.24 0"/></g>
+        </svg>
+      </button>
+      <button id="btnRewrite" class="mode-btn" type="button" aria-pressed="false">Rewrite</button>
+    </div>
     <div class="express-panel-header">
       <span class="heading-1 f18">Express</span>
       <div class="express-panel-actions">

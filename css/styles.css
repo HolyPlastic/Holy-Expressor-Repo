@@ -953,6 +953,73 @@ textarea { width: 100%; }
   margin-bottom: 4px;
 }
 
+/* Mode switch buttons (Express | Rewrite) */
+.modeSwitchBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  user-select: none;
+}
+
+.modeSwitchBar button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: var(--G-color-1-offwhite);
+  cursor: pointer;
+  letter-spacing: inherit;
+  transition: color 0.2s ease;
+}
+
+.modeSwitchBar .mode-switch-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modeSwitchBar .mode-switch-svg {
+  width: 14px;
+  height: auto;
+  display: block;
+}
+
+.modeSwitchBar .diamond-left,
+.modeSwitchBar .diamond-right {
+  fill: currentColor;
+}
+
+.modeSwitchBar .mode-btn.active,
+#expressArea.express-active #btnExpress,
+#expressArea.rewrite-active #btnRewrite {
+  color: var(--G-color-1);
+}
+
+#expressArea.express-active .diamond-left {
+  color: var(--G-color-1-offwhite);
+}
+
+#expressArea.express-active .diamond-right {
+  color: var(--G-color-1);
+}
+
+#expressArea.rewrite-active .diamond-left {
+  color: var(--G-color-1);
+}
+
+#expressArea.rewrite-active .diamond-right {
+  color: var(--G-color-1-offwhite);
+}
+
+#expressArea.rewrite-active .express-panel-header,
+#expressArea.rewrite-active #codeEditor,
+#expressArea.rewrite-active .express-editor-overlay {
+  display: none;
+}
+
 .express-panel-actions {
   display: flex;
   align-items: center;
