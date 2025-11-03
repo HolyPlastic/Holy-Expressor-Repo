@@ -928,15 +928,31 @@ function cy_deleteExpressions() {
           var entry = entries[ei];
           if (!entry || !entry.path) continue;
 
-          var prop = null;
-          try { prop = he_P_EX_findPropertyByPath(comp, entry.path); }
-          catch (_) { prop = null; }
-          if (!prop) {
+          var propList = [];
+          try {
+            if (typeof he_P_EX_findPropertiesByPath === "function") {
+              propList = he_P_EX_findPropertiesByPath(comp, entry.path) || [];
+            } else {
+              propList = he_U_EX_findPropertiesByPath(comp, entry.path) || [];
+            }
+          } catch (_) {
+            propList = [];
+          }
+
+          if (!propList || !propList.length) {
             result.errors.push({ path: entry.path, err: "Property not found" });
             continue;
           }
 
-          disableExpressionOnProperty(prop, result, layerMap);
+          for (var pi = 0; pi < propList.length; pi++) {
+            var prop = propList[pi];
+            if (!prop) continue;
+
+            var clearedProp = disableExpressionOnProperty(prop, result, layerMap);
+            if (!clearedProp) {
+              trackLayerFromProperty(prop, layerMap);
+            }
+          }
         }
 
         trackLayer(layer, layerMap);
