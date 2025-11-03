@@ -268,11 +268,6 @@ ____________________ -------->
 <!-- #region 🖥️🖥️🖥️ EXPRESS ===================================------------------
 ____________________ -------->
 
-
-<!-- Tab content wrapper that holds both panels -->
-  <div id="mainTabContent" class="tab-content">
-  <!-- Express panel -->
-  <div id="expressArea" class="panel express-active" role="tabpanel" aria-labelledby="tab-express">
     <div class="modeSwitchBar f18-c heading-1" role="group" aria-label="Choose between Express and Rewrite modes">
       <button id="tab-express" class="mode-btn" type="button" aria-pressed="true" data-tab="expressArea" aria-controls="expressArea" role="tab" aria-selected="true">EXPRESS</button>
       <button id="btnModeSwitch" class="mode-switch-btn" type="button" aria-label="Switch to rewrite mode" title="Switch to rewrite mode">
@@ -283,6 +278,11 @@ ____________________ -------->
       </button>
       <button id="tab-search" class="mode-btn" type="button" aria-pressed="false" data-tab="searchReplacePanel" aria-controls="searchReplacePanel" role="tab" aria-selected="false">REWRITE</button>
     </div>
+<!-- Tab content wrapper that holds both panels -->
+  <div id="mainTabContent" class="tab-content">
+  <!-- Express panel -->
+  <div id="expressArea" class="panel express-active" role="tabpanel" aria-labelledby="tab-express">
+
     <div class="express-panel-header">
       <span class="heading-1 f18">Express</span>
       <div class="express-panel-actions">

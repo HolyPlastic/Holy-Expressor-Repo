@@ -999,19 +999,19 @@ textarea { width: 100%; }
   color: var(--G-color-1);
 }
 
-#expressArea.express-active .diamond-left {
+.express-active .diamond-left {
   color: var(--G-color-1);
 }
 
-#expressArea.express-active .diamond-right {
+.express-active .diamond-right {
   color: var(--G-grey-1);
 }
 
-#expressArea.rewrite-active .diamond-left {
+.rewrite-active .diamond-left {
   color: var(--G-grey-1);
 }
 
-#expressArea.rewrite-active .diamond-right {
+.rewrite-active .diamond-right {
 color: var(--G-color-1);
 }  
 
