@@ -294,11 +294,21 @@
       input.value = normalizeHex(input.value) || initialHex;
     });
 
-    // V9.1 Apply button actually applies the chosen color
+    // V10.2 Ensure Apply applies the color and broadcasts to main panel
     applyBtn.addEventListener('click', function () {
       var normalized = normalizeHex(input.value);
       if (normalized) {
+        // local preview + CSEvent broadcast already happen inside applyColor
         applyColor(normalized);
+
+        // Fallback path: call main panel directly if available
+        try {
+          if (window.opener && !window.opener.closed && typeof window.opener.__HolyExpressorColorChange === 'function') {
+            window.opener.__HolyExpressorColorChange(normalized);
+          }
+        } catch (e) {
+          console.warn('[ColorPicker] opener fallback failed', e);
+        }
       }
       window.close();
     });
