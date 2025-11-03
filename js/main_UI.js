@@ -147,8 +147,15 @@ ensureHostReady(() => {
       function applyModeState(isExpress) {
         if (!expressArea) return;
 
-        expressArea.classList.toggle("express-active", isExpress);
-        expressArea.classList.toggle("rewrite-active", !isExpress);
+expressArea.classList.toggle("express-active", isExpress);
+expressArea.classList.toggle("rewrite-active", !isExpress);
+
+const modeSwitchBar = document.querySelector(".modeSwitchBar");
+if (modeSwitchBar) {
+  modeSwitchBar.classList.toggle("express-active", isExpress);
+  modeSwitchBar.classList.toggle("rewrite-active", !isExpress);
+}
+
 
         if (btnExpressMode) {
           btnExpressMode.classList.toggle("active", isExpress);
