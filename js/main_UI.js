@@ -132,18 +132,17 @@ ensureHostReady(() => {
       });
     }
 
-    var tabBar = document.getElementById("mainTabBar");
     var tabContent = document.getElementById("mainTabContent");
-    if (tabBar && tabContent) {
-      var tabButtons = tabBar.querySelectorAll("[data-tab]");
+    var tabButtons = document.querySelectorAll(".modeSwitchBar [data-tab]");
+    if (tabContent && tabButtons.length) {
       var tabPanels = tabContent.querySelectorAll(".panel");
       var expressArea = document.getElementById("expressArea");
       var searchPanel = document.getElementById("searchReplacePanel");
-      var btnExpressMode = document.getElementById("btnExpress");
-      var btnRewriteMode = document.getElementById("btnRewrite");
       var btnModeSwitch = document.getElementById("btnModeSwitch");
       var tabExpressBtn = document.getElementById("tab-express");
       var tabSearchBtn = document.getElementById("tab-search");
+      var btnExpressMode = tabExpressBtn;
+      var btnRewriteMode = tabSearchBtn;
 
       function applyModeState(isExpress) {
         if (!expressArea) return;
