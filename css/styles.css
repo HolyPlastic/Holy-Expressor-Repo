@@ -1650,6 +1650,17 @@ transform: translateX(18px);
 /* ==================================================
    Discreet buttons (text or symbol style)
    ================================================== */
+button.btn-discreet {
+  background: none;
+  border: none;
+
+
+
+  cursor: pointer;
+  transition: color 0.2s ease, box-shadow 0.2s ease;
+}
+
+
 button.btn-discreet:focus-visible {
   box-shadow: 0 0 0 2px rgba(var(--G-colour-1-RGB), 0.35);
 }
