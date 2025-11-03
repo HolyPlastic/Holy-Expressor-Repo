@@ -2249,39 +2249,33 @@ button.target-btn { border: 2px solid #ff7415; }
   gap: 8px;
 }
 
-.holy-color-modal .color-input {
-  width: 100%;
-  text-align: center;
-  background: #111;
-  border: 1px solid #333;
-  color: #fff;
-  border-radius: 4px;
-  padding: 6px 8px;
-  text-transform: uppercase;
+.color-input {
+    width: 100%;
+    text-align: center;
+    background: var(--G-color-1-mid);
+    border: 2px solid var(--G-color-1)!important;
+    color: var(--G-color-1);
+    border-radius: 4px;
+    padding: 6px 8px;
+    text-transform: uppercase;
 }
 
 .holy-color-picker .color-area {
   width: 100%;
   height: auto;
   border-radius: 6px;
-  border: 1px solid var(--G-colour-1-opac-30);
+
+    border: 2px solid var(--G-color-1);
   cursor: crosshair;
   background: #222;
   touch-action: none;
 }
 
-
-/* V9.5 Hue slider — single rainbow track only */
+/* 🎨 HUE SLIDER — fully CEP-compatible version */
 .hue-slider {
-  background: transparent;
-  accent-color: var(--G-color-1);
-  border-radius: 999px;
-  border: 1px solid var(--G-colour-1-opac-30);
-  height: 16px;
+  -webkit-appearance: none;
+  appearance: none;
   width: 100%;
-}
-.hue-slider::-webkit-slider-runnable-track,
-.hue-slider::-moz-range-track {
   height: 16px;
   border-radius: 999px;
   border: 1px solid var(--G-colour-1-opac-30);
@@ -2295,11 +2289,20 @@ button.target-btn { border: 2px solid #ff7415; }
     hsl(300, 100%, 50%),
     hsl(360, 100%, 50%)
   );
+  outline: none;
+  cursor: pointer;
+  margin: 0;
 }
 
-/* Thumb with white ring */
-.hue-slider::-webkit-slider-thumb,
-.hue-slider::-moz-range-thumb {
+/* CEP uses WebKit syntax for pseudo-elements */
+.hue-slider::-webkit-slider-runnable-track {
+  height: 16px;
+  border-radius: 999px;
+  border: 1px solid var(--G-colour-1-opac-30);
+  background: inherit; /* reuse main gradient */
+}
+
+.hue-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 18px;
@@ -2308,7 +2311,7 @@ button.target-btn { border: 2px solid #ff7415; }
   background: transparent;
   border: 2px solid white;
   box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.5);
-  margin-top: -1px;
+  margin-top: -1px; /* aligns thumb vertically */
 }
 
 .holy-color-picker .picker-actions {
