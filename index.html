@@ -481,7 +481,8 @@ document.addEventListener('DOMContentLoaded', () => {
     event.preventDefault();
     try {
 const cs = new CSInterface();
-cs.openExtension('com.holy.expressor.colorpicker');
+cs.requestOpenExtension('com.holy.expressor.colorpicker');
+
 
     } catch (err) {
       console.warn('Failed to open color picker panel', err);
