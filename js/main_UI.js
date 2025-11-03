@@ -137,6 +137,50 @@ ensureHostReady(() => {
     if (tabBar && tabContent) {
       var tabButtons = tabBar.querySelectorAll("[data-tab]");
       var tabPanels = tabContent.querySelectorAll(".panel");
+      var expressArea = document.getElementById("expressArea");
+      var searchPanel = document.getElementById("searchReplacePanel");
+      var btnExpressMode = document.getElementById("btnExpress");
+      var btnRewriteMode = document.getElementById("btnRewrite");
+      var btnModeSwitch = document.getElementById("btnModeSwitch");
+      var tabExpressBtn = document.getElementById("tab-express");
+      var tabSearchBtn = document.getElementById("tab-search");
+
+      function applyModeState(isExpress) {
+        if (!expressArea) return;
+
+        expressArea.classList.toggle("express-active", isExpress);
+        expressArea.classList.toggle("rewrite-active", !isExpress);
+
+        if (btnExpressMode) {
+          btnExpressMode.classList.toggle("active", isExpress);
+          btnExpressMode.setAttribute("aria-pressed", isExpress ? "true" : "false");
+        }
+
+        if (btnRewriteMode) {
+          btnRewriteMode.classList.toggle("active", !isExpress);
+          btnRewriteMode.setAttribute("aria-pressed", !isExpress ? "true" : "false");
+        }
+
+        if (btnModeSwitch) {
+          var switchLabel = isExpress ? "Switch to rewrite mode" : "Switch to express mode";
+          btnModeSwitch.setAttribute("aria-label", switchLabel);
+          btnModeSwitch.setAttribute("title", switchLabel);
+        }
+
+        if (tabExpressBtn) {
+          tabExpressBtn.classList.toggle("active", isExpress);
+          tabExpressBtn.setAttribute("aria-selected", isExpress ? "true" : "false");
+        }
+
+        if (tabSearchBtn) {
+          tabSearchBtn.classList.toggle("active", !isExpress);
+          tabSearchBtn.setAttribute("aria-selected", !isExpress ? "true" : "false");
+        }
+
+        if (searchPanel) {
+          searchPanel.setAttribute("aria-hidden", isExpress ? "true" : "false");
+        }
+      }
 
       function activateTab(targetId) {
         Array.prototype.forEach.call(tabButtons, function (btn) {
@@ -146,9 +190,36 @@ ensureHostReady(() => {
         });
 
         Array.prototype.forEach.call(tabPanels, function (panel) {
-          var isTarget = panel.id === targetId;
+          var panelId = panel.id;
+
+          if (panelId === "expressArea") {
+            panel.classList.remove("hidden");
+            return;
+          }
+
+          if (panelId === "searchReplacePanel") {
+            panel.classList.toggle("hidden", targetId !== "searchReplacePanel");
+            return;
+          }
+
+          var isTarget = panelId === targetId;
           panel.classList.toggle("hidden", !isTarget);
         });
+
+        if (targetId === "searchReplacePanel") {
+          if (searchPanel) {
+            searchPanel.classList.remove("hidden");
+          }
+          applyModeState(false);
+          return;
+        }
+
+        if (targetId === "expressArea") {
+          if (searchPanel) {
+            searchPanel.classList.add("hidden");
+          }
+          applyModeState(true);
+        }
       }
 
       Array.prototype.forEach.call(tabButtons, function (btn) {
@@ -158,6 +229,33 @@ ensureHostReady(() => {
           activateTab(target);
         });
       });
+
+      function setMode(mode) {
+        if (mode === "rewrite") {
+          activateTab("searchReplacePanel");
+        } else {
+          activateTab("expressArea");
+        }
+      }
+
+      if (btnExpressMode) {
+        btnExpressMode.addEventListener("click", function () {
+          setMode("express");
+        });
+      }
+
+      if (btnRewriteMode) {
+        btnRewriteMode.addEventListener("click", function () {
+          setMode("rewrite");
+        });
+      }
+
+      if (btnModeSwitch) {
+        btnModeSwitch.addEventListener("click", function () {
+          var isExpress = expressArea ? expressArea.classList.contains("express-active") : true;
+          setMode(isExpress ? "rewrite" : "express");
+        });
+      }
 
       activateTab("expressArea");
     }
