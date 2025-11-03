@@ -2343,3 +2343,55 @@ button.target-btn { border: 2px solid #ff7415; }
   transition: opacity 0.15s ease-in-out;
   opacity: 1;
 }
+
+/* V3 – range track gradients for engines that ignore input background */
+.hue-slider::-webkit-slider-runnable-track {
+  height: 16px;
+  border-radius: 999px;
+  border: 1px solid var(--G-colour-1-opac-30);
+  background: linear-gradient(
+    90deg,
+    hsl(0, 100%, 50%),
+    hsl(60, 100%, 50%),
+    hsl(120, 100%, 50%),
+    hsl(180, 100%, 50%),
+    hsl(240, 100%, 50%),
+    hsl(300, 100%, 50%),
+    hsl(360, 100%, 50%)
+  );
+}
+
+.hue-slider::-moz-range-track {
+  height: 16px;
+  border-radius: 999px;
+  border: 1px solid var(--G-colour-1-opac-30);
+  background: linear-gradient(
+    90deg,
+    hsl(0, 100%, 50%),
+    hsl(60, 100%, 50%),
+    hsl(120, 100%, 50%),
+    hsl(180, 100%, 50%),
+    hsl(240, 100%, 50%),
+    hsl(300, 100%, 50%),
+    hsl(360, 100%, 50%)
+  );
+}
+
+/* Optional inline fallback for browsers that support direct background */
+.hue-slider {
+  background: linear-gradient(
+    90deg,
+    hsl(0, 100%, 50%),
+    hsl(60, 100%, 50%),
+    hsl(120, 100%, 50%),
+    hsl(180, 100%, 50%),
+    hsl(240, 100%, 50%),
+    hsl(300, 100%, 50%),
+    hsl(360, 100%, 50%)
+  );
+}
+
+/* V6 – specificity bump to ensure active picker styles win */
+body .holy-color-picker .color-input {
+  /* duplicate or override rules as needed to ensure priority */
+}

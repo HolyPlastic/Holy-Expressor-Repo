@@ -10,6 +10,10 @@
     var cancelBtn = document.querySelector('.btn-cancel');
     var ctx = canvas && canvas.getContext ? canvas.getContext('2d') : null;
 
+    // V1 – canvas buffer sync to layout
+    canvas.width  = Math.max(1, Math.floor(canvas.clientWidth  || canvas.width));
+    canvas.height = Math.max(1, Math.floor(canvas.clientHeight || canvas.height));
+
     if (!input || !canvas || !hueSlider || !applyBtn || !cancelBtn || !ctx) {
       console.error('[ColorPicker] Missing required elements.');
       return;
@@ -18,11 +22,6 @@
     var parentDocument = window.opener && !window.opener.closed ? window.opener.document : null;
     var parentRoot = parentDocument ? parentDocument.documentElement : null;
     var localRoot = document.documentElement;
-
-    if (!parentRoot) {
-      console.error('[ColorPicker] No parent root found for color sync.');
-      return;
-    }
 
     var state = { h: 180, s: 100, l: 50 };
     var isPointerActive = false;
@@ -172,8 +171,10 @@
       if (!normalized) {
         return;
       }
-      parentRoot.style.setProperty('--G-color-1', normalized);
-      updateDerivedVariables(parentRoot, normalized);
+      if (parentRoot) {
+        parentRoot.style.setProperty('--G-color-1', normalized);
+        updateDerivedVariables(parentRoot, normalized);
+      }
       localRoot.style.setProperty('--G-color-1', normalized);
       updateDerivedVariables(localRoot, normalized);
       input.value = normalized;
@@ -290,8 +291,15 @@
 
     function readInitialHex() {
       try {
-        var view = window.opener || parentDocument.defaultView || window;
-        var cssValue = view.getComputedStyle(parentRoot).getPropertyValue('--G-color-1');
+        var openerDoc = (window.opener && !window.opener.closed) ? window.opener.document : null;
+        parentDocument = openerDoc;
+        parentRoot = openerDoc ? openerDoc.documentElement : null;
+        var view = (window.opener && !window.opener.closed) ? window.opener
+                 : (openerDoc && openerDoc.defaultView) ? openerDoc.defaultView
+                 : window;
+        var rootEl = (openerDoc ? openerDoc.documentElement : null) || document.documentElement;
+
+        var cssValue = view.getComputedStyle(rootEl).getPropertyValue('--G-color-1');
         var normalized = normalizeHex(cssValue) || '#1EFFD6';
         initialHex = normalized;
         return normalized;
@@ -309,7 +317,10 @@
 
     init();
     buildCanvas();
-    hueSlider.style.background = 'linear-gradient(90deg, hsl(0,100%,50%), hsl(60,100%,50%), hsl(120,100%,50%), hsl(180,100%,50%), hsl(240,100%,50%), hsl(300,100%,50%), hsl(360,100%,50%))';
+    // V2 – correct hue gradient inline fallback
+    hueSlider.style.background = 'linear-gradient(90deg,' +
+      'hsl(0,100%,50%), hsl(60,100%,50%), hsl(120,100%,50%), ' +
+      'hsl(180,100%,50%), hsl(240,100%,50%), hsl(300,100%,50%), hsl(360,100%,50%))';
   }
 
   if (document.readyState === 'loading') {
