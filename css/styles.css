@@ -2217,32 +2217,38 @@ button.target-btn { border: 2px solid #ff7415; }
   width: 100%;
   accent-color: var(--G-color-1);
   height: 16px;
-  background: linear-gradient(
-    90deg,
-    hsl(0, 100%, 50%),
-    hsl(60, 100%, 50%),
-    hsl(120, 100%, 50%),
-    hsl(180, 100%, 50%),
-    hsl(240, 100%, 50%),
-    hsl(300, 100%, 50%),
-    hsl(360, 100%, 50%)
-  );
   border-radius: 999px;
   border: 1px solid var(--G-colour-1-opac-30);
   outline: none;
 }
 
+/* V7.1 base input transparent so only the track paints */
+.hue-slider {
+  background: transparent;
+}
+
+/* V7.2 high-contrast white-ring thumb */
 .holy-color-picker .hue-slider::-webkit-slider-thumb,
-.holy-color-picker .hue-slider::-moz-range-thumb,
-.hue-slider::-webkit-slider-thumb,
-.hue-slider::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
+.hue-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  border: 2px solid #111;
-  background: #fff;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.45);
-  cursor: pointer;
+  background: transparent;
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.5);
+  margin-top: -1px;
+}
+
+.holy-color-picker .hue-slider::-moz-range-thumb,
+.hue-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: transparent;
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.5);
 }
 
 .holy-color-picker .picker-actions {
@@ -2256,21 +2262,19 @@ button.target-btn { border: 2px solid #ff7415; }
   flex: 1;
 }
 
-.holy-color-picker .btn-apply {
-  background: linear-gradient(180deg, var(--G-color-1-midlight2) 0%, var(--G-color-1-mid) 100%);
-  border-color: var(--G-colour-1-opac-50);
-  color: #041410;
-  font-weight: 600;
+.holy-color-picker .btn-apply,
+.holy-color-picker .btn-cancel {
+  border-radius: 8px;
+  border: 1px solid var(--G-colour-1-opac-30);
+  background-image: none;
+  background: var(--G-color-1);
+  color: #0a0a0a;
+  letter-spacing: 0.5px;
 }
 
-.holy-color-picker .btn-apply:hover {
-  background: linear-gradient(180deg, var(--G-color-1-midlight2) 0%, var(--G-color-1-midup) 100%);
-  border-color: var(--G-colour-1-opac-75);
-}
-
-.holy-color-modal .btn-apply:active {
-  background: linear-gradient(180deg, var(--G-color-1-mid) 0%, var(--G-color-1-dark-bg) 100%);
-  border-color: var(--G-colour-1-opac-50);
+.holy-color-picker .btn-cancel {
+  background: var(--G-color-1-deepdark-bg, #2b2b2b);
+  color: #ddd;
 }
 
 /* =============================
@@ -2379,16 +2383,7 @@ button.target-btn { border: 2px solid #ff7415; }
 
 /* Optional inline fallback for browsers that support direct background */
 .hue-slider {
-  background: linear-gradient(
-    90deg,
-    hsl(0, 100%, 50%),
-    hsl(60, 100%, 50%),
-    hsl(120, 100%, 50%),
-    hsl(180, 100%, 50%),
-    hsl(240, 100%, 50%),
-    hsl(300, 100%, 50%),
-    hsl(360, 100%, 50%)
-  );
+  background: transparent;
 }
 
 /* V6 – specificity bump to ensure active picker styles win */
