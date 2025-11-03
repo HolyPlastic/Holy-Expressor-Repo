@@ -579,14 +579,31 @@ cs.requestOpenExtension('com.holy.expressor.colorpicker');
 });
 </script>
 
+
+
 <script>
-(function connectColorSync(){
+/* V10.1 Global receiver for direct opener calls */
+window.__HolyExpressorColorChange = function(hex) {
+  try {
+    if (typeof hex !== 'string') return;
+    var root = document.documentElement;
+    root.style.setProperty('--G-color-1', hex);
+    if (typeof window.updateDerivedVariables === 'function') {
+      window.updateDerivedVariables(root, hex);
+    }
+    console.log('[HolyExpressor] Theme updated via opener call:', hex);
+  } catch (err) {
+    console.warn('[HolyExpressor] Failed in __HolyExpressorColorChange', err);
+  }
+};
+
+/* V10.1 CEP event listener, bound after everything is loaded */
+(function connectColorSyncOnce(){
   if (window.__holyColorSyncAttached__) return;
   window.__holyColorSyncAttached__ = true;
-
   try {
     var cs = new CSInterface();
-    var handler = function(evt){
+    var handler = function(evt) {
       try {
         var data = JSON.parse(evt.data || '{}');
         if (data && typeof data.hex === 'string') {
@@ -595,20 +612,21 @@ cs.requestOpenExtension('com.holy.expressor.colorpicker');
           if (typeof window.updateDerivedVariables === 'function') {
             window.updateDerivedVariables(root, data.hex);
           }
-          console.log('[HolyExpressor] Theme updated to', data.hex);
+          console.log('[HolyExpressor] Theme updated via CSEvent:', data.hex);
         }
-      } catch(err){
-        console.warn('[HolyExpressor] Failed to handle color change', err);
+      } catch (err) {
+        console.warn('[HolyExpressor] Failed to handle color change event', err);
       }
     };
-
     cs.addEventListener('holy.color.change', handler);
     console.log('[HolyExpressor] Color sync listener active');
-  } catch(err){
-    console.warn('[HolyExpressor] CSInterface unavailable', err);
+  } catch (err) {
+    console.warn('[HolyExpressor] CSInterface unavailable for color sync', err);
   }
 })();
 </script>
+
+
 </body>
 
 </html>
