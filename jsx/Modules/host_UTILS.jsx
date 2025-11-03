@@ -756,6 +756,243 @@ function he_U_EX_findPropertiesByPath(comp, pathString) {
   return resolved;
 }
 
+function cy_deleteExpressions() {
+  var result = {
+    ok: false,
+    selectionType: "",
+    clearedProperties: 0,
+    clearedLayers: 0,
+    layers: [],
+    errors: [],
+    hadErrors: false,
+    toastMessage: "",
+    consoleMessage: ""
+  };
+  var undoOpen = false;
+
+  function trackLayer(target, map) {
+    if (!target || !map) return;
+    var key = "";
+    try {
+      if (target.id) key = "id:" + String(target.id);
+    } catch (_) { key = ""; }
+    if (!key) {
+      var idx = "";
+      var nm = "";
+      try { idx = (typeof target.index === "number") ? String(target.index) : ""; } catch (_) { idx = ""; }
+      try { nm = target.name || ""; } catch (_) { nm = ""; }
+      if (idx || nm) {
+        key = idx + "::" + nm;
+      }
+    }
+    if (!key) {
+      var counter = map.__anonCount || 0;
+      key = "layer_" + counter;
+      map.__anonCount = counter + 1;
+    }
+    if (!map[key]) {
+      map[key] = target;
+    }
+  }
+
+  function trackLayerFromProperty(prop, map) {
+    if (!prop || !map) return;
+    var owner = null;
+    try { owner = prop.propertyGroup(prop.propertyDepth); }
+    catch (_) { owner = null; }
+    if (!owner) {
+      try { owner = prop.propertyGroup(prop.propertyDepth - 1); }
+      catch (_) { owner = null; }
+    }
+    if (owner) trackLayer(owner, map);
+  }
+
+  function disableExpressionOnProperty(prop, state, layerMap) {
+    if (!prop) return false;
+
+    var canExpr = false;
+    try { canExpr = (prop.canSetExpression === true); } catch (_) { canExpr = false; }
+    if (!canExpr) return false;
+
+    if (typeof he_U_PB_isPhantomLayerStyleProp === "function" && he_U_PB_isPhantomLayerStyleProp(prop)) return false;
+    if (typeof he_U_Ls_1_isLayerStyleProp === "function" &&
+        typeof he_U_Ls_2_styleEnabledForLeaf === "function" &&
+        he_U_Ls_1_isLayerStyleProp(prop) && !he_U_Ls_2_styleEnabledForLeaf(prop)) {
+      return false;
+    }
+    if (typeof he_U_VS_isTrulyHidden === "function" && he_U_VS_isTrulyHidden(prop)) return false;
+
+    var hadExpr = false;
+    var exprStr = "";
+    try { exprStr = prop.expression; } catch (_) { exprStr = ""; }
+    if (exprStr && String(exprStr).length) {
+      hadExpr = true;
+    }
+
+    var wasEnabled = false;
+    try { wasEnabled = (prop.expressionEnabled === true); } catch (_) { wasEnabled = false; }
+
+    try {
+      prop.expression = "";
+      try { prop.expressionEnabled = false; } catch (_) {}
+      if (state && (hadExpr || wasEnabled)) state.clearedProperties++;
+      if (layerMap && (hadExpr || wasEnabled)) trackLayerFromProperty(prop, layerMap);
+      return hadExpr || wasEnabled;
+    } catch (clearErr) {
+      var path = "";
+      if (typeof he_P_MM_getExprPath === "function") {
+        try { path = he_P_MM_getExprPath(prop); } catch (_) { path = ""; }
+      }
+      if (!path) {
+        try { path = prop.name || ""; } catch (_) { path = ""; }
+      }
+      if (state && state.errors) {
+        state.errors.push({ path: path, err: String(clearErr) });
+      }
+      return false;
+    }
+  }
+
+  try {
+    var comp = app.project && app.project.activeItem;
+    if (!comp || !(comp instanceof CompItem)) {
+      result.err = "No active comp";
+      return JSON.stringify(result);
+    }
+
+    var layerMap = {};
+    var selectedProps = null;
+    var selectedLayers = null;
+
+    try { selectedProps = comp.selectedProperties; } catch (_) { selectedProps = null; }
+    try { selectedLayers = comp.selectedLayers; } catch (_) { selectedLayers = null; }
+
+    if (selectedProps && selectedProps.length) {
+      result.selectionType = "properties";
+      app.beginUndoGroup("Holy Delete Expressions");
+      undoOpen = true;
+
+      for (var i = 0; i < selectedProps.length; i++) {
+        var candidate = selectedProps[i];
+        if (!candidate) continue;
+
+        var leaf = null;
+        try { leaf = he_U_findFirstLeaf(candidate, 0); }
+        catch (_) { leaf = null; }
+        if (!leaf) {
+          var type = 0;
+          try { type = candidate.propertyType; } catch (_) { type = 0; }
+          if (type === PropertyType.PROPERTY) leaf = candidate;
+        }
+        if (!leaf) continue;
+
+        var cleared = disableExpressionOnProperty(leaf, result, layerMap);
+        if (!cleared) {
+          trackLayerFromProperty(leaf, layerMap);
+        }
+      }
+    } else if (selectedLayers && selectedLayers.length) {
+      result.selectionType = "layers";
+      app.beginUndoGroup("Holy Delete Expressions");
+      undoOpen = true;
+
+      for (var li = 0; li < selectedLayers.length; li++) {
+        var layer = selectedLayers[li];
+        if (!layer) continue;
+
+        var payload = JSON.stringify({ layerIndex: layer.index, layerId: layer.id });
+        var raw = "";
+        try {
+          raw = he_EX_collectExpressionsForLayer(payload);
+        } catch (collectErr) {
+          result.errors.push({ layer: layer.name || ("#" + layer.index), err: String(collectErr) });
+          continue;
+        }
+
+        var report = {};
+        try { report = JSON.parse(raw || "{}"); }
+        catch (_) { report = { ok: false, err: "Parse error" }; }
+
+        if (!report || report.ok === false) {
+          result.errors.push({ layer: layer.name || ("#" + layer.index), err: (report && report.err) ? report.err : "Failed to scan expressions" });
+          continue;
+        }
+
+        var entries = report.entries || [];
+        if (!entries.length) {
+          trackLayer(layer, layerMap); // still note layer processed even if no expressions
+          continue;
+        }
+
+        for (var ei = 0; ei < entries.length; ei++) {
+          var entry = entries[ei];
+          if (!entry || !entry.path) continue;
+
+          var prop = null;
+          try { prop = he_P_EX_findPropertyByPath(comp, entry.path); }
+          catch (_) { prop = null; }
+          if (!prop) {
+            result.errors.push({ path: entry.path, err: "Property not found" });
+            continue;
+          }
+
+          disableExpressionOnProperty(prop, result, layerMap);
+        }
+
+        trackLayer(layer, layerMap);
+      }
+    } else {
+      result.err = "Select a property or layer";
+      return JSON.stringify(result);
+    }
+
+    var names = [];
+    for (var key in layerMap) {
+      if (!layerMap.hasOwnProperty(key) || key === "__anonCount") continue;
+      var layerRef = layerMap[key];
+      var nm = "";
+      try { nm = layerRef.name || ""; } catch (_) { nm = ""; }
+      if (!nm) nm = key;
+      names.push(nm);
+    }
+
+    result.layers = names;
+    result.clearedLayers = names.length;
+    result.hadErrors = result.errors.length > 0;
+
+    if (!result.clearedProperties && !result.hadErrors) {
+      if (result.selectionType === "properties") {
+        result.toastMessage = "No expressions found on selected properties";
+      } else {
+        result.toastMessage = "No expressions found on selected layers";
+      }
+    } else {
+      var scopeLabel = result.selectionType === "properties" ? "properties" : "layers";
+      result.toastMessage = "✅ Deleted expressions from selected " + scopeLabel;
+    }
+
+    result.consoleMessage = "[Holy.EXPRESS] Cleared " + result.clearedProperties + " expression(s) across " + result.clearedLayers + " layer(s).";
+    result.ok = true;
+
+    if (undoOpen) {
+      try { app.endUndoGroup(); }
+      catch (_) {}
+      undoOpen = false;
+    }
+
+    try { logToPanel(result.consoleMessage); } catch (_) {}
+  } catch (err) {
+    result.err = String(err);
+  } finally {
+    if (undoOpen) {
+      try { app.endUndoGroup(); }
+      catch (_) {}
+    }
+  }
+
+  return JSON.stringify(result);
+}
+
 try {
   logToPanel("✅ host_UTILS.jsx Loaded ⛓️");
 } catch (e) {}
