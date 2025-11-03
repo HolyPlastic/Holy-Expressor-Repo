@@ -1524,6 +1524,18 @@ button:disabled { opacity: 0.5; cursor: default; }
   vector-effect: non-scaling-stroke;
   stroke-width: var(--stroke-width);
 }
+/* ==================================================
+   🧩↗️↙️⬇️ Clear Button bespokes
+   ================================================== */
+
+
+
+#deleteExpressionsBtn{
+
+  transform:translateX(24px);
+    --size: 20px;
+}
+
 
 #bankSelectBtn {
   --size: 16px;
@@ -1557,6 +1569,9 @@ button:disabled { opacity: 0.5; cursor: default; }
 transform: translateX(18px);
   z-index: 10;
 }
+
+
+
 
 /* ==================================================
    Discreet buttons (text or symbol style)
