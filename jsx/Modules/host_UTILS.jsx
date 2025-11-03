@@ -795,6 +795,42 @@ function cy_deleteExpressions() {
     }
   }
 
+  function propertyBelongsToLayer(prop, layer) {
+    if (!prop || !layer) return false;
+
+    if (prop === layer) return true;
+
+    var depth = 0;
+    try { depth = prop.propertyDepth || 0; } catch (_) { depth = 0; }
+
+    for (var step = depth; step >= 1; step--) {
+      var owner = null;
+      try { owner = prop.propertyGroup(step); }
+      catch (_) { owner = null; }
+      if (!owner) continue;
+
+      if (owner === layer) return true;
+
+      try {
+        if (layer.id && owner.id && owner.id === layer.id) return true;
+      } catch (_) {}
+
+      try {
+        if (owner.index === layer.index && owner.name === layer.name) return true;
+      } catch (_) {}
+    }
+
+    var parent = null;
+    try { parent = prop.parentProperty; }
+    catch (_) { parent = null; }
+
+    if (parent && parent !== prop) {
+      return propertyBelongsToLayer(parent, layer);
+    }
+
+    return false;
+  }
+
   function trackLayerFromProperty(prop, map) {
     if (!prop || !map) return;
     var owner = null;
@@ -944,13 +980,29 @@ function cy_deleteExpressions() {
             continue;
           }
 
+          var scopedProps = [];
           for (var pi = 0; pi < propList.length; pi++) {
             var prop = propList[pi];
             if (!prop) continue;
 
-            var clearedProp = disableExpressionOnProperty(prop, result, layerMap);
+            if (!propertyBelongsToLayer(prop, layer)) {
+              continue;
+            }
+
+            scopedProps.push(prop);
+          }
+
+          if (!scopedProps.length) {
+            result.errors.push({ path: entry.path, err: "Property not found on selected layer" });
+            continue;
+          }
+
+          for (var spi = 0; spi < scopedProps.length; spi++) {
+            var scopedProp = scopedProps[spi];
+
+            var clearedProp = disableExpressionOnProperty(scopedProp, result, layerMap);
             if (!clearedProp) {
-              trackLayerFromProperty(prop, layerMap);
+              trackLayerFromProperty(scopedProp, layerMap);
             }
           }
         }
