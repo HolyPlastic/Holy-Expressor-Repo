@@ -263,6 +263,32 @@ function cy_safeApplyExpressionBatch(entries, opts) {
   });
 }
 
+function cy_deleteExpressions() {
+  return new Promise(function (resolve, reject) {
+    try {
+      cs.evalScript('cy_deleteExpressions()', function (raw) {
+        var result = {};
+        try {
+          result = JSON.parse(raw || "{}");
+        } catch (parseErr) {
+          reject({ err: parseErr, userMessage: "Failed to parse delete result" });
+          return;
+        }
+
+        if (!result || result.ok === false) {
+          var err = (result && result.err) ? result.err : "Delete expressions failed";
+          reject({ err: err, userMessage: err, details: result });
+          return;
+        }
+
+        resolve(result || {});
+      });
+    } catch (err) {
+      reject({ err: err, userMessage: "Delete expressions failed" });
+    }
+  });
+}
+
 function cy_replaceInExpressions(searchStr, replaceStr, options) {
   var search = (searchStr === undefined || searchStr === null) ? "" : String(searchStr);
   var replace = (replaceStr === undefined || replaceStr === null) ? "" : String(replaceStr);
@@ -435,6 +461,7 @@ Holy.EXPRESS = {
   initPresets: initPresets,
   cy_collectExprTargets: cy_collectExprTargets,
   cy_safeApplyExpression: cy_safeApplyExpressionBatch,
-  cy_replaceInExpressions: cy_replaceInExpressions
+  cy_replaceInExpressions: cy_replaceInExpressions,
+  cy_deleteExpressions: cy_deleteExpressions
 };
 })();

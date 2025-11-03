@@ -268,6 +268,50 @@ if (typeof Holy !== "object") Holy = {};
               applyBtn.addEventListener("click", onApply);
             }
 
+            var deleteExpressionsBtn = Holy.UI.DOM("#deleteExpressionsBtn");
+            if (deleteExpressionsBtn) {
+              deleteExpressionsBtn.addEventListener("click", function () {
+                if (!Holy || !Holy.EXPRESS || typeof Holy.EXPRESS.cy_deleteExpressions !== "function") {
+                  console.warn("[Holy.BUTTONS] Delete expressions helper unavailable");
+                  if (Holy.UI && typeof Holy.UI.toast === "function") {
+                    Holy.UI.toast("Delete expressions unavailable");
+                  }
+                  return;
+                }
+
+                deleteExpressionsBtn.disabled = true;
+                var release = function () {
+                  deleteExpressionsBtn.disabled = false;
+                };
+
+                Holy.EXPRESS.cy_deleteExpressions()
+                  .then(function (result) {
+                    release();
+
+                    if (result && result.consoleMessage) {
+                      console.log(result.consoleMessage);
+                    }
+
+                    if (result && result.hadErrors && Array.isArray(result.errors) && result.errors.length) {
+                      console.warn("[Holy.BUTTONS] Delete expressions completed with warnings", result.errors);
+                    }
+
+                    var toastMsg = (result && result.toastMessage) || "✅ Deleted expressions from selection";
+                    if (Holy.UI && typeof Holy.UI.toast === "function" && toastMsg) {
+                      Holy.UI.toast(toastMsg);
+                    }
+                  })
+                  .catch(function (err) {
+                    release();
+                    console.error("[Holy.BUTTONS] Delete expressions failed", err);
+                    var msg = (err && err.userMessage) ? err.userMessage : "Delete expressions failed";
+                    if (Holy.UI && typeof Holy.UI.toast === "function") {
+                      Holy.UI.toast(msg);
+                    }
+                  });
+              });
+            }
+
             /* ============================
               ORANGE APPLY BUTTON (Target List + Custom Search)
               ============================ */
