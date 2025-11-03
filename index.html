@@ -119,7 +119,8 @@ ____________________ -------->
     }
     cs.addEventListener('holy.color.change', function(e) {
       try {
-        var data = JSON.parse(e.data || '{}');
+var data = (typeof e.data === 'string') ? JSON.parse(e.data || '{}') : e.data;
+
         if (data && typeof data.hex === 'string') {
           var root = document.documentElement;
           root.style.setProperty('--G-color-1', data.hex);
@@ -605,7 +606,9 @@ window.__HolyExpressorColorChange = function(hex) {
     var cs = new CSInterface();
     var handler = function(evt) {
       try {
-        var data = JSON.parse(evt.data || '{}');
+            console.log('[HolyExpressor] Incoming evt.data =', evt.data);
+var data = (typeof evt.data === 'string') ? JSON.parse(evt.data || '{}') : evt.data;
+
         if (data && typeof data.hex === 'string') {
           var root = document.documentElement;
           root.style.setProperty('--G-color-1', data.hex);

@@ -3,8 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <title>Holy Expressor – Color Picker</title>
-  <link rel="stylesheet" href="./css/styles.css" />
-  <script src="./js/libs/CSInterface.js"></script>
+<script>
+(function() {
+  try {
+    var cs = new CSInterface();
+    var extPath = cs.getSystemPath(SystemPath.EXTENSION);
+    var cssPath = extPath + "/css/styles.css";
+
+    var link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "file:///" + cssPath.replace(/\\/g, "/");
+    document.head.appendChild(link);
+
+    console.log("[ColorPicker] Injected stylesheet:", link.href);
+  } catch (err) {
+    console.warn("[ColorPicker] Failed to inject stylesheet", err);
+  }
+})();
+</script>
+
+  <script src="js/libs/CSInterface.js"></script>
   <script>
     (function STYLE_boot() {
       try {
@@ -15,7 +33,7 @@
       }
     })();
   </script>
-  <script src="./js/panel_state.js"></script>
+  <script src="js/panel_state.js"></script>
 </head>
 <body class="theme-default">
   <div class="holy-color-picker">
@@ -28,6 +46,7 @@
     </div>
   </div>
 
-  <script src="./js/colorpicker.js"></script>
+  <script src="js/colorpicker.js"></script>
+
 </body>
 </html>

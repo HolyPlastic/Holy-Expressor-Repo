@@ -11,7 +11,7 @@
     var ctx = canvas && canvas.getContext ? canvas.getContext('2d') : null;
 
     // V1 – canvas buffer sync to layout
-    canvas.width  = Math.max(1, Math.floor(canvas.clientWidth  || canvas.width));
+    canvas.width = Math.max(1, Math.floor(canvas.clientWidth || canvas.width));
     canvas.height = Math.max(1, Math.floor(canvas.clientHeight || canvas.height));
 
     if (!input || !canvas || !hueSlider || !applyBtn || !cancelBtn || !ctx) {
@@ -166,19 +166,20 @@
     }
 
     // V9.3 Broadcast color to main panel
-    function broadcastHexToMain(hex) {
-      try {
-        if (typeof CSInterface !== 'function') {
-          throw new Error('CSInterface unavailable');
-        }
-        var cs = new CSInterface();
-        var evt = new CSEvent('holy.color.change', 'APPLICATION');
-        evt.data = JSON.stringify({ hex: hex });
-        cs.dispatchEvent(evt);
-      } catch (err) {
-        console.warn('[ColorPicker] Failed to dispatch color event', err);
-      }
+function broadcastHexToMain(hex) {
+  try {
+    if (typeof CSInterface !== 'function') {
+      throw new Error('CSInterface unavailable');
     }
+    var cs = new CSInterface();
+    var evt = new CSEvent('holy.color.change', 'APPLICATION');
+    evt.data = JSON.stringify({ hex: hex }); // ✅ use the passed-in hex
+    cs.dispatchEvent(evt);
+  } catch (err) {
+    console.warn('[ColorPicker] Failed to dispatch color event', err);
+  }
+}
+
 
     function applyColor(hex) {
       var normalized = normalizeHex(hex);
@@ -323,8 +324,8 @@
         var openerDoc = (window.opener && !window.opener.closed) ? window.opener.document : null;
         parentDocument = openerDoc;
         var view = (window.opener && !window.opener.closed) ? window.opener
-                 : (openerDoc && openerDoc.defaultView) ? openerDoc.defaultView
-                 : window;
+          : (openerDoc && openerDoc.defaultView) ? openerDoc.defaultView
+            : window;
         var rootEl = (openerDoc ? openerDoc.documentElement : null) || document.documentElement;
 
         var cssValue = view.getComputedStyle(rootEl).getPropertyValue('--G-color-1');
