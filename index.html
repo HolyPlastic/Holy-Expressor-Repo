@@ -244,7 +244,7 @@ ____________________ -------->
 
 <!-- 🟧 Bank Header Compact + Dropdown Icon -->
 <div id="bankHeader" class=>
-  <span class="heading-1 f18-c">Snippets </span>
+
   <!-- Dropdown button (icon version) -->
  
  
@@ -278,7 +278,7 @@ ____________________ -------->
   <!-- Bank name (editable text) -->
   <span id="bankNameLabel" class="f18-c">Bank 1</span>
 
-
+  <label class="checkbox-label text-sm"><input type="checkbox" id="snipLoadControls"></label>
 
   <!-- Context menu for bank actions -->
   <ul id="bankSelectMenu" class="context-menu"></ul>
@@ -286,7 +286,7 @@ ____________________ -------->
 
 
   <div class="snippetsRow" id="snippetsRow"></div>
-  <label class="checkbox-label text-sm"><input type="checkbox" id="snipLoadControls"></label>
+
 </div>
 
 <!-- Context menu for snippet buttons -->
@@ -306,8 +306,7 @@ ____________________ -------->
 
   </section>
 
-<!-- #region 🖥️🖥️🖥️ EXPRESS ===================================------------------
-____________________ -------->
+
 
     <div class="modeSwitchBar f18-c heading-1" role="group" aria-label="Choose between Express and Rewrite modes">
       <button id="tab-express" class="mode-btn" type="button" aria-pressed="true" data-tab="expressArea" aria-controls="expressArea" role="tab" aria-selected="true">EXPRESS</button>
@@ -321,7 +320,14 @@ ____________________ -------->
     </div>
 <!-- Tab content wrapper that holds both panels -->
   <div id="mainTabContent" class="tab-content">
+
+
+    
   <!-- Express panel -->
+<!-- #region 🖥️🖥️🖥️ EXPRESS ===================================------------------
+____________________ -------->
+
+
   <div id="expressArea" class="panel express-active" role="tabpanel" aria-labelledby="tab-express">
 
     <div class="express-panel-header">
