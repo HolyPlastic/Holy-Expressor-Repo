@@ -302,6 +302,8 @@ If conflicts arise, assume this file overrides individual code comments.
 
 * 2025-11-03 – gpt-5-codex: Added modeless color picker panel plus shared panel_state persistence for color and quick panels. Design Intent: deliver a floating hue picker with window memory and live theme syncing. Risks / Concerns: CEP may block move/resize persistence on some hosts; monitor for permission warnings.
 
+* 2025-11-03 – gpt-5-codex: Floated the editor maximize control onto a top overlay anchored to the Express panel. Design Intent: keep the maximize toggle accessible without disturbing the panel layout as the editor resizes. Risks / Concerns: Ensure overlay stacking stays clear of future header controls.
+
 🧱 Verified Architectural Notes (2025-11)
 
 The entire codebase operates under a single global namespace:
