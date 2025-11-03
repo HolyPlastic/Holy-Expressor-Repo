@@ -6,105 +6,96 @@ var(--G-color-1);
 
 
 :root {
+  /* Fallback theme colour — used until JS overrides */
   --G-color-1: #1effd6;
-  /*#region style proccessing, color variants=== */
-  --G-color-1-H: 0; /* placeholder – overwritten by JS */
+
+  /* JS will overwrite these at runtime */
+  --G-color-1-H: 0;
   --G-color-1-S: 0;
   --G-color-1-L: 0;
   --G-colour-1-RGB: 0, 0, 0;
 
+  --G-color-1-mid: hsl(
+    var(--G-color-1-H),
+    calc(var(--G-color-1-S) * 0.75),
+    calc(var(--G-color-1-L) * 2 * 0.08)
+  );
 
---G-color-1-mid: hsl(
-  var(--G-color-1-H),
-  calc(var(--G-color-1-S) * 0.75),
-  calc(var(--G-color-1-L) *2 * 0.08)
-);
+  --G-color-1-mid-2: hsl(
+    /* mid desat */
+    var(--G-color-1-H),
+    calc(var(--G-color-1-S) * 0.45),
+    calc(var(--G-color-1-L) * 2 * 0.18)
+  );
 
+  --G-color-1-mid-3: hsl(
+    /* mid desat but darker */
+    var(--G-color-1-H),
+    calc(var(--G-color-1-S) * 0),
+    calc(var(--G-color-1-L) * 2 * 0.15)
+  );
 
---G-color-1-mid-2: hsl(
-  /* mid desat*/
-  var(--G-color-1-H),
-  calc(var(--G-color-1-S) * 0.45),
-  calc(var(--G-color-1-L) *2 * 0.18)
-);
+  --G-color-1-mid-4: hsl(
+    /* balance of mid desat 1 and 2 */
+    var(--G-color-1-H),
+    calc(var(--G-color-1-S) * 0.45),
+    calc(var(--G-color-1-L) * 2 * 0.18)
+  );
 
---G-color-1-mid-3: hsl(
-  /* mid desat but darker*/
-  var(--G-color-1-H),
-  calc(var(--G-color-1-S) * 0),
-  calc(var(--G-color-1-L) *2 * 0.15)
-);
+  --G-color-1-dark-bg: hsl(
+    var(--G-color-1-H),
+    calc(var(--G-color-1-S) * 0.9),
+    calc(var(--G-color-1-L) * 2 * 0.04)
+  );
 
---G-color-1-mid-4: hsl(
-  /* balance of mid desat 1 and 2*/
-  var(--G-color-1-H),
-  calc(var(--G-color-1-S) * 0.45),
-  calc(var(--G-color-1-L) *2 * 0.18)
-);
+  --G-color-1-deepdark-bg: hsl(
+    var(--G-color-1-H),
+    calc(var(--G-color-1-S) * 1),
+    calc(var(--G-color-1-L) * 2 * 0.02)
+  );
 
+  --G-color-1-lowsatdark-bg: hsl(
+    var(--G-color-1-H),
+    calc(var(--G-color-1-S) * 0.1),
+    calc(var(--G-color-1-L) * 2 * 0.04)
+  );
 
---G-color-1-dark-bg: hsl(
-  var(--G-color-1-H),
-  calc(var(--G-color-1-S) * 0.9),
-  calc(var(--G-color-1-L) *2 * 0.04)
-);
+  --G-color-1-offwhite: hsl(
+    var(--G-color-1-H),
+    calc(var(--G-color-1-S) * 1),
+    calc(var(--G-color-1-L) * 2 * 0.8)
+  );
 
---G-color-1-deepdark-bg: hsl(
-  var(--G-color-1-H),
-  calc(var(--G-color-1-S) * 1),
-  calc(var(--G-color-1-L) *2 * 0.02)
-);
+  --G-color-1-light: hsl(
+    var(--G-color-1-H),
+    calc(var(--G-color-1-S) * 1),
+    calc(var(--G-color-1-L) * 2 * 0.8)
+  );
 
---G-color-1-lowsatdark-bg: hsl(
-  var(--G-color-1-H),
-  calc(var(--G-color-1-S) * .1),
-  calc(var(--G-color-1-L) *2 * 0.04)
-);
+  --G-color-1-midlight: hsl(
+    var(--G-color-1-H),
+    var(--G-color-1-S),
+    calc(var(--G-color-1-L) * 2 * 0.3)
+  );
 
+  --G-color-1-midlight2: hsl(
+    var(--G-color-1-H),
+    var(--G-color-1-S),
+    calc(var(--G-color-1-L) * 2 * 0.65)
+  );
 
+  --G-color-1-midup: hsl(
+    var(--G-color-1-H),
+    calc(var(--G-color-1-S) * 0.75),
+    calc(var(--G-color-1-L) * 2 * 0.2)
+  );
 
-
-
---G-color-1-offwhite: hsl(
-  var(--G-color-1-H),
-  calc(var(--G-color-1-S) * 1),
-  calc(var(--G-color-1-L) *2 * 0.8)
-);
-
---G-color-1-light: hsl(
-  var(--G-color-1-H),
-  calc(var(--G-color-1-S) * 1),
-  calc(var(--G-color-1-L) *2 * 0.8)
-);
-
---G-color-1-midlight: hsl(
-  var(--G-color-1-H),
-var(--G-color-1-S),
-  calc(var(--G-color-1-L) *2 * 0.3)
-);
-
---G-color-1-midlight2: hsl(
-  var(--G-color-1-H),
-var(--G-color-1-S),
-  calc(var(--G-color-1-L) *2 *0.65)
-);
-
---G-color-1-midup: hsl(
-  var(--G-color-1-H),
-  calc(var(--G-color-1-S) * 0.75),
-  calc(var(--G-color-1-L) *2 * 0.2)
-);
-  
   --G-colour-1-opac-75: rgba(var(--G-colour-1-RGB), 0.75);
   --G-colour-1-opac-50: rgba(var(--G-colour-1-RGB), 0.5);
   --G-colour-1-opac-30: rgba(var(--G-colour-1-RGB), 0.3);
   --G-colour-1-opac-10: rgba(var(--G-colour-1-RGB), 0.1);
 
-
-  /*#endregion end style processing======== */
-
-  --G-faded-text:rgba(255, 255, 255, 0.151);
-
+  --G-faded-text: rgba(255, 255, 255, 0.151);
 }
 
 /*#endregion 🌐🎨 */
@@ -2212,24 +2203,36 @@ button.target-btn { border: 2px solid #ff7415; }
   touch-action: none;
 }
 
-.holy-color-picker .hue-slider,
+
+/* V9.5 Hue slider — single rainbow track only */
 .hue-slider {
-  width: 100%;
+  background: transparent;
   accent-color: var(--G-color-1);
+  border-radius: 999px;
+  border: 1px solid var(--G-colour-1-opac-30);
+  height: 16px;
+  width: 100%;
+}
+.hue-slider::-webkit-slider-runnable-track,
+.hue-slider::-moz-range-track {
   height: 16px;
   border-radius: 999px;
   border: 1px solid var(--G-colour-1-opac-30);
-  outline: none;
+  background: linear-gradient(
+    90deg,
+    hsl(0, 100%, 50%),
+    hsl(60, 100%, 50%),
+    hsl(120, 100%, 50%),
+    hsl(180, 100%, 50%),
+    hsl(240, 100%, 50%),
+    hsl(300, 100%, 50%),
+    hsl(360, 100%, 50%)
+  );
 }
 
-/* V7.1 base input transparent so only the track paints */
-.hue-slider {
-  background: transparent;
-}
-
-/* V7.2 high-contrast white-ring thumb */
-.holy-color-picker .hue-slider::-webkit-slider-thumb,
-.hue-slider::-webkit-slider-thumb {
+/* Thumb with white ring */
+.hue-slider::-webkit-slider-thumb,
+.hue-slider::-moz-range-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 18px;
@@ -2239,16 +2242,6 @@ button.target-btn { border: 2px solid #ff7415; }
   border: 2px solid white;
   box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.5);
   margin-top: -1px;
-}
-
-.holy-color-picker .hue-slider::-moz-range-thumb,
-.hue-slider::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: transparent;
-  border: 2px solid white;
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.5);
 }
 
 .holy-color-picker .picker-actions {
@@ -2267,9 +2260,13 @@ button.target-btn { border: 2px solid #ff7415; }
   border-radius: 8px;
   border: 1px solid var(--G-colour-1-opac-30);
   background-image: none;
+  font-family: var(--pixel-font, inherit);
+  letter-spacing: 0.5px;
+}
+
+.holy-color-picker .btn-apply {
   background: var(--G-color-1);
   color: #0a0a0a;
-  letter-spacing: 0.5px;
 }
 
 .holy-color-picker .btn-cancel {
@@ -2348,45 +2345,3 @@ button.target-btn { border: 2px solid #ff7415; }
   opacity: 1;
 }
 
-/* V3 – range track gradients for engines that ignore input background */
-.hue-slider::-webkit-slider-runnable-track {
-  height: 16px;
-  border-radius: 999px;
-  border: 1px solid var(--G-colour-1-opac-30);
-  background: linear-gradient(
-    90deg,
-    hsl(0, 100%, 50%),
-    hsl(60, 100%, 50%),
-    hsl(120, 100%, 50%),
-    hsl(180, 100%, 50%),
-    hsl(240, 100%, 50%),
-    hsl(300, 100%, 50%),
-    hsl(360, 100%, 50%)
-  );
-}
-
-.hue-slider::-moz-range-track {
-  height: 16px;
-  border-radius: 999px;
-  border: 1px solid var(--G-colour-1-opac-30);
-  background: linear-gradient(
-    90deg,
-    hsl(0, 100%, 50%),
-    hsl(60, 100%, 50%),
-    hsl(120, 100%, 50%),
-    hsl(180, 100%, 50%),
-    hsl(240, 100%, 50%),
-    hsl(300, 100%, 50%),
-    hsl(360, 100%, 50%)
-  );
-}
-
-/* Optional inline fallback for browsers that support direct background */
-.hue-slider {
-  background: transparent;
-}
-
-/* V6 – specificity bump to ensure active picker styles win */
-body .holy-color-picker .color-input {
-  /* duplicate or override rules as needed to ensure priority */
-}

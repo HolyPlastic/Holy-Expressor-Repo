@@ -20,7 +20,6 @@
     }
 
     var parentDocument = window.opener && !window.opener.closed ? window.opener.document : null;
-    var parentRoot = parentDocument ? parentDocument.documentElement : null;
     var localRoot = document.documentElement;
 
     var state = { h: 180, s: 100, l: 50 };
@@ -166,7 +165,7 @@
       root.style.setProperty('--G-color-1-L', hsl.l + '%');
     }
 
-    // V7.3 broadcast color to main panel
+    // V9.3 Broadcast color to main panel
     function broadcastHexToMain(hex) {
       try {
         if (typeof CSInterface !== 'function') {
@@ -185,10 +184,6 @@
       var normalized = normalizeHex(hex);
       if (!normalized) {
         return;
-      }
-      if (parentRoot) {
-        parentRoot.style.setProperty('--G-color-1', normalized);
-        updateDerivedVariables(parentRoot, normalized);
       }
       localRoot.style.setProperty('--G-color-1', normalized);
       updateDerivedVariables(localRoot, normalized);
@@ -299,7 +294,12 @@
       input.value = normalizeHex(input.value) || initialHex;
     });
 
+    // V9.1 Apply button actually applies the chosen color
     applyBtn.addEventListener('click', function () {
+      var normalized = normalizeHex(input.value);
+      if (normalized) {
+        applyColor(normalized);
+      }
       window.close();
     });
 
@@ -312,7 +312,6 @@
       try {
         var openerDoc = (window.opener && !window.opener.closed) ? window.opener.document : null;
         parentDocument = openerDoc;
-        parentRoot = openerDoc ? openerDoc.documentElement : null;
         var view = (window.opener && !window.opener.closed) ? window.opener
                  : (openerDoc && openerDoc.defaultView) ? openerDoc.defaultView
                  : window;
