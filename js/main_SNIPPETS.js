@@ -4,7 +4,11 @@
 // 🧩 SNIPPET BANK DEFINITION
 // ---------------------------------------------------------
 if (typeof Holy !== "object") Holy = {};
+
+const SNIPPETS_PER_BANK = 3;
+
 if (!Holy.SNIPPETS) Holy.SNIPPETS = {};
+Holy.SNIPPETS.SNIPPETS_PER_BANK = SNIPPETS_PER_BANK;
 Holy.SNIPPETS.banks = [
   {
     id: 1,
@@ -12,8 +16,7 @@ Holy.SNIPPETS.banks = [
     snippets: [
       { id: 1, name: "Wiggle", expr: "wiggle(2,20)", controls: {} },
       { id: 2, name: "Loop", expr: "loopOut('cycle')", controls: {} },
-      { id: 3, name: "Random", expr: "random(0,100)", controls: {} },
-      { id: 4, name: "Ease", expr: "ease(time,0,1,0,100)", controls: {} }
+      { id: 3, name: "Random", expr: "random(0,100)", controls: {} }
     ]
   },
   {
@@ -21,7 +24,8 @@ Holy.SNIPPETS.banks = [
     name: "Secondary",
     snippets: [
       { id: 1, name: "Bounce", expr: "n=Math.sin(time*3)*30", controls: {} },
-      { id: 2, name: "Blink", expr: "Math.sin(time*10)>0?100:0", controls: {} }
+      { id: 2, name: "Blink", expr: "Math.sin(time*10)>0?100:0", controls: {} },
+      { id: 3, name: "", expr: "", controls: {} }
     ]
   }
 ];
@@ -34,6 +38,37 @@ Holy.SNIPPETS.banks = [
 
   var cs = new CSInterface();
   var HX_LOG_MODE = window.HX_LOG_MODE || "verbose";
+
+
+  // ---------------------------------------------------------
+  // 🧮 ID + snippet factories
+  // ---------------------------------------------------------
+  var snippetIdCounter = 0;
+
+  function generateSnippetId() {
+    snippetIdCounter += 1;
+    return (
+      "snip-" +
+      Date.now().toString(36) +
+      "-" +
+      snippetIdCounter.toString(36) +
+      "-" +
+      Math.random().toString(36).slice(2, 8)
+    );
+  }
+
+  function cy_createEmptySnippet() {
+    return {
+      id: generateSnippetId(),
+      name: "",
+      expr: "",
+      controls: {}
+    };
+  }
+
+  function cy_createEmptySnippetArray() {
+    return Array.from({ length: SNIPPETS_PER_BANK }, cy_createEmptySnippet);
+  }
 
 
   // V2 – Scoped document resolver for multi-panel safety
@@ -55,15 +90,41 @@ Holy.SNIPPETS.banks = [
     if (typeof snippet.controls !== "object" || snippet.controls === null) {
       snippet.controls = {};
     }
+    if (typeof snippet.name !== "string") snippet.name = "";
+    if (typeof snippet.expr !== "string") snippet.expr = "";
+    if (snippet.id === undefined || snippet.id === null || snippet.id === "") {
+      snippet.id = generateSnippetId();
+    }
     return snippet;
   }
 
+  function normalizeBankSnippets(bank) {
+    if (!bank || typeof bank !== "object") return bank;
+    if (typeof bank.name !== "string" || !bank.name) {
+      bank.name = "Bank";
+    }
+
+    const trimmed = Array.isArray(bank.snippets)
+      ? bank.snippets.slice(0, SNIPPETS_PER_BANK)
+      : [];
+
+    const normalizedSnippets = trimmed.map(function (snippet) {
+      const normalized = cy_normalizeSnippet(snippet);
+      return normalized || cy_createEmptySnippet();
+    });
+
+    while (normalizedSnippets.length < SNIPPETS_PER_BANK) {
+      normalizedSnippets.push(cy_createEmptySnippet());
+    }
+
+    bank.snippets = normalizedSnippets;
+    return bank;
+  }
+
   function cy_normalizeBanksCollection(banks) {
-    if (!Array.isArray(banks)) return;
-    banks.forEach((bank) => {
-      if (!bank || typeof bank !== "object") return;
-      if (!Array.isArray(bank.snippets)) return;
-      bank.snippets.forEach(cy_normalizeSnippet);
+    if (!Array.isArray(banks)) return [];
+    return banks.map(function (bank) {
+      return normalizeBankSnippets(bank || {});
     });
   }
 
@@ -83,13 +144,12 @@ Holy.SNIPPETS.banks = [
       snippets: [
         { id: 1, name: "Wiggle", expr: "wiggle(2,20)", controls: {} },
         { id: 2, name: "Loop", expr: "loopOut('cycle')", controls: {} },
-        { id: 3, name: "Random", expr: "random(0,100)", controls: {} },
-        { id: 4, name: "Ease", expr: "ease(time, 0, 1, 0, 100)", controls: {} }
+        { id: 3, name: "Random", expr: "random(0,100)", controls: {} }
       ]
     }
   ];
 
-  cy_normalizeBanksCollection(Holy.SNIPPETS.banks);
+  Holy.SNIPPETS.banks = cy_normalizeBanksCollection(Holy.SNIPPETS.banks);
 
   // active bank pointer
   Holy.SNIPPETS.activeBankId = 1;
@@ -99,10 +159,10 @@ Holy.SNIPPETS.banks = [
     const id = Holy.SNIPPETS.activeBankId;
     const b = Holy.SNIPPETS.banks.find(x => x.id === id);
     const fallback = b || Holy.SNIPPETS.banks[0];
-    if (fallback && Array.isArray(fallback.snippets)) {
-      fallback.snippets.forEach(cy_normalizeSnippet);
+    if (fallback) {
+      normalizeBankSnippets(fallback);
     }
-    return fallback;
+    return fallback || null;
   }
   // 🌍 Make it globally accessible
   window.cy_getActiveBank = cy_getActiveBank;
@@ -131,9 +191,22 @@ Holy.SNIPPETS.banks = [
       const { file } = Holy.UTILS.cy_getBanksPaths();
       const loaded = Holy.UTILS.cy_readJSONFile(file);
       if (loaded && Array.isArray(loaded.banks) && loaded.banks.length) {
-        Holy.SNIPPETS.banks = loaded.banks;
-        Holy.SNIPPETS.activeBankId = loaded.activeBankId || loaded.banks[0].id;
-        console.log("[Holy.SNIPPETS] Loaded banks from disk:", { count: loaded.banks.length });
+        Holy.SNIPPETS.banks = cy_normalizeBanksCollection(loaded.banks);
+
+        const hasActive = Holy.SNIPPETS.banks.some(function (bank) {
+          return bank && bank.id === loaded.activeBankId;
+        });
+
+        if (hasActive) {
+          Holy.SNIPPETS.activeBankId = loaded.activeBankId;
+        } else if (Holy.SNIPPETS.banks[0] && Holy.SNIPPETS.banks[0].id !== undefined) {
+          Holy.SNIPPETS.activeBankId = Holy.SNIPPETS.banks[0].id;
+        }
+
+        console.log("[Holy.SNIPPETS] Loaded banks from disk:", { count: Holy.SNIPPETS.banks.length });
+
+        // heal stored data immediately after normalization
+        cy_saveBanksToDisk();
       } else {
         // first-run: persist the in-memory defaults
         cy_saveBanksToDisk();
@@ -143,7 +216,7 @@ Holy.SNIPPETS.banks = [
     }
   })();
 
-  cy_normalizeBanksCollection(Holy.SNIPPETS.banks);
+  Holy.SNIPPETS.banks = cy_normalizeBanksCollection(Holy.SNIPPETS.banks);
 
 
 
@@ -153,6 +226,8 @@ Holy.SNIPPETS.banks = [
 
   // V1 — persist current banks to disk
   function cy_saveBanksToDisk() {
+    Holy.SNIPPETS.banks = cy_normalizeBanksCollection(Holy.SNIPPETS.banks);
+
     const { file } = Holy.UTILS.cy_getBanksPaths();
     const payload = {
       version: 1,
@@ -397,13 +472,17 @@ Holy.SNIPPETS.banks = [
 
     // 🔁 pivot to active bank
     const _bank = cy_getActiveBank();
-    const source = _bank?.snippets || [];
+    const normalizedBank = _bank ? normalizeBankSnippets(_bank) : null;
+    const source = normalizedBank?.snippets || [];
+    const renderable = Array.isArray(source)
+      ? source.slice(0, SNIPPETS_PER_BANK)
+      : [];
 
     // 🧹 clear previous buttons
     bar.innerHTML = "";
 
     // 🧱 fail-safe guard
-    if (!Array.isArray(source) || source.length === 0) {
+    if (renderable.length === 0) {
       const emptyMsg = doc.createElement("div");
       emptyMsg.textContent = "No snippets in this bank";
       emptyMsg.style.opacity = "0.5";
@@ -413,7 +492,7 @@ Holy.SNIPPETS.banks = [
     }
 
     // 🎨 build each snippet button
-    source.forEach((snippet) => {
+    renderable.forEach((snippet) => {
       cy_normalizeSnippet(snippet);
       const snippetId = snippet.id; // closure-safe capture
       const btn = createRhombusButton(snippet.name);
@@ -516,7 +595,7 @@ Holy.SNIPPETS.banks = [
     cy_saveBanksToDisk();
 
     console.log(
-      `[Holy.SNIPPETS] Rendered ${source.length} snippets from bank: ${_bank.name}`
+      `[Holy.SNIPPETS] Rendered ${renderable.length} snippets from bank: ${normalizedBank?.name || "?"}`
     );
   }
 
@@ -870,15 +949,19 @@ Holy.SNIPPETS.banks = [
         break;
 
       case "new": {
-        const newId = Math.max(...Holy.SNIPPETS.banks.map(b => b.id)) + 1;
-        const newBank = {
+        const newId = Holy.SNIPPETS.banks.reduce((max, bank) => {
+          const candidate = Number(bank && bank.id);
+          return candidate > max ? candidate : max;
+        }, 0) + 1;
+
+        const newBank = normalizeBankSnippets({
           id: newId,
           name: `Bank ${newId}`,
-          snippets: []
-        };
+          snippets: cy_createEmptySnippetArray()
+        });
 
         Holy.SNIPPETS.banks.push(newBank);
-        Holy.SNIPPETS.activeBankId = newId;
+        Holy.SNIPPETS.activeBankId = newBank.id;
         cy_saveBanksToDisk();
         renderBankHeader();
         renderSnippets();
@@ -894,6 +977,7 @@ Holy.SNIPPETS.banks = [
           break;
         }
         Holy.SNIPPETS.banks = Holy.SNIPPETS.banks.filter(b => b.id !== Number(bankId));
+        Holy.SNIPPETS.banks = cy_normalizeBanksCollection(Holy.SNIPPETS.banks);
         Holy.SNIPPETS.activeBankId = Holy.SNIPPETS.banks[0].id;
         cy_saveBanksToDisk();
         renderBankHeader();
@@ -1031,6 +1115,9 @@ Holy.SNIPPETS.banks = [
 
   Holy.SNIPPETS.cy_getActiveBank = cy_getActiveBank;
   Holy.SNIPPETS.cy_getActiveSnippet = cy_getActiveSnippet;
+  Holy.SNIPPETS.normalizeBankSnippets = normalizeBankSnippets;
+  Holy.SNIPPETS.cy_createEmptySnippet = cy_createEmptySnippet;
+  Holy.SNIPPETS.cy_saveBanksToDisk = cy_saveBanksToDisk;
 
 
 })();
