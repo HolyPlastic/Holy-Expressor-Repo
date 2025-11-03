@@ -180,7 +180,7 @@
             <!-- V5 – enable resizing for color picker -->
             <MinSize>
               <Width>300</Width>
-              <Height>200</Height>
+              <Height>300</Height>
             </MinSize>
             <MaxSize>
               <Width>1200</Width>

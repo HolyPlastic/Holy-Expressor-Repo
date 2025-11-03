@@ -579,7 +579,36 @@ cs.requestOpenExtension('com.holy.expressor.colorpicker');
 });
 </script>
 
+<script>
+(function connectColorSync(){
+  if (window.__holyColorSyncAttached__) return;
+  window.__holyColorSyncAttached__ = true;
 
+  try {
+    var cs = new CSInterface();
+    var handler = function(evt){
+      try {
+        var data = JSON.parse(evt.data || '{}');
+        if (data && typeof data.hex === 'string') {
+          var root = document.documentElement;
+          root.style.setProperty('--G-color-1', data.hex);
+          if (typeof window.updateDerivedVariables === 'function') {
+            window.updateDerivedVariables(root, data.hex);
+          }
+          console.log('[HolyExpressor] Theme updated to', data.hex);
+        }
+      } catch(err){
+        console.warn('[HolyExpressor] Failed to handle color change', err);
+      }
+    };
+
+    cs.addEventListener('holy.color.change', handler);
+    console.log('[HolyExpressor] Color sync listener active');
+  } catch(err){
+    console.warn('[HolyExpressor] CSInterface unavailable', err);
+  }
+})();
+</script>
 </body>
 
 </html>
