@@ -160,7 +160,7 @@
           <CEFCommandLine>
             <Parameter>--enable-nodejs</Parameter>
             <Parameter>--enable-devtools</Parameter>
-            <Parameter>--remote-debugging-port=6910</Parameter>
+            <Parameter>--remote-debugging-port=6906</Parameter>
             <Parameter>--allow-file-access</Parameter>
             <Parameter>--allow-file-access-from-files</Parameter>
             <Parameter>--disable-web-security</Parameter>

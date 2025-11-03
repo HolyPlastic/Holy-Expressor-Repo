@@ -11,4 +11,11 @@
             <Host Name="AEFT" Port="6905" />
         </HostList>
     </Extension>
+
+
+    <Extension Id="com.holy.expressor.colorpicker">
+        <HostList>
+            <Host Name="AEFT" Port="6906" />
+        </HostList>
+    </Extension>
 </ExtensionList>
