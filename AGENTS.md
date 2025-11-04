@@ -242,23 +242,23 @@ Section currently unused.
 
 ## 13. Architecture Deductions
 ### A. Structural Unknowns
-* [UNKNOWN-STRUCTURE] Precise JSX load order enforcement after `main_DEV_INIT.js` runs remains undocumented, so the availability timing of `holy_applySnippet` is uncertain.
-* [UNKNOWN-STRUCTURE] The explicit wiring between snippet button handlers in `main_SNIPPETS.js` and the host-side `holy_applySnippet()` routine lacks a documented dependency chain covering CSInterface scope and readiness.
-* [UNKNOWN-STRUCTURE] The expected return payload for `holy_applySnippet()` is undefined; current behavior reveals the JavaScript layer cannot distinguish success from an arbitrary string response.
-* [UNCLEAR-DECISION] The transition from `Holy.TOAST.show` to `Holy.UI.toast` lacks a recorded rationale, leaving ambiguity over whether the change reflects a permanent API shift or temporary fallback.
-* [ASSUMED-BEHAVIOUR] Runtime assumptions state that a `CSInterface` instance is created during panel load, yet no specification clarifies whether that instance should be globally accessible.
-* [ASSUMED-BEHAVIOUR] Snippet application is presumed to invoke both control reapply and expression bridges, but the conditions selecting `holy_applyControlsJSON` versus `holy_applySnippet` remain unverified.
-* [ASSUMED-BEHAVIOUR] Toast notifications are treated purely as client-side status indicators without confirmed mapping to host success codes.
+* [unknown-structure] jsx load – Precise JSX load order enforcement after `main_DEV_INIT.js` runs remains undocumented, so the availability timing of `holy_applySnippet` is uncertain.
+* [unknown-structure] bridge wiring – The explicit wiring between snippet button handlers in `main_SNIPPETS.js` and the host-side `holy_applySnippet()` routine lacks a documented dependency chain covering CSInterface scope and readiness.
+* [unknown-structure] return contract – The expected return payload for `holy_applySnippet()` is undefined; current behavior reveals the JavaScript layer cannot distinguish success from an arbitrary string response.
+* [unclear-decision] toast api – The transition from `Holy.TOAST.show` to `Holy.UI.toast` lacks a recorded rationale, leaving ambiguity over whether the change reflects a permanent API shift or temporary fallback.
+* [assumed-behaviour] csinterface scope – Runtime assumptions state that a `CSInterface` instance is created during panel load, yet no specification clarifies whether that instance should be globally accessible.
+* [assumed-behaviour] snippet routing – Snippet application is presumed to invoke both control reapply and expression bridges, but the conditions selecting `holy_applyControlsJSON` versus `holy_applySnippet` remain unverified.
+* [assumed-behaviour] toast feedback – Toast notifications are treated purely as client-side status indicators without confirmed mapping to host success codes.
 
 ### B. Established Architectural Facts
-* [CONFIRMED-MECHANISM] Snippet apply actions dispatch `cs.evalScript("holy_applySnippet(index)")` calls from `main_SNIPPETS.js` into the ExtendScript layer.
-* [CONFIRMED-MECHANISM] An empty or non-successful ExtendScript response propagates back to JavaScript as the literal `"string"`, triggering the “Snippet error: Apply failed” toast branch.
-* [CONFIRMED-MECHANISM] DevTools access lacks an exposed `cs` reference unless the panel explicitly binds `CSInterface` to `window`, demonstrating module-level encapsulation of the bridge instance.
-* [CONFIRMED-MECHANISM] Toast feedback operates independently of console logging; the UI reports failures even when the console is silent.
-* [ESTABLISHED-PATTERN] Snippet processing follows a consistent pipeline: UI button → JavaScript handler → `cs.evalScript` bridge → JSX executor.
-* [ESTABLISHED-PATTERN] Failure-handling logic centers on evaluating the ExtendScript return payload; absent or invalid results always surface via toast rather than silent failure.
-* [PERMANENT-DECISION] Each snippet bank now initializes with exactly three immutable snippet slots, disallowing runtime addition or removal.
-* [PERMANENT-DECISION] The project persists in using the global `Holy.<MODULE>` namespace structure across modules as an intentional architectural choice.
+* [confirmed-mechanism] bridge dispatch – Snippet apply actions dispatch `cs.evalScript("holy_applySnippet(index)")` calls from `main_SNIPPETS.js` into the ExtendScript layer.
+* [confirmed-mechanism] bridge response – An empty or non-successful ExtendScript response propagates back to JavaScript as the literal `"string"`, triggering the “Snippet error: Apply failed” toast branch.
+* [confirmed-mechanism] csinterface scope – DevTools access lacks an exposed `cs` reference unless the panel explicitly binds `CSInterface` to `window`, demonstrating module-level encapsulation of the bridge instance.
+* [confirmed-mechanism] toast independence – Toast feedback operates independently of console logging; the UI reports failures even when the console is silent.
+* [established-pattern] snippet pipeline – Snippet processing follows a consistent pipeline: UI button → JavaScript handler → `cs.evalScript` bridge → JSX executor.
+* [established-pattern] failure signaling – Failure-handling logic centers on evaluating the ExtendScript return payload; absent or invalid results always surface via toast rather than silent failure.
+* [permanent-decision] snippet banks – Each snippet bank now initializes with exactly three immutable snippet slots, disallowing runtime addition or removal.
+* [permanent-decision] global namespace – The project persists in using the global `Holy.<MODULE>` namespace structure across modules as an intentional architectural choice.
 
 ---
 
@@ -329,6 +329,8 @@ If conflicts arise, assume this file overrides individual code comments.
 * 2025-11-03 – gpt-5-codex: Added fallback `holy_applySnippet` bridge when control loads are disabled. Design Intent: ensure snippets still apply expressions via host bridge when controls aren't requested. Risks / Concerns: Fallback coexists with existing `cy_evalApplyExpression`; monitor for double-apply paths.
 
 * 2025-11-03 – gpt-5-codex: Injected temporary logging around `holy_applySnippet` bridge. Design Intent: capture ExtendScript responses while diagnosing snippet apply failures. Risks / Concerns: Verbose logs until removed.
+
+* 2025-11-04 – gpt-5-codex: no functional change – annotated Section 13 architecture deductions with lowercase tags and subject prefixes for clarity.
 
 🧱 Verified Architectural Notes (2025-11)
 
