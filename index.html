@@ -308,27 +308,18 @@ ____________________ -------->
 
 
 
-    <div class="modeSwitchBar f18-c heading-1" role="group" aria-label="Choose between Express and Rewrite modes">
-      <button id="tab-express" class="mode-btn" type="button" aria-pressed="true" data-tab="expressArea" aria-controls="expressArea" role="tab" aria-selected="true">EXPRESS</button>
-      <button id="btnModeSwitch" class="mode-switch-btn" type="button" aria-label="Switch to rewrite mode" title="Switch to rewrite mode">
-        <svg class="mode-switch-svg" width="18" height="12" viewBox="0 0 8.48 5.29" aria-hidden="true" focusable="false">
-          <g class="diamond-right"><polygon points="4.24 0 8.48 2.74 4.23 5.29 4.24 0"/></g>
-          <g class="diamond-left"><polygon points="4.24 0 0 2.74 4.25 5.29 4.24 0"/></g>
-        </svg>
+  <section id="modePanel" class="he-mode-panel" aria-label="Expression Tools">
+    <header class="he-mode-header" role="tablist" aria-label="Mode Switcher">
+      <button id="modeExpressBtn" class="he-tab is-active" role="tab" aria-selected="true" aria-controls="modeViewExpress">
+        Express
       </button>
-      <button id="tab-search" class="mode-btn" type="button" aria-pressed="false" data-tab="searchReplacePanel" aria-controls="searchReplacePanel" role="tab" aria-selected="false">REWRITE</button>
-    </div>
-<!-- Tab content wrapper that holds both panels -->
-  <div id="mainTabContent" class="tab-content">
+      <button id="modeRewriteBtn" class="he-tab" role="tab" aria-selected="false" aria-controls="modeViewRewrite">
+        Rewrite
+      </button>
+    </header>
 
-
-    
-  <!-- Express panel -->
-<!-- #region 🖥️🖥️🖥️ EXPRESS ===================================------------------
-____________________ -------->
-
-
-  <div id="expressArea" class="panel express-active" role="tabpanel" aria-labelledby="tab-express">
+    <div class="he-mode-views">
+      <div id="modeViewExpress" class="he-mode-view panel" role="tabpanel" aria-labelledby="modeExpressBtn">
 
     <div class="express-panel-header">
       <span class="heading-1 f18">Express</span>
@@ -434,21 +425,22 @@ ____________________ -------->
         </svg>
       </button>
     </div>
-  </div>
+      </div>
 
-  <div id="searchReplacePanel" class="panel search-replace-panel hidden" role="tabpanel" aria-labelledby="tab-search">
-    <label for="searchField" class="text-sm block-label">Search</label>
-    <input type="text" id="searchField" class="text-input" />
-    <label for="replaceField" class="text-sm block-label">Replace</label>
-    <input type="text" id="replaceField" class="text-input" />
-    <div class="row search-options">
-      <label class="checkbox-label text-sm">
-        <input type="checkbox" id="matchCase" checked /> Match case
-      </label>
+      <div id="modeViewRewrite" class="he-mode-view panel search-replace-panel is-hidden" role="tabpanel" aria-labelledby="modeRewriteBtn" hidden>
+        <label for="searchField" class="text-sm block-label">Search</label>
+        <input type="text" id="searchField" class="text-input" />
+        <label for="replaceField" class="text-sm block-label">Replace</label>
+        <input type="text" id="replaceField" class="text-input" />
+        <div class="row search-options">
+          <label class="checkbox-label text-sm">
+            <input type="checkbox" id="matchCase" checked /> Match case
+          </label>
+        </div>
+        <button id="runSearchReplace" class="tab-btn">Run Search &amp; Replace</button>
+      </div>
     </div>
-    <button id="runSearchReplace" class="tab-btn">Run Search &amp; Replace</button>
-  </div>
-</div>
+  </section>
 <!-- #endregion ^^^ End Express 🖥️ ^^^ -->
 
 

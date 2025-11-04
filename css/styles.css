@@ -929,7 +929,7 @@ textarea { width: 100%; }
 /*____________________________________________________*/
 
 
-#expressArea {
+#modeViewExpress {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -941,80 +941,18 @@ textarea { width: 100%; }
   overflow: visible; /* allow overlay buttons to float over the panel edge */
 }
 
-#expressArea.panel {
+#modeViewExpress.panel {
   margin-top: 0;
   padding: 4px 6px 8px;
 }
 
-#expressArea .express-panel-header {
+#modeViewExpress .express-panel-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 4px;
   margin-bottom: 4px;
 }
-
-/* Mode switch buttons (Express | Rewrite) */
-.modeSwitchBar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-    margin: 4px;
-  user-select: none;
-  font-size: 8px;
-}
-
-.modeSwitchBar button {
-  background: none;
-  border: none;
-  padding: 0;
-  margin: 0;
-  font: inherit;
-  color: var(--G-grey-1);
-  cursor: pointer;
-  letter-spacing: inherit;
-  transition: color 0.2s ease;
-}
-
-.modeSwitchBar .mode-switch-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modeSwitchBar .mode-switch-svg {
-  width: 14px;
-  height: auto;
-  display: block;
-}
-
-.modeSwitchBar .diamond-left,
-.modeSwitchBar .diamond-right {
-  fill: currentColor;
-}
-
-.modeSwitchBar .mode-btn.active,
-#expressArea.express-active #btnExpress,
-#expressArea.rewrite-active #btnRewrite {
-  color: var(--G-color-1);
-}
-
-.express-active .diamond-left {
-  color: var(--G-color-1);
-}
-
-.express-active .diamond-right {
-  color: var(--G-grey-1);
-}
-
-.rewrite-active .diamond-left {
-  color: var(--G-grey-1);
-}
-
-.rewrite-active .diamond-right {
-color: var(--G-color-1);
-}  
 
 .express-panel-actions {
   display: flex;
@@ -1104,7 +1042,7 @@ color: var(--G-color-1);
   margin-top: 16px;
 }
 
-#expressArea .row {
+#modeViewExpress .row {
   width: 100%;
   display: flex;
   align-items: stretch;
@@ -1113,20 +1051,20 @@ color: var(--G-color-1);
 
 
 /* Remove container spacing */
-#expressArea #codeEditor .cm-editor {
+#modeViewExpress #codeEditor .cm-editor {
   margin: 0 !important;
   padding: 0 !important;
   border: none; /* optional */
 }
 
 /* Remove scroller spacing */
-#expressArea #codeEditor .cm-scroller {
+#modeViewExpress #codeEditor .cm-scroller {
   margin: 0 !important;
   padding: 0 !important;
 }
 
 /* Remove inner content padding */
-#expressArea #codeEditor .cm-content {
+#modeViewExpress #codeEditor .cm-content {
   margin: 0 !important;
   padding: 0 !important;
 }
@@ -1158,7 +1096,7 @@ body.editor-maximized #appRoot {
   height: 100%;
 }
 
-body.editor-maximized #expressArea {
+body.editor-maximized #modeViewExpress {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
@@ -1176,7 +1114,7 @@ body.editor-maximized #bankSelectMenu {
   display: none !important;
 }
 
-body.editor-maximized #expressArea .express-panel-header .heading-1 {
+body.editor-maximized #modeViewExpress .express-panel-header .heading-1 {
   display: none;
 }
 
@@ -2315,37 +2253,45 @@ button.target-btn { border: 2px solid #ff7415; }
 
 
 
-/* V1 – Tabs for Express | Search */
-.tab-bar {
+/* V1 – Visibility + tabs */
+.he-mode-view[hidden],
+.he-mode-view.is-hidden {
+  display: none;
+}
+
+.he-mode-panel {
   display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.he-mode-header {
+  display: flex;
+  align-items: center;
   gap: 6px;
-  margin: 8px 0;
+  padding: 0 4px;
 }
 
-.tab-bar .tab-btn.active {
-  background-color: var(--G-color-1, #3a3a3a);
-  color: #fff;
+.he-tab {
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 4px 8px;
+  font: inherit;
+  color: var(--G-grey-1);
+  border-radius: 6px;
+  transition: color 0.2s ease, background-color 0.2s ease;
 }
 
-.tab-content {
-  position: relative;
+.he-tab.is-active {
+  color: var(--G-color-1);
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
-/* Safe hide for CEP without collapsing layout or breaking CodeMirror */
-.tab-content .panel.hidden {
-  visibility: hidden;
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 0;
-  overflow: hidden;
-  opacity: 0;
-  pointer-events: none;
+#modeViewExpress {
+  border-radius: 12px 12px 0 0;
 }
 
-/* Optional micro fade for polish */
-.tab-content .panel {
-  transition: opacity 0.15s ease-in-out;
-  opacity: 1;
+#modeViewRewrite {
+  border-radius: 0 0 12px 12px;
 }
-
