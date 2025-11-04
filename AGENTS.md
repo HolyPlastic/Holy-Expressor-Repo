@@ -242,23 +242,23 @@ Section currently unused.
 
 ## 13. Architecture Deductions
 ### A. Structural Unknowns
-* [unknown-structure] jsx load – Precise JSX load order enforcement after `main_DEV_INIT.js` runs remains undocumented, so the availability timing of `holy_applySnippet` is uncertain.
-* [unknown-structure] bridge wiring – The explicit wiring between snippet button handlers in `main_SNIPPETS.js` and the host-side `holy_applySnippet()` routine lacks a documented dependency chain covering CSInterface scope and readiness.
-* [unknown-structure] return contract – The expected return payload for `holy_applySnippet()` is undefined; current behavior reveals the JavaScript layer cannot distinguish success from an arbitrary string response.
-* [unclear-decision] toast api – The transition from `Holy.TOAST.show` to `Holy.UI.toast` lacks a recorded rationale, leaving ambiguity over whether the change reflects a permanent API shift or temporary fallback.
-* [assumed-behaviour] csinterface scope – Runtime assumptions state that a `CSInterface` instance is created during panel load, yet no specification clarifies whether that instance should be globally accessible.
-* [assumed-behaviour] snippet routing – Snippet application is presumed to invoke both control reapply and expression bridges, but the conditions selecting `holy_applyControlsJSON` versus `holy_applySnippet` remain unverified.
-* [assumed-behaviour] toast feedback – Toast notifications are treated purely as client-side status indicators without confirmed mapping to host success codes.
+* BRIDGE WIRING — [unknown-structure] — The explicit wiring between snippet button handlers in `main_SNIPPETS.js` and the host-side `holy_applySnippet()` routine lacks a documented dependency chain covering CSInterface scope and readiness.
+* CSINTERFACE SCOPE — [assumed-behaviour] — Runtime assumptions state that a `CSInterface` instance is created during panel load, yet no specification clarifies whether that instance should be globally accessible.
+* JSX LOAD — [unknown-structure] — Precise JSX load order enforcement after `main_DEV_INIT.js` runs remains undocumented, so the availability timing of `holy_applySnippet` is uncertain.
+* RETURN CONTRACT — [unknown-structure] — The expected return payload for `holy_applySnippet()` is undefined; current behavior reveals the JavaScript layer cannot distinguish success from an arbitrary string response.
+* SNIPPET ROUTING — [assumed-behaviour] — Snippet application is presumed to invoke both control reapply and expression bridges, but the conditions selecting `holy_applyControlsJSON` versus `holy_applySnippet` remain unverified.
+* TOAST API — [unclear-decision] — The transition from `Holy.TOAST.show` to `Holy.UI.toast` lacks a recorded rationale, leaving ambiguity over whether the change reflects a permanent API shift or temporary fallback.
+* TOAST FEEDBACK — [assumed-behaviour] — Toast notifications are treated purely as client-side status indicators without confirmed mapping to host success codes.
 
 ### B. Established Architectural Facts
-* [confirmed-mechanism] bridge dispatch – Snippet apply actions dispatch `cs.evalScript("holy_applySnippet(index)")` calls from `main_SNIPPETS.js` into the ExtendScript layer.
-* [confirmed-mechanism] bridge response – An empty or non-successful ExtendScript response propagates back to JavaScript as the literal `"string"`, triggering the “Snippet error: Apply failed” toast branch.
-* [confirmed-mechanism] csinterface scope – DevTools access lacks an exposed `cs` reference unless the panel explicitly binds `CSInterface` to `window`, demonstrating module-level encapsulation of the bridge instance.
-* [confirmed-mechanism] toast independence – Toast feedback operates independently of console logging; the UI reports failures even when the console is silent.
-* [established-pattern] snippet pipeline – Snippet processing follows a consistent pipeline: UI button → JavaScript handler → `cs.evalScript` bridge → JSX executor.
-* [established-pattern] failure signaling – Failure-handling logic centers on evaluating the ExtendScript return payload; absent or invalid results always surface via toast rather than silent failure.
-* [permanent-decision] snippet banks – Each snippet bank now initializes with exactly three immutable snippet slots, disallowing runtime addition or removal.
-* [permanent-decision] global namespace – The project persists in using the global `Holy.<MODULE>` namespace structure across modules as an intentional architectural choice.
+* BRIDGE DISPATCH — [confirmed-mechanism] — Snippet apply actions dispatch `cs.evalScript("holy_applySnippet(index)")` calls from `main_SNIPPETS.js` into the ExtendScript layer.
+* BRIDGE RESPONSE — [confirmed-mechanism] — An empty or non-successful ExtendScript response propagates back to JavaScript as the literal `"string"`, triggering the “Snippet error: Apply failed” toast branch.
+* CSINTERFACE SCOPE — [confirmed-mechanism] — DevTools access lacks an exposed `cs` reference unless the panel explicitly binds `CSInterface` to `window`, demonstrating module-level encapsulation of the bridge instance.
+* TOAST INDEPENDENCE — [confirmed-mechanism] — Toast feedback operates independently of console logging; the UI reports failures even when the console is silent.
+* SNIPPET PIPELINE — [established-pattern] — Snippet processing follows a consistent pipeline: UI button → JavaScript handler → `cs.evalScript` bridge → JSX executor.
+* FAILURE SIGNALING — [established-pattern] — Failure-handling logic centers on evaluating the ExtendScript return payload; absent or invalid results always surface via toast rather than silent failure.
+* SNIPPET BANKS — [permanent-decision] — Each snippet bank now initializes with exactly three immutable snippet slots, disallowing runtime addition or removal.
+* GLOBAL NAMESPACE — [permanent-decision] — The project persists in using the global `Holy.<MODULE>` namespace structure across modules as an intentional architectural choice.
 
 ---
 
@@ -317,6 +317,8 @@ If conflicts arise, assume this file overrides individual code comments.
 * 2025-11-02 – gpt-5-codex: Normalized `.btn-clearSVG` hitboxes by tightening SVG viewBoxes and centralizing stroke width variable. Design Intent: align all clear buttons on consistent stroke sizing with icon-bound click targets. Risks / Concerns: confirm expanded viewBox padding covers hover-scale strokes.
 
 * 2025-11-02 – gpt-5-codex: Floated clear/path/expression load buttons on an overlay anchored to the Express panel. Design Intent: keep quick actions visually attached to the editor while tracking dynamic height changes. Risks / Concerns: Monitor the panel’s `overflow` override for any unexpected bleed with other layered elements.
+
+* 2025-11-04 – gpt-5-codex: no functional change – repositioned architecture deduction subject tags ahead of identifiers per updated formatting guidance.
 
 * 2025-11-03 – gpt-5-codex: Added Theme button and live color picker modal to let users retune `--G-color-1` from the panel footer. Design Intent: expose quick theme tweaks without leaving the Expressor UI. Risks / Concerns: Canvas gradient rendering may tax very old CEP runtimes; watch for pointer-capture quirks on high-DPI displays.
 
