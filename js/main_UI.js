@@ -132,138 +132,40 @@ ensureHostReady(() => {
       });
     }
 
-    var tabContent = document.getElementById("mainTabContent");
-    var tabButtons = document.querySelectorAll(".modeSwitchBar [data-tab]");
-    if (tabContent && tabButtons.length) {
-      var tabPanels = tabContent.querySelectorAll(".panel");
-      var expressArea = document.getElementById("expressArea");
-      var searchPanel = document.getElementById("searchReplacePanel");
-      var btnModeSwitch = document.getElementById("btnModeSwitch");
-      var tabExpressBtn = document.getElementById("tab-express");
-      var tabSearchBtn = document.getElementById("tab-search");
-      var btnExpressMode = tabExpressBtn;
-      var btnRewriteMode = tabSearchBtn;
-      var modeSwitchBar = document.querySelector(".modeSwitchBar");
+    var modePanel = document.getElementById("modePanel");
+    var modeExpressBtn = document.getElementById("modeExpressBtn");
+    var modeRewriteBtn = document.getElementById("modeRewriteBtn");
+    var modeViewExpress = document.getElementById("modeViewExpress");
+    var modeViewRewrite = document.getElementById("modeViewRewrite");
 
-      function applyModeState(isExpress) {
-        if (!expressArea) return;
+    if (modePanel && modeExpressBtn && modeRewriteBtn && modeViewExpress && modeViewRewrite) {
+      function setMode(mode) {
+        var isExpress = mode === "express";
 
-        expressArea.classList.toggle("express-active", isExpress);
-        expressArea.classList.toggle("rewrite-active", !isExpress);
-        expressArea.style.display = isExpress ? "" : "none";
+        modeViewExpress.hidden = !isExpress;
+        modeViewRewrite.hidden = isExpress;
+        modeViewExpress.classList.toggle("is-hidden", !isExpress);
+        modeViewRewrite.classList.toggle("is-hidden", isExpress);
+        modeViewExpress.setAttribute("aria-hidden", String(!isExpress));
+        modeViewRewrite.setAttribute("aria-hidden", String(isExpress));
 
-        if (modeSwitchBar) {
-          modeSwitchBar.classList.toggle("express-active", isExpress);
-          modeSwitchBar.classList.toggle("rewrite-active", !isExpress);
-        }
+        modeExpressBtn.classList.toggle("is-active", isExpress);
+        modeRewriteBtn.classList.toggle("is-active", !isExpress);
+        modeExpressBtn.setAttribute("aria-selected", String(isExpress));
+        modeRewriteBtn.setAttribute("aria-selected", String(!isExpress));
 
-        if (btnExpressMode) {
-          btnExpressMode.classList.toggle("active", isExpress);
-          btnExpressMode.setAttribute("aria-pressed", isExpress ? "true" : "false");
-        }
-
-        if (btnRewriteMode) {
-          btnRewriteMode.classList.toggle("active", !isExpress);
-          btnRewriteMode.setAttribute("aria-pressed", !isExpress ? "true" : "false");
-        }
-
-        if (btnModeSwitch) {
-          var switchLabel = isExpress ? "Switch to rewrite mode" : "Switch to express mode";
-          btnModeSwitch.setAttribute("aria-label", switchLabel);
-          btnModeSwitch.setAttribute("title", switchLabel);
-        }
-
-        if (tabExpressBtn) {
-          tabExpressBtn.classList.toggle("active", isExpress);
-          tabExpressBtn.setAttribute("aria-selected", isExpress ? "true" : "false");
-        }
-
-        if (tabSearchBtn) {
-          tabSearchBtn.classList.toggle("active", !isExpress);
-          tabSearchBtn.setAttribute("aria-selected", !isExpress ? "true" : "false");
-        }
-
-        if (searchPanel) {
-          searchPanel.setAttribute("aria-hidden", isExpress ? "true" : "false");
-        }
+        modePanel.dataset.mode = isExpress ? "express" : "rewrite";
       }
 
-      function activateTab(targetId) {
-        Array.prototype.forEach.call(tabButtons, function (btn) {
-          var isTarget = btn.getAttribute("data-tab") === targetId;
-          btn.classList.toggle("active", isTarget);
-          btn.setAttribute("aria-selected", isTarget ? "true" : "false");
-        });
-
-        Array.prototype.forEach.call(tabPanels, function (panel) {
-          var panelId = panel.id;
-
-          if (panelId === "expressArea") {
-            panel.classList.remove("hidden");
-            return;
-          }
-
-          if (panelId === "searchReplacePanel") {
-            panel.classList.toggle("hidden", targetId !== "searchReplacePanel");
-            return;
-          }
-
-          var isTarget = panelId === targetId;
-          panel.classList.toggle("hidden", !isTarget);
-        });
-
-        if (targetId === "searchReplacePanel") {
-          if (searchPanel) {
-            searchPanel.classList.remove("hidden");
-          }
-          applyModeState(false);
-          return;
-        }
-
-        if (targetId === "expressArea") {
-          if (searchPanel) {
-            searchPanel.classList.add("hidden");
-          }
-          applyModeState(true);
-        }
-      }
-
-      Array.prototype.forEach.call(tabButtons, function (btn) {
-        btn.addEventListener("click", function () {
-          var target = btn.getAttribute("data-tab");
-          if (!target) return;
-          activateTab(target);
-        });
+      modeExpressBtn.addEventListener("click", function () {
+        setMode("express");
       });
 
-      function setMode(mode) {
-        if (mode === "rewrite") {
-          activateTab("searchReplacePanel");
-        } else {
-          activateTab("expressArea");
-        }
-      }
+      modeRewriteBtn.addEventListener("click", function () {
+        setMode("rewrite");
+      });
 
-      if (btnExpressMode) {
-        btnExpressMode.addEventListener("click", function () {
-          setMode("express");
-        });
-      }
-
-      if (btnRewriteMode) {
-        btnRewriteMode.addEventListener("click", function () {
-          setMode("rewrite");
-        });
-      }
-
-      if (btnModeSwitch) {
-        btnModeSwitch.addEventListener("click", function () {
-          var isExpress = expressArea ? expressArea.classList.contains("express-active") : true;
-          setMode(isExpress ? "rewrite" : "express");
-        });
-      }
-
-      activateTab("expressArea");
+      setMode("express");
     }
   });
 
