@@ -283,3 +283,44 @@ Engineering responses pivoted to load sequencing and resilience. Developers had 
 Parallel work confirmed that persistence worked even as live updates failed. Editing snippets or banks in either panel successfully saved `banks.json` to disk, proving that `Holy.State` writes remained intact. However, the other panel saw no updates until a manual reload, signaling that CEP event broadcasts did not propagate across window contexts. Engineers suspected the listener registration or channel naming left the Quick Panel isolated, but no definitive fix emerged inside the session. Additional diagnostics emphasized known limitations: ExtendScript (JSX) logs do not surface in DevTools, so only the panel JavaScript logs were visible, and each CEP window runs inside an isolated JavaScript runtime with its own `localStorage`, forcing all shared state through the CSInterface bridge or filesystem.
 
 By the end of the investigation the Quick Panel remained partially operational. Warm-wake timers, focus listeners, and persistence routines all executed as expected, yet the first-load blank state persisted and live synchronization between panels still failed. The user could reliably open the panel, click the launcher a second time to reveal content, and trust that any edits saved to disk would survive the session, but they still lacked a true hot-sync experience. Future work therefore centers on instrumenting the load lifecycle to determine why CEP fails to paint during the initial boot and on constructing a verified event relay so both panels consume `Holy.State` updates without manual intervention.
+
+###2025-10-30 – Quick Panel Compositor Attach Fix (Condensed)
+The Holy Expressor Quick Panel displayed a persistent blank window on its first open, showing white or gray depending on cache state, and required a second activation to render. Logs confirmed that all modules loaded correctly and the DOM was alive, but After Effects failed to visually composite the panel surface. Numerous JavaScript-side fixes—resize events, transform reflows, bridge readiness checks, and UI refresh calls—failed to solve the problem.
+
+Research uncovered that this bug stemmed from an After Effects compositor attach race in CEPHtmlEngine, where the first requestOpenExtension() call succeeded logically while failing to bind a GPU surface. Examination of the Flow plugin revealed its panels use <AutoVisible>true</AutoVisible> and <Type>ModalDialog</Type>, forcing AE to pre-initialize compositor surfaces at startup.
+
+Adopting the same manifest-level pattern resolved the issue completely. Setting <AutoVisible>true</AutoVisible> and <Type>Modeless</Type> ensured the Quick Panel surface was prebound and visible on the first open. Subsequent testing proved that switching between Modeless and Panel types retained the fix, provided AutoVisible remained true.
+
+All redundant repaint and recovery code was deleted. The final manifest block:
+
+<AutoVisible>true</AutoVisible>
+<Type>Modeless</Type>
+<Geometry>
+  <Width>400</Width>
+  <Height>300</Height>
+</Geometry>
+
+The Quick Panel now renders immediately without white or gray blanks, and compositor attach problems are considered permanently solved. Development focus has shifted to synchronizing snippet and bank data between panels.
+
+
+### 2025-10-31 – Quick Panel Type & Persistence Behavior (Condensed)
+Once the compositor attach issue was resolved, attention turned to window behavior and persistence. The Quick Panel, now opening correctly, still lacked saved screen position and size persistence. Testing established that Modeless windows in CEP cannot store OS-level coordinates or be restored by After Effects. AE treats them as transient dialogs excluded from workspace serialization.
+Only <Type>Panel</Type> extensions participate in workspace layouts and can persist docking or floating coordinates. Attempts to reposition modeless windows programmatically via window.moveTo() or geometry tags failed because CEP sandbox blocks these APIs. The <Geometry> manifest tag defines initial size only, not coordinates, and no CEP API or manifest directive allows explicit spawn positioning.
+Visual persistence can be faked with saved offsets and CSS transforms, but AE itself will always reopen modeless windows at defaults. For this reason, Holy Expressor’s Quick Panel was converted to <Type>Panel</Type> for persistent docking and workspace integration, despite the unavoidable header chrome. Header elements cannot be hidden or moved; they can only be visually blended with a top bar using AE’s dark theme color.
+Final manifest decision:
+<Type>Panel</Type> with <AutoVisible>true</AutoVisible> and standard geometry fields.
+Modeless is retained only for transient floating tools.
+
+### 2025-11-01 – Quick Panel Geometry, Debug Ports, and CSS Cascade (Condensed)
+During further testing, the Quick Panel spawned larger than its declared 320×150 manifest geometry. Investigation confirmed that After Effects treats manifest <Size> and <Geometry> as non-binding hints overridden by workspace records. Only when no workspace data exists does AE use those dimensions. <MinSize> and <MaxSize> can limit resizing but not enforce a first-launch size.
+
+Debugging also revealed each CEP extension can expose its own remote port. The .debug file must list every extension ID explicitly; otherwise, only the first port activates. Holy Expressor’s main panel (6904) and Quick Panel (6905) therefore require distinct <Extension> entries. Failure to include an ID prevents its debugger from broadcasting.
+
+Parallel research clarified a CSS issue: the Quick Panel’s custom button style .btn-smallpop conflicted with the generic button {} rule. Equal-specificity selectors resolve by cascade order, so whichever appears later wins. The fix is to move .btn-smallpop below the generic rule or increase specificity (button.btn-smallpop {}), optionally resetting inherited styles with all: unset;.
+
+Established outcomes:
+AE ignores manifest size once a workspace record exists.
+.debug supports multiple ports with matching IDs.
+CEP user-agent styles always apply to native elements.
+Correct bottom-right alignment uses position:absolute; bottom:0; right:0;.
+Quick Panel remains Panel-type with persistent docking.
