@@ -396,7 +396,7 @@ Holy.SNIPPETS.banks = [
   function createRhombusButton(labelText, positionIndex) {
     const doc = cy_resolveDoc();
     const btn = doc.createElement("button");
-    btn.className = "btn-rhombus2-flex f21 snippet-btn";
+    btn.className = "f21 snippet-btn";
 
     const pos = typeof positionIndex === "number" ? positionIndex : 1;
     let svgMarkup = "";
