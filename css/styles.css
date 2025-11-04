@@ -1397,22 +1397,26 @@ body.editor-maximized #toast {
 
 
 #snippetsBar {
-  display: block;
-
-
+  display: flex;
+  flex-direction: column;
+  gap: 0;
   background: none;
-
+  padding: 0;
+  margin: 0;
 }
 
 #snippetsRow {
   display: flex;
-  flex-wrap: wrap;
-    gap: 8px;
-    margin-left: 4px;
-    margin-top: 2px;
-  /*padding-top: 4px;
-  min-height: 28px;*/
-  
+  flex-wrap: nowrap;
+  align-items: stretch;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: var(--snippet-row-height, 26px);
+  height: 100%;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 
@@ -1811,192 +1815,95 @@ button.btn-discreet.is-active .icon-collapse {
    You can move these up near the flex block — they’re non-conflicting. */
 /* ======================================================================== */
 
-.snippet-btn {
-  display: inline-block;
 
-  border-radius: 6px;
-      height: 22px;
-  background: none;          /* transparent background */
-           /* fallback text color */
-
-  transition: background 0.15s ease, border-color 0.15s ease;
-}
-
-/* Optional hover glow or darkening for the snippet button zone */
-.snippet-btn:hover {
-  background: none;          /* mild dark overlay behind the SVG */
-  border-color: none;
-}
-
-
-/* #region 🧩 btn-rhombus2-flex — “Mark II” Flexible Rhombus Button Layout    */
-/* -------------------------------------------------------------------------- */
-/* Used by the Snippet Buttons. This version builds the button using          */
-/* three separate SVGs (left cap, middle stretch, right cap) so it can        */
-/* expand and contract automatically based on label text length.              */
+/* ======================================================================== */
+/* 🧩 Snippet Button Strip — fixed rhombus layout                           */
+/* ------------------------------------------------------------------------ */
 
 :root {
-  /* 🎨 Global button theme defaults */
-  --btn-Rs-stroke: var(--G-color-1);        /* outer line color */
-  --btn-Rs-fill: var(--G-color-1-mid);      /* interior fill color */
-  --btn-Rs-text: var(--G-color-1-midlight); /* text color */
-    --btn-Rs-mid-stroke: var(--G-color-1-midlight);    
+  --btn-Rs-fill: var(--G-color-1-mid);
+  --btn-Rs-text: var(--G-color-1-midlight);
+  --btn-Rs-fill-hover: var(--G-color-1);
+  --btn-Rs-text-hover: var(--G-color-1-deepdark-bg);
+  --snippet-row-height: 26px;
+}
 
- --btn-Rs-stroke-hover: var(--G-color-1-light);        
- --btn-Rs-fill-hover: var(--G-color-1);      
- --btn-Rs-text-hover: var(--G-color-1-deepdark-bg); 
-    --btn-Rs-mid-stroke-hover: var(--G-color-1);      
-  }
+.snippetsRow > .snippet-btn {
+  flex: 1 1 33.3333%;
+}
+
+.snippet-btn {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  flex: 1 1 33.3333%;
+  min-width: 0;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--btn-Rs-fill);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.snippet-btn:hover {
+  background: transparent;
+  border-color: transparent;
+  color: var(--btn-Rs-fill-hover);
+}
 
 .btn-rhombus2-flex {
-
-  /* 🎨 Button theme colors — drawn from your global palette */
-
-  /* 🧱 STRUCTURE / LAYOUT */
-  position: relative;                    /* allows inner elements (like .label) 
-                                            to position themselves relative to this button */
-  display: inline-flex;                  /* creates a horizontal flex container so 
-                                            all children (SVG caps, label) align in a row */
-  align-items: center;                   /* vertically centers everything inside */
-  justify-content: center;               /* centers everything horizontally */
-  border: none;                          /* removes default button border */
-  background: none;                      /* removes native button background */
-  cursor: pointer;                       /* shows pointer cursor on hover */
-padding: 0 0 !important;                            /* removes browser padding */
-  margin: -5.3px -7px !important  ;                      /* sits neatly with siblings (spacing added later) */
-  transform: scale(0.9);                 /* slightly reduces visual scale to match others */
-
-  /* 📏 WIDTH CONTROL */
-  width: auto;                           /* auto-expands to fit label + SVGs */
-  min-width: 60px;                       /* prevents it from collapsing too small */
-  max-width: 180px;     
-    line-height: 0;              /* caps the width — prevents it stretching too far */
-    height: 22.5px;
-
-
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
 }
-
-/* 🌈 HOVER STATE — dynamic recolor                                           */
-/* Matches Apply button hover: changes fill and stroke theme colors          */
-/* via CSS variables.                                                         */
-
-.btn-rhombus2-flex:hover {
-  --btn-Rs-stroke: var(--btn-Rs-stroke-hover);
-  --btn-Rs-fill: var(--btn-Rs-fill-hover);
-  --btn-Rs-text: var(--btn-Rs-text-hover);
-  
-  --btn-Rs-mid-stroke: var(--btn-Rs-mid-stroke-hover);
-
-  font-weight: bold;
-  stroke-width: 1px !important;
-}
-
-
-
-/* 🎞️ RHOMBUS-WRAP — the internal container that holds all 3 SVG segments     */
-/* -------------------------------------------------------------------------- */
-                                           
-
-.btn-rhombus2-flex .rhombus-wrap {
-  display: flex;                         /* lays out the three SVGs in a row */
-  align-items: center;                   /* keeps their vertical alignment consistent */
-  height: 18.5px;                        /* the total button height */
-  position: relative;                    /* positions child elements like .label cleanly */
-  flex: 1 1 auto;       
-                
-}
-
-
-/* 🎯 RHOMBUS-LEFT & RHOMBUS-RIGHT — the end caps                            */
-
-
-.btn-rhombus2-flex .rhombus-left,
-.btn-rhombus2-flex .rhombus-right {
-
-  flex: 0 0 auto;                        /* fixed width, not affected by flex growth */
-  width: 7.47px;                         /* exact cap size (matches Apply button geometry) */
-}
-
-.btn-rhombus2-flex .rhombus-mid line {
-  transform-box: fill-box;
-  transform-origin: center;
-transform: scaleX(0.98);
-}
-
-/* 🧩 RHOMBUS-MID — the middle section that stretches dynamically             */
-
-
-.btn-rhombus2-flex .rhombus-mid {
-  flex: 1 0 auto;                        /* grows to fill available space but doesn’t shrink 
-                                            smaller than its content */
-  display: flex;                         /* creates a mini flexbox for internal SVG centering */
-  align-items: center;                   /* vertically centers SVG and label if needed */
-  justify-content: center;               /* centers horizontally */
-  width: auto;                           /* auto width follows label size */
-  min-width: 10px;                       /* safety minimum so it doesn’t collapse */
-   
-  /* middle line gets dimmer colour
-  --btn-Rs-stroke: var(--btn-Rs-mid-stroke); 
-  */
-
-
-  }
-
-
-/* ========================================================================== */
-/* 🧠 SVG RULES — global vector settings for all parts of the rhombus         */
-/* -------------------------------------------------------------------------- */
 
 .btn-rhombus2-flex svg {
-  height: 18.5px;                        /* locks consistent button height */
-  fill: inherit;                           
-  stroke: inherit;             /* outline color uses theme variable */
-  stroke-width: 1;                       /* thin outline */
-  stroke-miterlimit: 10;                 /* keeps corners clean (used for sharp joins) */
-  vector-effect: non-scaling-stroke;     /* stroke width stays consistent on scale */
-    shape-rendering: geometricPrecision;  
-
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
-
-/* ========================================================================== */
-/* 📏 RHOMBUS-MID SVG — makes the middle SVG stretch horizontally             */
-/* -------------------------------------------------------------------------- */
-
-.btn-rhombus2-flex .rhombus-mid svg {
-  width: 100%;                           /* fill available horizontal space */
-}
-
-
-/* ========================================================================== */
-/* 📩📩📩 LABEL — text inside the button                                         */
-/* -------------------------------------------------------------------------- */
-/* The label sits visually centered, not absolute-positioned like v1,        */
-/* so it stays aligned as the SVG stretches.                                 */
-/* ========================================================================== */
-.btn-rhombus2-flex .label {
-  position: relative;                     /* positioned in normal flow, not overlapping SVG */
-
-  z-index: 2;                             /* ensures text is above glows and SVG lines */
-
-  padding: 0 10px;                       /* horizontal space inside the mid section */
+.snippet-btn .label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 0 8px;
   font-family: var(--f1);
   font-size: 11.5px;
   letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--btn-Rs-text);
-  white-space: nowrap;                   /* stops multi-line wrapping */
-  pointer-events: none;                  /* makes label text unclickable (passes clicks to button) */
-  line-height: 1;                        /* keeps text vertically tight and centered */
+  pointer-events: none;
+  white-space: nowrap;
+  max-width: calc(100% - 12px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  z-index: 1;
+  line-height: 1.1;
+}
 
-  max-width: 100px;           /* match button width minus side caps */
-  overflow: hidden;           /* hides overflowing text cleanly */
-  text-overflow: ellipsis;    /* adds … when text overflows */
-  display: inline-block;      /* required for ellipsis to work */
-  vertical-align: middle;     /* keeps text aligned nicely */
+.snippet-btn:hover .label {
+  color: var(--btn-Rs-text-hover);
+  font-weight: bold;
+}
 
-transform: translateY(2.5px) !important; /* fine-tunes vertical centering */
-  margin-bottom: -12px; /* roughly cancels the phantom space */
+.snippet-btn:focus-visible {
+  outline: 2px solid var(--btn-Rs-fill-hover);
+  outline-offset: -2px;
+}
+
+.snippet-btn:focus-visible .label {
+  font-weight: bold;
+}
+
+.rhombus-icon {
+  pointer-events: none;
 }
 
 /*#endregion*/
