@@ -164,6 +164,14 @@ ensureHostReady(() => {
       modeRewriteBtn.addEventListener("click", function () {
         setMode("rewrite");
       });
+// Center diamond button toggles between modes
+var btnModeSwitch = document.getElementById("btnModeSwitch");
+if (btnModeSwitch) {
+  btnModeSwitch.addEventListener("click", function () {
+    var isExpress = modePanel.dataset.mode === "express";
+    setMode(isExpress ? "rewrite" : "express");
+  });
+}
 
       setMode("express");
     }
@@ -300,5 +308,43 @@ ensureHostReady(() => {
   } catch (listenerErr) {
     console.warn("[Holy.State] Failed to attach LiveSync listener", listenerErr);
   }
+
+
+
+
+
+// 🔗 Open Full Editor Window
+window.addEventListener("DOMContentLoaded", function () {
+  const btn = document.getElementById("openFullEditorBtn");
+  if (!btn) return;
+
+  btn.addEventListener("click", function () {
+    const cs = new CSInterface();
+
+    // 🧩 1️⃣ hide the embedded editor
+    const expressArea = document.getElementById("expressArea");
+    if (expressArea) expressArea.style.display = "none";
+
+    // 🧩 2️⃣ broadcast current CodeMirror contents before opening
+    if (window.Holy && Holy.EXPRESS && typeof Holy.EXPRESS.broadcastEditorText === "function") {
+      Holy.EXPRESS.broadcastEditorText();
+    }
+
+    // 🧩 3️⃣ open the full editor panel
+    cs.requestOpenExtension("com.holy.expressor.fulleditor");
+    console.log("[Holy.UI] Full editor opened + content broadcasted");
+  });
+
+// 🧠 When full editor loses focus or closes, restore main editor visibility
+window.addEventListener("focus", function () {
+  const expressArea = document.getElementById("expressArea");
+  if (expressArea) expressArea.style.display = "";
+});
+
+
+});
+
+
+
 
 })();

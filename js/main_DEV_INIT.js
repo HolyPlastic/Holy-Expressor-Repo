@@ -15,13 +15,13 @@ if (typeof Holy !== "object") Holy = {};
 
 
 
-// Debug messages from host.jsx
-Holy.UI.cs.addEventListener("com.holyexpressor.debug", (evt) => {
+  // Debug messages from host.jsx
+  Holy.UI.cs.addEventListener("com.holyexpressor.debug", (evt) => {
     if (window.HX_LOG_MODE === "verbose") {
-  console.log("[host]", evt.data);
-}
+      console.log("[host]", evt.data);
+    }
 
-});
+  });
 
 
 
@@ -33,46 +33,45 @@ Holy.UI.cs.addEventListener("com.holyexpressor.debug", (evt) => {
   // ---------------------------------------------------------
   // 🚀 Load JSON2 + HostJSX
   // ---------------------------------------------------------
-function loadJSX() {
-  // Base path to extension
-  var base = Holy.UI.cs.getSystemPath(SystemPath.EXTENSION);
+  function loadJSX() {
+    // Base path to extension
+    var base = Holy.UI.cs.getSystemPath(SystemPath.EXTENSION);
 
-  // Path helper (escapes backslashes for Windows)
-  function p(rel) {
-    return (base + rel).replace(/\\/g, "\\\\");
+    // Path helper (escapes backslashes for Windows)
+    function p(rel) {
+      return (base + rel).replace(/\\/g, "\\\\");
+    }
+
+    // Load JSON polyfill first (required for legacy AE engines)
+    Holy.UI.cs.evalScript('$.evalFile("' + p("/jsx/json2.js") + '")');
+
+    // Explicitly load all host modules in correct order
+    var hostModules = [
+      "/jsx/modules/host_UTILS.jsx",
+      "/jsx/modules/host_MAPS.jsx",
+      "/jsx/modules/host_GET.jsx",
+      "/jsx/modules/host_APPLY.jsx",
+      "/jsx/modules/host_DEV.jsx",
+      "/jsx/modules/host_FLYO.jsx", // 🆕 added for flyover launcher
+      "/jsx/host.jsx" // load main host last
+    ];
+
+    hostModules.forEach(function (file) {
+      Holy.UI.cs.evalScript('$.evalFile("' + p(file) + '")');
+    });
+
+    // Console pings to confirm ExtendScript linkage
+    Holy.UI.cs.evalScript('(typeof he_U_SS_getSelectionSummary)', function (res) {
+      console.log("he_U_SS_getSelectionSummary typeof:", res);
+    });
+
+    Holy.UI.cs.evalScript('(typeof he_U_getSelectedPaths)', function (res) {
+      console.log("he_U_getSelectedPaths typeof:", res);
+    });
+
+    console.log("✅ loadJSX(): All host modules loaded into ExtendScript.");
   }
 
-  // Load JSON polyfill first (required for legacy AE engines)
-  Holy.UI.cs.evalScript('$.evalFile("' + p("/jsx/json2.js") + '")');
-
-  // Explicitly load all host modules in correct order
-  var hostModules = [
-    "/jsx/modules/host_UTILS.jsx",
-    "/jsx/modules/host_MAPS.jsx",
-    "/jsx/modules/host_GET.jsx",
-    "/jsx/modules/host_APPLY.jsx",
-    "/jsx/modules/host_DEV.jsx",
-      "/jsx/modules/host_FLYO.jsx", // 🆕 added for flyover launcher
-    "/jsx/host.jsx" // load main host last
-  ];
-
-  hostModules.forEach(function (file) {
-    Holy.UI.cs.evalScript('$.evalFile("' + p(file) + '")');
-  });
-
-  // Console pings to confirm ExtendScript linkage
-  Holy.UI.cs.evalScript('(typeof he_U_SS_getSelectionSummary)', function (res) {
-    console.log("he_U_SS_getSelectionSummary typeof:", res);
-  });
-
-  Holy.UI.cs.evalScript('(typeof he_U_getSelectedPaths)', function (res) {
-    console.log("he_U_getSelectedPaths typeof:", res);
-  });
-
-  console.log("✅ loadJSX(): All host modules loaded into ExtendScript.");
-}
-
-  
 
 
 
@@ -80,7 +79,8 @@ function loadJSX() {
 
 
 
-function init() {
+
+  function init() {
     loadJSX();
     if (Holy.State && typeof Holy.State.init === "function") {
       try {
@@ -97,12 +97,12 @@ function init() {
     // 🧩 SNIPPETS MODULE INIT
     // ---------------------------------------------------------
     if (Holy.SNIPPETS && typeof Holy.SNIPPETS.init === "function") {
-        // 💡 CHECKER: run dynamic snippet button rendering
-        Holy.SNIPPETS.init();
-        console.log("[Holy.SNIPPETS] init() called from DEV_INIT");
+      // 💡 CHECKER: run dynamic snippet button rendering
+      Holy.SNIPPETS.init();
+      console.log("[Holy.SNIPPETS] init() called from DEV_INIT");
     } else {
-        // 💡 CHECKER: prevent crash if SNIPPETS failed to load
-        console.warn("[Holy.SNIPPETS] init unavailable at boot");
+      // 💡 CHECKER: prevent crash if SNIPPETS failed to load
+      console.warn("[Holy.SNIPPETS] init unavailable at boot");
     }
 
     if (Holy.State && typeof Holy.State.attachPanelBindings === "function") {
@@ -114,12 +114,12 @@ function init() {
     }
 
 
-  Holy.MENU.contextM_disableNative();
+    Holy.MENU.contextM_disableNative();
     console.log("Holy Expressor ready");
-}
+  }
 
 
-  Holy.UI.cs.addEventListener("com.adobe.csxs.events.SDKEventMessage", function(evt) {
+  Holy.UI.cs.addEventListener("com.adobe.csxs.events.SDKEventMessage", function (evt) {
     if (evt && evt.data && evt.data.indexOf("HE_LOG::") === 0) {
       var msg = evt.data.replace("HE_LOG::", "");
       var out = document.querySelector("#applyOutput");
@@ -135,108 +135,110 @@ function init() {
   } else {
     init();
   }
-  
 
 
 
 
 
 
-// --- CodeMirror setup ---	
-window.addEventListener("DOMContentLoaded", () => {	
-console.log("CodeMirror global:", window.codemirror);	
 
-// ✅ Corrected guard: only continue if CodeMirror is loaded
-if (!window.codemirror || !window.codemirror.EditorState) {
-console.warn("⚠️ CodeMirror bundle missing or not ready");
-return;
-}
+  // --- CodeMirror setup ---	
+  window.addEventListener("DOMContentLoaded", () => {
+    console.log("CodeMirror global:", window.codemirror);
 
-const startState = window.codemirror.EditorState.create({
-doc: "// Type your expression here...",
-extensions: [
-window.codemirror.basicSetup,
-window.codemirror.javascript(),
-window.codemirror.oneDark,
-window.codemirror.EditorView.lineWrapping // ✅ word wrap
-]
-});
-
-window.editor = new window.codemirror.EditorView({
-state: startState,
-parent: document.getElementById("codeEditor")
-});
-
-// ✅ V2 - Clear placeholder on focus/click
-if (window.editor && window.editor.contentDOM) {
-window.editor.contentDOM.addEventListener("focus", () => {
-try {
-const full = window.editor.state.doc.toString();
-if (full === "// Type your expression here...") {
-window.editor.dispatch({
-changes: { from: 0, to: full.length, insert: "" }
-});
-console.log("Placeholder cleared on contentDOM focus");
-}
-} catch (e) {
-console.error("Placeholder clear failed:", e);
-}
-});
-}
-
-console.log("✅ CodeMirror editor mounted");
-
-if (Holy.State && typeof Holy.State.bindEditor === "function") {
-  try {
-    Holy.State.bindEditor(window.editor);
-  } catch (err) {
-    console.warn("[DEV_INIT] Holy.State.bindEditor failed", err);
-  }
-}
-
-const clearBtn = document.getElementById("editorClearBtn");
-if (clearBtn) {
-  clearBtn.addEventListener("click", () => {
-    if (!window.editor || !window.editor.state) {
-      console.warn("Editor clear requested but CodeMirror instance is unavailable");
+    // ✅ Corrected guard: only continue if CodeMirror is loaded
+    if (!window.codemirror || !window.codemirror.EditorState) {
+      console.warn("⚠️ CodeMirror bundle missing or not ready");
       return;
     }
 
-    try {
-      const full = window.editor.state.doc.toString();
-      window.editor.dispatch({
-        changes: { from: 0, to: full.length, insert: "" }
-      });
-      if (typeof window.editor.focus === "function") {
-        window.editor.focus();
-      }
-      if (Holy.State && typeof Holy.State.update === "function") {
+    const startState = window.codemirror.EditorState.create({
+      doc: "// Type your expression here...",
+      extensions: [
+        window.codemirror.basicSetup,
+        window.codemirror.javascript(),
+        window.codemirror.oneDark,
+        window.codemirror.EditorView.lineWrapping // ✅ word wrap
+      ]
+    });
+
+    window.editor = new window.codemirror.EditorView({
+      state: startState,
+      parent: document.getElementById("codeEditor")
+    });
+
+    // ✅ V2 - Clear placeholder on focus/click
+    if (window.editor && window.editor.contentDOM) {
+      window.editor.contentDOM.addEventListener("focus", () => {
         try {
-          Holy.State.update({ expressionText: "" });
-        } catch (err) {
-          console.warn("[DEV_INIT] Holy.State.update failed after clear", err);
+          const full = window.editor.state.doc.toString();
+          if (full === "// Type your expression here...") {
+            window.editor.dispatch({
+              changes: { from: 0, to: full.length, insert: "" }
+            });
+            console.log("Placeholder cleared on contentDOM focus");
+          }
+        } catch (e) {
+          console.error("Placeholder clear failed:", e);
         }
+      });
+    }
+
+    console.log("✅ CodeMirror editor mounted");
+
+    
+
+    if (Holy.State && typeof Holy.State.bindEditor === "function") {
+      try {
+        Holy.State.bindEditor(window.editor);
+      } catch (err) {
+        console.warn("[DEV_INIT] Holy.State.bindEditor failed", err);
       }
-    } catch (e) {
-      console.error("Failed to clear editor contents", e);
+    }
+
+    const clearBtn = document.getElementById("editorClearBtn");
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        if (!window.editor || !window.editor.state) {
+          console.warn("Editor clear requested but CodeMirror instance is unavailable");
+          return;
+        }
+
+        try {
+          const full = window.editor.state.doc.toString();
+          window.editor.dispatch({
+            changes: { from: 0, to: full.length, insert: "" }
+          });
+          if (typeof window.editor.focus === "function") {
+            window.editor.focus();
+          }
+          if (Holy.State && typeof Holy.State.update === "function") {
+            try {
+              Holy.State.update({ expressionText: "" });
+            } catch (err) {
+              console.warn("[DEV_INIT] Holy.State.update failed after clear", err);
+            }
+          }
+        } catch (e) {
+          console.error("Failed to clear editor contents", e);
+        }
+      });
     }
   });
-}
-});
-  
-  
 
 
 
 
-// ---------------------------------------------------------
-// 🚀 MODULE EXPORT
-// ---------------------------------------------------------
-Holy.DEV_INIT = {
-  cs: cs,
-  HX_LOG_MODE: HX_LOG_MODE,
-  loadJSX: loadJSX,
-  init: init
-};
+
+
+  // ---------------------------------------------------------
+  // 🚀 MODULE EXPORT
+  // ---------------------------------------------------------
+  Holy.DEV_INIT = {
+    cs: cs,
+    HX_LOG_MODE: HX_LOG_MODE,
+    loadJSX: loadJSX,
+    init: init
+  };
 
 })();

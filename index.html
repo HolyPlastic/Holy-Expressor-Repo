@@ -278,7 +278,7 @@ ____________________ -------->
   <!-- Bank name (editable text) -->
   <span id="bankNameLabel" class="f18-c">Bank 1</span>
 
-  <label class="checkbox-label text-sm"><input type="checkbox" id="snipLoadControls"></label>
+  <label class="checkbox-layercontrols text-sm"><input type="checkbox" id="snipLoadControls"></label>
 
   <!-- Context menu for bank actions -->
   <ul id="bankSelectMenu" class="context-menu"></ul>
@@ -309,20 +309,71 @@ ____________________ -------->
 
 
   <section id="modePanel" class="he-mode-panel" aria-label="Expression Tools">
-    <header class="he-mode-header" role="tablist" aria-label="Mode Switcher">
-      <button id="modeExpressBtn" class="he-tab is-active" role="tab" aria-selected="true" aria-controls="modeViewExpress">
-        Express
-      </button>
-      <button id="modeRewriteBtn" class="he-tab" role="tab" aria-selected="false" aria-controls="modeViewRewrite">
-        Rewrite
-      </button>
-    </header>
+
+
+ <div class="modePanel-inner">
+
+
+<!-- 🎛️ Unified Mode Switcher (old look, new system) -->
+<div class="modeSwitchBar f18-c heading-1" role="group" aria-label="Choose between Express and Rewrite modes">
+  <!-- Express button -->
+  <button
+    id="modeExpressBtn"
+    class="mode-btn"
+    type="button"
+    aria-pressed="true"
+    role="tab"
+    aria-selected="true"
+    aria-controls="modeViewExpress"
+  >
+    EXPRESS
+  </button>
+
+  <!-- Middle switcher icon -->
+  <button
+    id="btnModeSwitch"
+    class="mode-switch-btn"
+    type="button"
+    aria-label="Switch to rewrite mode"
+    title="Switch to rewrite mode"
+  >
+    <svg
+      class="mode-switch-svg"
+      width="18"
+      height="12"
+      viewBox="0 0 8.48 5.29"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <g class="diamond-right">
+        <polygon points="4.24 0 8.48 2.74 4.23 5.29 4.24 0" />
+      </g>
+      <g class="diamond-left">
+        <polygon points="4.24 0 0 2.74 4.25 5.29 4.24 0" />
+      </g>
+    </svg>
+  </button>
+
+  <!-- Rewrite button -->
+  <button
+    id="modeRewriteBtn"
+    class="mode-btn"
+    type="button"
+    aria-pressed="false"
+    role="tab"
+    aria-selected="false"
+    aria-controls="modeViewRewrite"
+  >
+    REWRITE
+  </button>
+</div>
+
 
     <div class="he-mode-views">
       <div id="modeViewExpress" class="he-mode-view panel" role="tabpanel" aria-labelledby="modeExpressBtn">
 
     <div class="express-panel-header">
-      <span class="heading-1 f18">Express</span>
+
       <div class="express-panel-actions express-editor-top-overlay">
         <button id="editorMaximizeBtn" class="btn-discreet" type="button" aria-label="Maximize editor" aria-pressed="false" title="Maximize editor">
           <span class="icon icon-expand" aria-hidden="true">
@@ -347,11 +398,17 @@ ____________________ -------->
         </button>
       </div>
     </div>
+    </div>
     <!-- V2: pick UI removed -->
     <!-- Editor row -->
     <div id="codeEditor"></div>
     <!-- Overlay action buttons anchored to the bottom-right of the Express area -->
     <div class="express-editor-overlay" role="group" aria-label="Editor quick actions">
+
+
+
+<label class="checkbox-custom-1 text-sm"><input type="checkbox" id="useAbsoluteComp"></label>
+
 
       <button id="loadPathFromSelectionBtn" class="btn-clearSVG express-editor-overlay-btn" type="button" aria-label="Load path from selection" title="Load path from selection">
         <svg viewBox="-0.42 -0.43 19.59 19.02" class="btn-icon">
@@ -453,28 +510,6 @@ ____________________ -------->
 	
 	
 <div id="expressControls" class="express-controls">
-    <div class="row btns">
-<!--
-  Target Selected button 
-<div class="target-btn-wrapper">
-  <button id="targetSelectedBtn" class="circle-btn"></button>
-  <div class="label-under">Target<br>Selected</div>
-</div>
-
-
-
-<div class="target-btn-wrapper">
-  <button id="targetSelectedBtn" class="circle-btn"></button>
-  <div class="label-under">Target<br>Selected</div>
-</div>
-
--->
-  <!-- ============ Absolute vs Relative ☑️ ==============-->
-	<!-- ======================[___?]=====================-->
-
-</div>
-    
-<label class="checkbox-label text-sm"><input type="checkbox" id="useAbsoluteComp"> Use comp name instead of thisComp</label>
 
 
     <!-- ============ Custom Name Searching ☑️==============-->
@@ -483,7 +518,7 @@ ____________________ -------->
     <!-- Custom Search controls -->
     <div class="row">
       <label class="checkbox-label text-sm">
-  <input type="checkbox" id="useCustomSearch" /> Custom search
+  <input type="checkbox" id="useCustomSearch" />
 </label>
     </div>
     <div class="row">
@@ -596,6 +631,8 @@ ____________________ -------->
     <div class="row">
       <button id="openApplyLog" class="log-button text-sm" title="Open Apply Log">Log</button>
       <button id="openThemePicker" class="btn-theme text-sm" title="Adjust Theme Color">Theme</button>
+    <button id="openFullEditorBtn" class="btn-discreet">Expand Editor</button>
+
     </div>
 
 <!-- Target box

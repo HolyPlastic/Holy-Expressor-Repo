@@ -439,7 +439,34 @@ function cy_replaceInExpressions(searchStr, replaceStr, options) {
 
 
 
+function broadcastEditorText() {
+  if (!window.editor) return;
+  const cs = new CSInterface();
+  const evt = new CSEvent("com.holy.expressor.editor.sync", "APPLICATION");
+  evt.data = JSON.stringify({ text: window.editor.state.doc.toString() });
+  cs.dispatchEvent(evt);
+  console.log("[Holy.EXPRESS] Sent live editor sync");
+}
 
+(function attachEditorSyncListener() {
+  const cs = new CSInterface();
+  cs.addEventListener("com.holy.expressor.editor.sync", function (evt) {
+    try {
+      const data = JSON.parse(evt.data);
+      if (data.text && window.editor) {
+        const current = window.editor.state.doc.toString();
+        if (current !== data.text) {
+          window.editor.dispatch({
+            changes: { from: 0, to: current.length, insert: data.text }
+          });
+          console.log("[Holy.EXPRESS] Updated editor via sync");
+        }
+      }
+    } catch (err) {
+      console.warn("[Holy.EXPRESS] Failed to parse sync data", err);
+    }
+  });
+})();
 
 
 
