@@ -249,6 +249,12 @@ Section currently unused.
 * SNIPPET ROUTING — [assumed-behaviour] — Snippet application is presumed to invoke both control reapply and expression bridges, but the conditions selecting `holy_applyControlsJSON` versus `holy_applySnippet` remain unverified.
 * TOAST API — [unclear-decision] — The transition from `Holy.TOAST.show` to `Holy.UI.toast` lacks a recorded rationale, leaving ambiguity over whether the change reflects a permanent API shift or temporary fallback.
 * TOAST FEEDBACK — [assumed-behaviour] — Toast notifications are treated purely as client-side status indicators without confirmed mapping to host success codes.
+* MODE SWITCH WIRING — [unknown-structure] — Event bindings that connect the historical `tab-express` and `tab-search` identifiers to the new Express/Rewrite buttons are only partially documented, leaving the dependency chain inside `main_UI.js` unclear.
+* SVG THEME CASCADE — [unknown-structure] — The inheritance path that feeds `currentColor` values into diamond and icon SVG elements is not charted, so the propagation of palette variables across nested containers remains uncertain.
+* MODE STATE INVOCATION — [unknown-structure] — The runtime trigger points for `applyModeState()` (initialization versus click handlers) are unstated, making its activation sequence ambiguous.
+* TAB LOGIC RESIDUAL — [unclear-decision] — No rationale explains why legacy tab-switch logic stays resident in `main_UI.js` after the visual tab bar was removed, resulting in overlapping state controllers.
+* EXPRESS VISIBILITY — [assumed-behaviour] — It is presumed that toggling `#expressArea` with `display: none` leaves CodeMirror and event listeners unaffected, but no verification confirms downstream stability.
+* OVERLAY POSITIONING — [assumed-behaviour] — Overlay buttons are believed to rely solely on CSS absolute positioning without JavaScript layout adjustments, yet no evidence confirms that assumption for every overlay variant.
 
 ### B. Established Architectural Facts
 * BRIDGE DISPATCH — [confirmed-mechanism] — Snippet apply actions dispatch `cs.evalScript("holy_applySnippet(index)")` calls from `main_SNIPPETS.js` into the ExtendScript layer.
@@ -259,6 +265,14 @@ Section currently unused.
 * FAILURE SIGNALING — [established-pattern] — Failure-handling logic centers on evaluating the ExtendScript return payload; absent or invalid results always surface via toast rather than silent failure.
 * SNIPPET BANKS — [permanent-decision] — Each snippet bank now initializes with exactly three immutable snippet slots, disallowing runtime addition or removal.
 * GLOBAL NAMESPACE — [permanent-decision] — The project persists in using the global `Holy.<MODULE>` namespace structure across modules as an intentional architectural choice.
+* MODE SWITCH STATE — [confirmed-mechanism] — `applyModeState(isExpress)` manages mode toggling by updating Express/Rewrite classes and setting `expressArea.style.display` to hide the inactive panel.
+* DIAMOND COLORS — [confirmed-mechanism] — `.express-active` and `.rewrite-active` classes drive the active-state fill changes for `.diamond-left` and `.diamond-right` elements on the mode switch.
+* BUTTON CASCADE — [confirmed-mechanism] — The base `button {}` selector supplies default styling, so modifiers like `.btn-discreet` inherit those rules unless they explicitly override each property.
+* PANEL CLASS TOGGLING — [established-pattern] — UI mode transitions are handled by adding or removing classes on `#expressArea` instead of rebuilding DOM fragments.
+* OVERLAY PLACEMENT — [established-pattern] — Overlay controls, including maximize and quick-action buttons, remain children of `#expressArea` even when visually floated with absolute positioning.
+* SVG COLOR SYSTEM — [established-pattern] — Inline SVG controls throughout the panel use `fill: currentColor` so their appearance tracks global theme variables.
+* THEME PARITY — [permanent-decision] — Mode switch elements share the same `currentColor` palette as neighboring controls to maintain cohesive styling between Express and Rewrite views.
+* EXPRESS CONTAINER — [permanent-decision] — `#expressArea` continues to anchor the editor, overlays, and mode buttons, confirming its role as the central structural container.
 
 ---
 
