@@ -255,6 +255,12 @@ Section currently unused.
 * TAB LOGIC RESIDUAL — [unclear-decision] — No rationale explains why legacy tab-switch logic stays resident in `main_UI.js` after the visual tab bar was removed, resulting in overlapping state controllers.
 * EXPRESS VISIBILITY — [assumed-behaviour] — It is presumed that toggling `#expressArea` with `display: none` leaves CodeMirror and event listeners unaffected, but no verification confirms downstream stability.
 * OVERLAY POSITIONING — [assumed-behaviour] — Overlay buttons are believed to rely solely on CSS absolute positioning without JavaScript layout adjustments, yet no evidence confirms that assumption for every overlay variant.
+* COLORPICKER SPAWN — [unknown-structure] — The exact API responsible for opening the color picker window (direct `window.open` versus `cs.requestOpenExtension`) lacks documentation on parameters and lifecycle.
+* STATE PERSISTENCE — [unknown-structure] — References to “roaming” settings imply an existing persistence store, but its file paths, schema, and access layer are still undefined.
+* DERIVED VARS — [unknown-structure] — `window.updateDerivedVariables()` executes during theme changes without a recorded contract outlining arguments or side effects.
+* COLOR SYNC — [unclear-decision] — Maintaining both the `cs.addEventListener('holy.color.change')` binding and a secondary listener block remains unexplained, leaving redundancy motives unclear.
+* PANEL GLOBALS — [assumed-behaviour] — Cross-window access to globals such as `window.updateDerivedVariables` is presumed to work despite CEP isolation, yet no proof confirms this sharing model.
+* BOOT ORDER — [unknown-structure] — The startup sequencing between style bootstrapping, derived variable hydration, and persisted state replay is undocumented, obscuring timing guarantees.
 
 ### B. Established Architectural Facts
 * BRIDGE DISPATCH — [confirmed-mechanism] — Snippet apply actions dispatch `cs.evalScript("holy_applySnippet(index)")` calls from `main_SNIPPETS.js` into the ExtendScript layer.
@@ -273,6 +279,14 @@ Section currently unused.
 * SVG COLOR SYSTEM — [established-pattern] — Inline SVG controls throughout the panel use `fill: currentColor` so their appearance tracks global theme variables.
 * THEME PARITY — [permanent-decision] — Mode switch elements share the same `currentColor` palette as neighboring controls to maintain cohesive styling between Express and Rewrite views.
 * EXPRESS CONTAINER — [permanent-decision] — `#expressArea` continues to anchor the editor, overlays, and mode buttons, confirming its role as the central structural container.
+* COLOR EVENTS — [confirmed-mechanism] — Theme updates broadcast through `holy.color.change` CEP events and supplementary `window.postMessage` payloads that carry `{hex: "#xxxxxx"}` objects.
+* EVENT PARSE — [confirmed-mechanism] — Main-panel handlers must treat `evt.data` as JSON text and only parse when `typeof evt.data === 'string'` to avoid `Unexpected token o` errors.
+* CEP STORAGE — [confirmed-mechanism] — Each CEP window owns an isolated `localStorage`, preventing the color picker from sharing persisted data with the main panel.
+* HUE SLIDER — [confirmed-mechanism] — The custom hue slider depends on `-webkit-appearance: none` for its gradient to render inside the CEP Chromium runtime.
+* THEME CASCADE — [established-pattern] — Color application funnels through resetting the root `--G-color-1` CSS variable and then calling `updateDerivedVariables()` to refresh dependent tokens.
+* STATE BRIDGE — [permanent-decision] — Cross-window and cross-session state is standardized on `cs.setPersistentData` / `getPersistentData` rather than `localStorage`.
+* TOKEN DESIGN — [permanent-decision] — Visual styles intentionally lean on shared CSS tokens such as `--G-color-1` and opacity variants so runtime changes propagate automatically.
+* LISTENER GUARD — [established-pattern] — CEP event listeners wrap in IIFEs with single-run guards (e.g., `if (window.__holyColorSyncAttached__) return;`) to prevent duplicate bindings during reloads.
 
 ---
 
