@@ -242,6 +242,14 @@ Section currently unused.
 
 ## 13. Architecture Deductions
 ### A. Structural Unknowns
+* state sync — [unknown-structure] — The event broadcast path connecting Holy.State instances in the main and quick panels is undocumented, leaving cross-window listener scope undefined.
+* quick spawn — [unknown-structure] — It remains unverified whether `cs.requestOpenExtension("com.holy.expressor.quickpanel")` launches a new CEPHtmlEngine process or reuses an existing instance.
+* quick dom — [unknown-structure] — The quick panel’s first-load DOMContentLoaded timing relative to CEP readiness is unproven, so initial script execution order remains uncertain.
+* ui parity — [unclear-decision] — The strategic reason for mirroring the main panel’s snippet DOM inside the quick panel has not been recorded.
+* focus scope — [unclear-decision] — The choice to register focus and rehydration listeners inside specific IIFEs rather than globally lacks documented rationale.
+* doc resolver — [assumed-behaviour] — Current fixes assume `cy_resolveDoc()` always returns the active CEP document, but no multi-window validation confirms that behavior.
+* snippets init — [assumed-behaviour] — Recovery routines presume repeated `Holy.SNIPPETS.init()` calls are idempotent despite no verification against duplicate bindings.
+* warm timer — [assumed-behaviour] — The warm-wake timeout window is treated as safe across hosts without measured benchmarks for slower environments.
 * BRIDGE WIRING — [unknown-structure] — The explicit wiring between snippet button handlers in `main_SNIPPETS.js` and the host-side `holy_applySnippet()` routine lacks a documented dependency chain covering CSInterface scope and readiness.
 * CSINTERFACE SCOPE — [assumed-behaviour] — Runtime assumptions state that a `CSInterface` instance is created during panel load, yet no specification clarifies whether that instance should be globally accessible.
 * JSX LOAD — [unknown-structure] — Precise JSX load order enforcement after `main_DEV_INIT.js` runs remains undocumented, so the availability timing of `holy_applySnippet` is uncertain.
@@ -263,6 +271,17 @@ Section currently unused.
 * BOOT ORDER — [unknown-structure] — The startup sequencing between style bootstrapping, derived variable hydration, and persisted state replay is undocumented, obscuring timing guarantees.
 
 ### B. Established Architectural Facts
+* state storage — [confirmed-mechanism] — Both the main and quick panels independently load and persist `banks.json` after snippet or bank edits.
+* quick panel — [confirmed-mechanism] — The first quick panel activation opens a blank UI, while a second activation repaints the snippet interface without restarting.
+* focus wake — [confirmed-mechanism] — Focus listeners fire `Holy.State` rehydration logs yet do not trigger immediate DOM changes in the quick panel.
+* cache reset — [confirmed-mechanism] — Clearing CEP caches or renaming the extension directory leaves the double-click requirement unchanged.
+* runtime split — [confirmed-mechanism] — Main and quick panels operate in isolated CEP JavaScript contexts with no shared globals or localStorage.
+* load order — [established-pattern] — Quick panel initialization follows the sequence CEP boot → script registration → focus rehydration → `Holy.SNIPPETS.init()`.
+* dom timing — [established-pattern] — The blank-first-load symptom indicates scripts execute before the DOM is ready during the initial CEP spawn.
+* warm wake — [established-pattern] — Warm-wake timers re-run `Holy.SNIPPETS.init()` when layout checks detect missing snippet markup.
+* module layout — [permanent-decision] — Separate module files (`main_UI.js`, `main_SNIPPETS.js`, `quickpanel.js`, etc.) remain the chosen architecture instead of a shared runtime bundle.
+* cs bridge — [permanent-decision] — The extension continues to rely exclusively on Adobe’s CSInterface bridge without supplemental relay layers.
+* doc helper — [permanent-decision] — Refactoring DOM access through `cy_resolveDoc()` and scoped `doc` variables is retained as the standard multi-window safeguard.
 * BRIDGE DISPATCH — [confirmed-mechanism] — Snippet apply actions dispatch `cs.evalScript("holy_applySnippet(index)")` calls from `main_SNIPPETS.js` into the ExtendScript layer.
 * BRIDGE RESPONSE — [confirmed-mechanism] — An empty or non-successful ExtendScript response propagates back to JavaScript as the literal `"string"`, triggering the “Snippet error: Apply failed” toast branch.
 * CSINTERFACE SCOPE — [confirmed-mechanism] — DevTools access lacks an exposed `cs` reference unless the panel explicitly binds `CSInterface` to `window`, demonstrating module-level encapsulation of the bridge instance.
