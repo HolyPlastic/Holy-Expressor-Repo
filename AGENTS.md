@@ -269,6 +269,20 @@ Section currently unused.
 * COLOR SYNC — [unclear-decision] — Maintaining both the `cs.addEventListener('holy.color.change')` binding and a secondary listener block remains unexplained, leaving redundancy motives unclear.
 * PANEL GLOBALS — [assumed-behaviour] — Cross-window access to globals such as `window.updateDerivedVariables` is presumed to work despite CEP isolation, yet no proof confirms this sharing model.
 * BOOT ORDER — [unknown-structure] — The startup sequencing between style bootstrapping, derived variable hydration, and persisted state replay is undocumented, obscuring timing guarantees.
+* COMPOSITOR-ATTACH — [unknown-structure] — CEP compositor binding sequence within After Effects is undocumented; the timing and dependency graph controlling when a panel becomes visually paintable remain unknown.  
+* COMPOSITOR-ATTACH — [unknown-structure] — Relationship between `requestOpenExtension()` and compositor initialization phase is undefined; no API specifies the precise moment a surface binds.  
+* MANIFEST-DEFAULTS — [unclear-decision] — Adobe provides no rationale for defaulting `<AutoVisible>` to false on auxiliary panels; intent may be UX or legacy template inheritance.  
+* MANIFEST-MODELESS — [unclear-decision] — Choice to retain `<Type>Modeless</Type>` post-fix was justified only to prevent modal blocking; long-term UX rationale undocumented.  
+* COMPOSITOR-BIND — [assumed-behaviour] — `AutoVisible=true` is assumed to pre-bind GPU surfaces at startup though no formal confirmation exists.  
+* REPAINT-REMOVAL — [assumed-behaviour] — Removal of resize/reflow logic is assumed safe; long-session stress not verified.  
+* MODELESS-SPAWN — [unknown-structure] — CEP internal algorithm for modeless window coordinates is unexposed; presumed Chromium defaults. 
+* GEOMETRY-WORKSPACE — [unknown-structure] — Timing and mechanism for AE saving panel geometry to workspace files remain undocumented.  
+* JS-API-BLOCK — [unclear-decision] — Blocking of `window.moveTo()` and related APIs lacks explicit reasoning; likely sandbox security.  
+* GEOMETRY-OVERRIDE — [assumed-behaviour] — Believed that workspace metadata overrides manifest geometry on reopen, but unverified by logs.  
+* DEBUG-MAPPING — [unknown-structure] — CEP’s internal merge rules between `.debug` file entries and `--remote-debugging-port` flags are undefined.  
+* DEBUG-FAILURE — [assumed-behaviour] — Quick Panel’s missing port activation is assumed to stem from absent ID in `.debug`, not engine fault.  
+
+
 
 ### B. Established Architectural Facts
 * state storage — [confirmed-mechanism] — Both the main and quick panels independently load and persist `banks.json` after snippet or bank edits.
@@ -306,6 +320,35 @@ Section currently unused.
 * STATE BRIDGE — [permanent-decision] — Cross-window and cross-session state is standardized on `cs.setPersistentData` / `getPersistentData` rather than `localStorage`.
 * TOKEN DESIGN — [permanent-decision] — Visual styles intentionally lean on shared CSS tokens such as `--G-color-1` and opacity variants so runtime changes propagate automatically.
 * LISTENER GUARD — [established-pattern] — CEP event listeners wrap in IIFEs with single-run guards (e.g., `if (window.__holyColorSyncAttached__) return;`) to prevent duplicate bindings during reloads.
+* COMPOSITOR-FIX — [confirmed-mechanism] — Quick Panel blank-load bug originated from AE compositor attach race; manifest `AutoVisible=true` prevents it.  
+* COMPOSITOR-PREBIND — [confirmed-mechanism] — Setting `AutoVisible=true` allocates and binds panel surfaces during AE UI initialization.  
+* WINDOW-TYPES — [confirmed-mechanism] — `<Type>Modeless</Type>` allows interaction with AE while open; `<Type>ModalDialog</Type>` blocks host input.  
+* MANIFEST-CONTROL — [established-pattern] — Manifest configuration supersedes JS repaint hacks for compositor timing fixes.  
+* CSINTERFACE-BRIDGE — [established-pattern] — Cross-panel communication consistently uses CSInterface and DOM events.  
+* NAMESPACE-ORDER — [established-pattern] — All modules attach via `Holy.<Module>` under global namespace and load sequentially through `index.html`.  
+* COMPOSITOR-STABLE — [permanent-decision] — Quick Panel to remain `<Type>Modeless</Type>` or `<Type>Panel</Type>` with `AutoVisible=true` ensuring stability.  
+* REPAINT-LEGACY — [permanent-decision] — Deprecated compositor poke logic must not be restored unless issue resurfaces.  
+* SYNC-FOCUS — [permanent-decision] — Development focus transferred to panel synchronization logic once compositor issue closed.  
+* GEOMETRY-PANEL — [confirmed-mechanism] — Only `<Type>Panel</Type>` extensions persist geometry in AE workspaces.  
+* SANDBOX-RESTRICTION — [confirmed-mechanism] — CEP disables window coordinate APIs for security.  
+* WORKSPACE-EXCLUSION — [confirmed-mechanism] — Modeless windows excluded from workspace serialization and reopen centered.  
+* HEADER-RENDER — [established-pattern] — Panel headers rendered by AE outside DOM; cannot be hidden or styled.  
+* HEADER-BLEND — [established-pattern] — Developers simulate frameless look with color-matched overlay bars.  
+* QUICKPANEL-CONFIG — [permanent-decision] — Quick Panel manifest uses `<AutoVisible>true</AutoVisible>` with `<Type>Panel</Type>` for persistence.  
+* MANIFEST-COMPATIBILITY — [established-pattern] — Verified manifest attributes conform to CEP 9.0 and AEFT `[13.0,99.9]`.  
+* GEOMETRY-OVERRIDE — [confirmed-mechanism] — AE ignores manifest size when workspace data exists.  
+* DEBUG-MULTIPORT — [confirmed-mechanism] — `.debug` supports multiple simultaneous ports if IDs match manifests.  
+* CSS-CASCADE — [established-pattern] — Equal-specificity CSS selectors resolve by cascade order; later rules override.  
+* USERAGENT-STYLE — [confirmed-mechanism] — Chromium user-agent styles always apply to native form elements; `all:unset` clears them.  
+* CSS-ALIGN — [established-pattern] — Absolute positioning for bottom-right alignment uses `position:absolute; bottom:0; right:0;`.  
+* MANIFEST-FLAGS — [permanent-decision] — Development builds retain CEF debug flags for visibility (`--enable-nodejs`, `--disable-web-security`, etc.).  
+
+
+
+
+
+
+
 
 ---
 
