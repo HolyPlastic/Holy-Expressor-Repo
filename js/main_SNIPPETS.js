@@ -393,44 +393,38 @@ Holy.SNIPPETS.banks = [
 
 
   // V3 — snippet rhombus using flexible width variant
-  function createRhombusButton(labelText) {
+  function createRhombusButton(labelText, positionIndex) {
     const doc = cy_resolveDoc();
     const btn = doc.createElement("button");
     btn.className = "btn-rhombus2-flex f21 snippet-btn";
 
-    btn.innerHTML = `
-<div>
- <span class="label">${labelText}</span>
-  <div class="rhombus-wrap">
-    <svg class="rhombus-left" xmlns="http://www.w3.org/2000/svg"
-         viewBox="0 0 7.47 18.58">
-      <path d="M7.47,18.08h-3.69c-2.24,0-3.82-2.19-3.11-4.32L4.36,2.74
-               c.45-1.34,1.7-2.24,3.11-2.24"
-            fill="var(--btn-Rs-fill)" stroke="var(--btn-Rs-stroke)" stroke-miterlimit="10" />
-    </svg>
+    const pos = typeof positionIndex === "number" ? positionIndex : 1;
+    let svgMarkup = "";
 
-    <svg class="rhombus-mid" xmlns="http://www.w3.org/2000/svg"
-         viewBox="0 0 46.8 18.58" preserveAspectRatio="none">
-      <rect x="0" y="0" 
-            width="100%" height="95%" fill="var(--btn-Rs-fill)" stroke="none" />
-      <line x1="0" y1=".5" x2="46.8" y2=".5"
-            fill="none" stroke="var(--btn-Rs-stroke)" stroke-miterlimit="10" stroke-width="1" />
-      <line x1="0" y1="18.08" x2="46.8" y2="18.08"
-            fill="none" stroke="var(--btn-Rs-stroke)" stroke-miterlimit="10" stroke-width="1" />
-    </svg>
+    if (pos === 0) {
+      svgMarkup = `
+<svg class="rhombus-icon rhombus-left" viewBox="0 0 57.88 26.63" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+  <polygon points="0.12 0.13 50.45 0.13 57.71 26.51 0.15 26.51" fill="currentColor"/>
+</svg>`;
+    } else if (pos === 2) {
+      svgMarkup = `
+<svg class="rhombus-icon rhombus-right" viewBox="0 0 58.42 26.63" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+  <polygon points="0.33 0.25 58.14 0.25 58.17 26.38 7.52 26.38 0.33 0.25" fill="currentColor"/>
+</svg>`;
+    } else {
+      svgMarkup = `
+<svg class="rhombus-icon rhombus-middle" viewBox="0 0 66.92 26.63" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+  <polygon points="0.16 0.13 59.5 0.13 66.75 26.51 7.42 26.51 0.16 0.13" fill="currentColor"/>
+</svg>`;
+    }
 
-    <svg class="rhombus-right" xmlns="http://www.w3.org/2000/svg"
-         viewBox="0 0 7.47 18.58">
-      <path d="M0,.5h3.69c2.24,0,3.82,2.19,3.11,4.32l-3.69,11.02
-               C2.66,17.18,1.41,18.08,0,18.08"
-            fill="var(--btn-Rs-fill)" stroke="var(--btn-Rs-stroke)" stroke-miterlimit="10" />
-    </svg>
-  </div>
+    btn.innerHTML = svgMarkup;
 
- 
-</div>
+    const label = doc.createElement("span");
+    label.className = "label";
+    label.textContent = labelText || "";
+    btn.appendChild(label);
 
-  `;
     return btn;
   }
 
@@ -492,10 +486,10 @@ Holy.SNIPPETS.banks = [
     }
 
     // 🎨 build each snippet button
-    renderable.forEach((snippet) => {
+    renderable.forEach((snippet, index) => {
       cy_normalizeSnippet(snippet);
       const snippetId = snippet.id; // closure-safe capture
-      const btn = createRhombusButton(snippet.name);
+      const btn = createRhombusButton(snippet.name, index);
       btn.dataset.id = snippetId; // keep only this
 
       // 🖱 Left-click → apply expression
