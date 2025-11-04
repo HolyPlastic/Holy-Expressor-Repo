@@ -304,6 +304,10 @@ If conflicts arise, assume this file overrides individual code comments.
 
 * 2025-11-03 – gpt-5-codex: Floated the editor maximize control onto a top overlay anchored to the Express panel. Design Intent: keep the maximize toggle accessible without disturbing the panel layout as the editor resizes. Risks / Concerns: Ensure overlay stacking stays clear of future header controls.
 
+* 2025-11-03 – gpt-5-codex: Added fallback `holy_applySnippet` bridge when control loads are disabled. Design Intent: ensure snippets still apply expressions via host bridge when controls aren't requested. Risks / Concerns: Fallback coexists with existing `cy_evalApplyExpression`; monitor for double-apply paths.
+
+* 2025-11-03 – gpt-5-codex: Injected temporary logging around `holy_applySnippet` bridge. Design Intent: capture ExtendScript responses while diagnosing snippet apply failures. Risks / Concerns: Verbose logs until removed.
+
 🧱 Verified Architectural Notes (2025-11)
 
 The entire codebase operates under a single global namespace:

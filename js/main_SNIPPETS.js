@@ -472,7 +472,7 @@ Holy.SNIPPETS.banks = [
       ? source.slice(0, SNIPPETS_PER_BANK)
       : [];
 
-    // 🧹 clear previous buttons
+    //  🧹 clear previous buttons
     bar.innerHTML = "";
 
     // 🧱 fail-safe guard
@@ -493,9 +493,14 @@ Holy.SNIPPETS.banks = [
       btn.dataset.id = snippetId; // keep only this
 
       // 🖱 Left-click → apply expression
-      btn.addEventListener("click", () => {
-        const loadCheckbox = doc.getElementById("snipLoadControls");
-        const shouldApplyControls = !!(loadCheckbox && loadCheckbox.checked);
+        btn.addEventListener("click", () => {
+          const loadCheckbox = doc.getElementById("snipLoadControls");
+          const shouldApplyControls = !!(loadCheckbox && loadCheckbox.checked);
+          const toastApplyError = () => {
+            if (Holy.UI && typeof Holy.UI.toast === "function") {
+              Holy.UI.toast("Snippet error: Apply failed");
+            }
+          };
 
         if (shouldApplyControls && cs && typeof cs.evalScript === "function") {
           const idLiteral = typeof snippetId === "number" && isFinite(snippetId)
@@ -506,30 +511,31 @@ Holy.SNIPPETS.banks = [
           cs.evalScript(jsxCommand, (response) => {
             if (typeof response !== "string" || !response.trim()) {
               console.warn("[Holy.SNIPPETS] Apply Controls returned empty response", response);
+              toastApplyError();
               return;
-            }
-
-            let payload = null;
-            try {
-              payload = JSON.parse(response);
-            } catch (err) {
-              console.warn("[Holy.SNIPPETS] Apply Controls invalid JSON", err, response);
-              return;
-            }
-
-            if (payload && payload.error) {
-              console.warn(`[Holy.SNIPPETS] Apply Controls error for snippet ${snippet.name}:`, payload.error);
-              return;
-            }
-
-            if (payload && payload.ok) {
-              console.log(`[Holy.SNIPPETS] Applied controls for snippet "${snippet.name}"`);
-            } else if (payload && payload.skipped) {
-              console.log(`[Holy.SNIPPETS] Apply Controls skipped for snippet "${snippet.name}"`);
             }
           });
-        } else if (shouldApplyControls) {
-          console.warn("[Holy.SNIPPETS] Apply Controls skipped: CSInterface unavailable");
+        } else if (cs && typeof cs.evalScript === "function") {
+          // ✅ Normal snippet application fallback
+          const idLiteral = typeof snippetId === "number" && isFinite(snippetId)
+            ? snippetId
+            : JSON.stringify(String(snippetId));
+
+          const jsxCommand = `holy_applySnippet(${idLiteral})`;
+          console.log("[Holy.SNIPPETS] sending to ExtendScript:", jsxCommand);
+          cs.evalScript(jsxCommand, (response) => {
+            console.log("[Holy.SNIPPETS] response from ExtendScript:", response, typeof response);
+
+            if (!response || response.trim().toLowerCase() === "fail") {
+              console.warn("[Holy.SNIPPETS] Apply failed: empty or 'fail' response");
+              toastApplyError();
+              return;
+            }
+
+            console.log("[Holy.SNIPPETS] Snippet apply SUCCESS →", response);
+          });
+        } else {
+          toastApplyError();
         }
 
         cy_evalApplyExpression(snippet.expr, (res) => {
@@ -592,7 +598,16 @@ Holy.SNIPPETS.banks = [
       `[Holy.SNIPPETS] Rendered ${renderable.length} snippets from bank: ${normalizedBank?.name || "?"}`
     );
   }
-
+function holy_applySnippet(snippetId) {
+    try {
+        $.writeln("[Holy.ExtendScript] holy_applySnippet called with id: " + snippetId);
+        // (Later this will actually apply the snippet)
+        return "ok"; // ✅ must return something non-empty
+    } catch (err) {
+        $.writeln("[Holy.ExtendScript] Error in holy_applySnippet: " + err);
+        return "fail";
+    }
+}
 
 
 
