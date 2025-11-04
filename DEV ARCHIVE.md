@@ -324,3 +324,26 @@ AE ignores manifest size once a workspace record exists.
 CEP user-agent styles always apply to native elements.
 Correct bottom-right alignment uses position:absolute; bottom:0; right:0;.
 Quick Panel remains Panel-type with persistent docking.
+
+
+The Holy Expressor development session opened with the Full Editor panel failing to appear despite button logs confirming an attempted launch. The main, quick, log, and color-picker panels all functioned correctly, isolating the fault to the new Full Editor entry. Early inspection of the repository’s manifest confirmed no <Extension Id="com.holy.expressor.fulleditor"> declaration and no corresponding fulleditor.html file, explaining After Effects’ inability to open the window.
+
+A corrected manifest block was drafted using the existing Color Picker and Quick Panel definitions as templates. The fix introduced <AutoVisible>true</AutoVisible> and <Type>Modeless</Type> to guarantee compositor readiness, plus a proper <HostList> entry in .debug with a unique debugging port. These additions followed earlier Quick Panel lessons showing that manifest-level visibility control resolves surface-binding failures more reliably than JavaScript-spawned windows.
+
+After the update, the user created a new archive containing both the manifest entry and the HTML file. A second extraction confirmed all components were in place:
+• fulleditor.html exists and references initFullEditor() and CodeMirror initialization.
+• index.html includes <button id="openFullEditorBtn">Expand Editor</button>.
+• main_UI.js contains cs.requestOpenExtension("com.holy.expressor.fulleditor").
+• manifest.xml lists the new ID with a valid MainPath.
+
+Because the panel still failed to appear, the investigation turned to After Effects’ manifest caching. Bumping ExtensionBundleVersion and assigning a unique debugging port were recommended to force a refresh. The assistant also noted that duplicate installations or cached manifests could suppress new entries.
+
+Parallel discussion examined upload-cache behavior inside ChatGPT. Renaming ZIP archives and verifying extraction listings were identified as effective methods to avoid stale file reuse during future reviews.
+
+By the end of the session, all repository components for the Full Editor panel were confirmed present and correctly wired. The remaining uncertainty concerned After Effects’ internal manifest cache, which might require manual clearing or duplicate removal. Core architectural truth: manifest registration, not JavaScript execution, governs panel discoverability, and AutoVisible + Modeless ensures compositor stability once recognition occurs.
+
+
+
+
+
+
