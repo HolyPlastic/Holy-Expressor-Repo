@@ -281,6 +281,12 @@ Section currently unused.
 * GEOMETRY-OVERRIDE — [assumed-behaviour] — Believed that workspace metadata overrides manifest geometry on reopen, but unverified by logs.  
 * DEBUG-MAPPING — [unknown-structure] — CEP’s internal merge rules between `.debug` file entries and `--remote-debugging-port` flags are undefined.  
 * DEBUG-FAILURE — [assumed-behaviour] — Quick Panel’s missing port activation is assumed to stem from absent ID in `.debug`, not engine fault.  
+	•	FULLEDITOR-VISIBILITY – [unknown-structure] – After Effects’ internal criteria for displaying a manifest-declared CEP panel in the Extensions list are undocumented; no diagnostic output clarifies why a valid entry may be ignored.
+	•	MANIFEST-REFRESH – [unknown-structure] – The refresh mechanism controlling AE’s reread of updated manifest.xml bundles is undefined; only version bumps and engine restarts are known triggers.
+	•	ZIP-CACHE – [unknown-structure] – ChatGPT’s reuse of same-named ZIP uploads is unverified and may surface older file versions.
+	•	AUTOVISIBLE-MODELESS – [unclear-decision] – The rationale for pairing <AutoVisible>true</AutoVisible> with <Type>Modeless</Type> is unrecorded though empirically effective.
+	•	MANIFEST-DUALITY – [assumed-behaviour] – It is assumed every CEP extension must appear in both <ExtensionList> and <DispatchInfoList> for AE to register it, but no documentation confirms this.
+	•	PORT-UNIQUENESS – [assumed-behaviour] – Unique remote-debugging ports are treated as required; the behavior on port collision remains unverified.
 
 
 
@@ -342,6 +348,17 @@ Section currently unused.
 * USERAGENT-STYLE — [confirmed-mechanism] — Chromium user-agent styles always apply to native form elements; `all:unset` clears them.  
 * CSS-ALIGN — [established-pattern] — Absolute positioning for bottom-right alignment uses `position:absolute; bottom:0; right:0;`.  
 * MANIFEST-FLAGS — [permanent-decision] — Development builds retain CEF debug flags for visibility (`--enable-nodejs`, `--disable-web-security`, etc.).  
+	•	MANIFEST-REGISTRATION – [confirmed-mechanism] – CEP panels instantiate only from IDs declared in CSXS/manifest.xml; cs.requestOpenExtension() silently fails when an ID is missing.
+	•	DUAL-ENTRY-REQUIREMENT – [confirmed-mechanism] – A panel must appear in both <ExtensionList> and <DispatchInfoList> with a valid <MainPath> to be visible under Window → Extensions.
+	•	COMPOSITOR-BINDING – [confirmed-mechanism] – AutoVisible=true ensures early compositor surface attachment, preventing blank or white windows on launch.
+	•	DEBUG-STRUCTURE – [confirmed-mechanism] – Each .debug file entry requires a <HostList> wrapper around its <Host> node for debugging ports to register.
+	•	NAMESPACE-UNIFORMITY – [established-pattern] – All Holy Expressor modules export through Holy.<MODULE> namespaces inside IIFEs, maintaining consistent global access.
+	•	PANEL-ISOLATION – [established-pattern] – Each panel runs in its own CEP context and communicates via CSEvent or cs.evalScript bridges.
+	•	MANIFEST-RESCAN – [established-pattern] – Increasing ExtensionBundleVersion and restarting both AE and CEPHtmlEngine reliably forces manifest recognition.
+	•	WINDOW-CREATION-POLICY – [permanent-decision] – New windows are implemented as manifest-declared modeless panels instead of JavaScript-spawned windows.
+	•	FULLEDITOR-PARITY – [permanent-decision] – The Full Editor mirrors the manifest-based structure of Color Picker and Quick Panel for UI and architectural consistency.
+	•	CODEMIRROR-SYNC – [confirmed-mechanism] – CodeMirror editors broadcast and receive text updates through CSEvent JSON payloads managed by main_EXPRESS.js.
+
 
 
 
