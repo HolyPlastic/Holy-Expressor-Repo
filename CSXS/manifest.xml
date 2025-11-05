@@ -3,7 +3,7 @@
 <ExtensionManifest
   Version="7.0"
   ExtensionBundleId="com.holy.expressor"
-  ExtensionBundleVersion="1.0.0"
+  ExtensionBundleVersion="1.0.1"
   ExtensionBundleName="Holy Expressor">
 
   <ExtensionList>
@@ -11,6 +11,7 @@
     <Extension Id="com.holy.expressor.log" />
     <Extension Id="com.holy.expressor.quickpanel" />
     <Extension Id="com.holy.expressor.colorpicker" />
+    <Extension Id="com.holy.expressor.fulleditor"/> 
   </ExtensionList>
 
   <ExecutionEnvironment>
@@ -71,40 +72,6 @@
    
    
    
-    <Extension Id="com.holy.expressor.log">
-      <DispatchInfo>
-        <Resources>
-          <MainPath>./log.html</MainPath>
-          <CEFCommandLine>
-              <Parameter>--enable-nodejs</Parameter>
-            <Parameter>--enable-devtools</Parameter>
-            <Parameter>--remote-debugging-port=6907</Parameter>
-            <Parameter>--allow-file-access</Parameter>
-            <Parameter>--allow-file-access-from-files</Parameter>
-            <Parameter>--disable-web-security</Parameter>
-
-          </CEFCommandLine>
-        </Resources>
-
-        <Lifecycle>
-          <AutoVisible>true</AutoVisible>
-        </Lifecycle>
-
-        <UI>
-          <Type>Modeless</Type>
-          <Menu>Holy Expressor Log</Menu>
-
-          <Geometry>
-            <Size>
-              <Width>520</Width>
-              <Height>600</Height>
-            </Size>
-          </Geometry>
-        </UI>
-      </DispatchInfo>
-    </Extension>
-    
-    
     
     
     
@@ -201,7 +168,7 @@
       <CEFCommandLine>
         <Parameter>--enable-nodejs</Parameter>
         <Parameter>--enable-devtools</Parameter>
-        <Parameter>--remote-debugging-port=6908</Parameter>
+        <Parameter>--remote-debugging-port=6907</Parameter>
         <Parameter>--allow-file-access</Parameter>
       </CEFCommandLine>
     </Resources>
@@ -216,8 +183,6 @@
           <Height>700</Height>
         </Size>
       </Geometry>
-      <Label>Holy Expressor — Full Editor</Label>
-      <Icon>./assets/icon.png</Icon>
     </UI>
   </DispatchInfo>
 </Extension>
@@ -225,6 +190,40 @@
 
 
 
+    <Extension Id="com.holy.expressor.log">
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./log.html</MainPath>
+          <CEFCommandLine>
+              <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--enable-devtools</Parameter>
+            <Parameter>--remote-debugging-port=6908</Parameter>
+            <Parameter>--allow-file-access</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+            <Parameter>--disable-web-security</Parameter>
+
+          </CEFCommandLine>
+        </Resources>
+
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+
+        <UI>
+          <Type>Modeless</Type>
+          <Menu>Holy Expressor Log</Menu>
+
+          <Geometry>
+            <Size>
+              <Width>520</Width>
+              <Height>600</Height>
+            </Size>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+    
+    
 
 
   </DispatchInfoList>

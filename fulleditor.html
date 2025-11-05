@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Holy Expressor — Full Editor</title>
+
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/codemirror_styles.css" />
+
+  <script src="js/libs/CSInterface.js"></script>
+  <script src="js/json2.js"></script>
+  <script src="js/main_UTILS.js"></script>
+  <script src="js/main_UI.js"></script>
+  <script src="js/main_EXPRESS.js"></script>
+  <script src="js/main_DEV_INIT.js"></script>
+</head>
+
+<body class="theme-default">
+  <div id="fullEditorContainer" class="holy-full-editor"></div>
+
+  <script>
+    (function initFullEditor() {
+      const cs = new CSInterface();
+      console.log("[FullEditor] Initializing CodeMirror...");
+      // Reuse CodeMirror setup from main panel
+      if (typeof Holy !== "undefined" && Holy.EXPRESS && !window.editor) {
+        try {
+          // ensure editor mounts to container
+          const container = document.getElementById("fullEditorContainer");
+          Holy.EXPRESS.initCodeMirror(container); // add this helper in main_EXPRESS if missing
+        } catch (err) {
+          console.error("Failed to initialize full editor", err);
+        }
+
+// 🧩 4️⃣ Send content back when window closes
+window.addEventListener("beforeunload", function () {
+  if (window.Holy && Holy.EXPRESS && typeof Holy.EXPRESS.broadcastEditorText === "function") {
+    Holy.EXPRESS.broadcastEditorText();
+    console.log("[FullEditor] Broadcasting editor text before closing");
+  }
+});
+
+      }
+    })();
+  </script>
+</body>
+</html>
