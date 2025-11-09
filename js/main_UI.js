@@ -137,6 +137,32 @@ ensureHostReady(() => {
     var modeRewriteBtn = document.getElementById("modeRewriteBtn");
     var modeViewExpress = document.getElementById("modeViewExpress");
     var modeViewRewrite = document.getElementById("modeViewRewrite");
+    var codeEditor = document.getElementById("codeEditor");
+    var expressOverlay = document.querySelector(".express-editor-overlay");
+    var useAbsoluteComp = document.getElementById("useAbsoluteComp");
+    var loadPathFromSelectionBtn = document.getElementById("loadPathFromSelectionBtn");
+    var loadFromSelectionBtn = document.getElementById("loadFromSelectionBtn");
+    var editorClearBtn = document.getElementById("editorClearBtn");
+
+    var expressOnlyElements = [];
+
+    if (codeEditor) {
+      expressOnlyElements.push(codeEditor);
+    }
+
+    if (expressOverlay) {
+      expressOnlyElements.push(expressOverlay);
+    }
+
+    if (useAbsoluteComp && useAbsoluteComp.parentElement) {
+      expressOnlyElements.push(useAbsoluteComp.parentElement);
+    }
+
+    [loadPathFromSelectionBtn, loadFromSelectionBtn, editorClearBtn].forEach(function (btn) {
+      if (btn) {
+        expressOnlyElements.push(btn);
+      }
+    });
 
     if (modePanel && modeExpressBtn && modeRewriteBtn && modeViewExpress && modeViewRewrite) {
       function setMode(mode) {
@@ -155,6 +181,27 @@ ensureHostReady(() => {
         modeRewriteBtn.setAttribute("aria-selected", String(!isExpress));
 
         modePanel.dataset.mode = isExpress ? "express" : "rewrite";
+
+        expressOnlyElements.forEach(function (el) {
+          if (!el) return;
+          el.hidden = !isExpress;
+          el.classList.toggle("is-hidden", !isExpress);
+          el.setAttribute("aria-hidden", String(!isExpress));
+        });
+
+        if (isExpress && window.editor) {
+          try {
+            if (typeof window.editor.requestMeasure === "function") {
+              window.editor.requestMeasure();
+            } else if (typeof window.editor.refresh === "function") {
+              window.editor.refresh();
+            }
+          } catch (refreshErr) {
+            if (window.HX_LOG_MODE === "verbose") {
+              console.warn("[UI] Failed to refresh editor after showing express mode", refreshErr);
+            }
+          }
+        }
       }
 
       modeExpressBtn.addEventListener("click", function () {
