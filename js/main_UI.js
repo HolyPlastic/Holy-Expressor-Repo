@@ -5,6 +5,16 @@ if (typeof Holy !== "object") Holy = {};
   "use strict";
 
   var cs = new CSInterface();
+  if (typeof Holy.Panel !== "object") Holy.Panel = {};
+
+  var modePanel = null;
+  var modeExpressBtn = null;
+  var modeRewriteBtn = null;
+  var modeViewExpress = null;
+  var modeViewRewrite = null;
+  var btnModeSwitch = null;
+  var expressOnlyElements = [];
+  var setMode = null;
 
 
   // -----------------------------------------------------------
@@ -132,11 +142,14 @@ ensureHostReady(() => {
       });
     }
 
-    var modePanel = document.getElementById("modePanel");
-    var modeExpressBtn = document.getElementById("modeExpressBtn");
-    var modeRewriteBtn = document.getElementById("modeRewriteBtn");
-    var modeViewExpress = document.getElementById("modeViewExpress");
-    var modeViewRewrite = document.getElementById("modeViewRewrite");
+    modePanel = document.getElementById("modePanel");
+    modeExpressBtn = document.getElementById("modeExpressBtn");
+    modeRewriteBtn = document.getElementById("modeRewriteBtn");
+    modeViewExpress = document.getElementById("modeViewExpress");
+    modeViewRewrite = document.getElementById("modeViewRewrite");
+    btnModeSwitch = document.getElementById("btnModeSwitch");
+
+    var openFullEditorBtn = document.getElementById("openFullEditorBtn");
     var codeEditor = document.getElementById("codeEditor");
     var expressOverlay = document.querySelector(".express-editor-overlay");
     var useAbsoluteComp = document.getElementById("useAbsoluteComp");
@@ -144,7 +157,7 @@ ensureHostReady(() => {
     var loadFromSelectionBtn = document.getElementById("loadFromSelectionBtn");
     var editorClearBtn = document.getElementById("editorClearBtn");
 
-    var expressOnlyElements = [];
+    expressOnlyElements = [];
 
     if (codeEditor) {
       expressOnlyElements.push(codeEditor);
@@ -165,7 +178,7 @@ ensureHostReady(() => {
     });
 
     if (modePanel && modeExpressBtn && modeRewriteBtn && modeViewExpress && modeViewRewrite) {
-      function setMode(mode) {
+      setMode = function (mode) {
         var isExpress = mode === "express";
 
         modeViewExpress.hidden = !isExpress;
@@ -202,7 +215,9 @@ ensureHostReady(() => {
             }
           }
         }
-      }
+      };
+
+      Holy.Panel.setMode = setMode;
 
       modeExpressBtn.addEventListener("click", function () {
         setMode("express");
@@ -211,16 +226,105 @@ ensureHostReady(() => {
       modeRewriteBtn.addEventListener("click", function () {
         setMode("rewrite");
       });
-// Center diamond button toggles between modes
-var btnModeSwitch = document.getElementById("btnModeSwitch");
-if (btnModeSwitch) {
-  btnModeSwitch.addEventListener("click", function () {
-    var isExpress = modePanel.dataset.mode === "express";
-    setMode(isExpress ? "rewrite" : "express");
-  });
-}
+      if (btnModeSwitch) {
+        btnModeSwitch.addEventListener("click", function () {
+          var isExpress = modePanel.dataset.mode === "express";
+          setMode(isExpress ? "rewrite" : "express");
+        });
+      }
+
+      Holy.Panel.returnToMainPanel = function () {
+        if (typeof setMode === "function") {
+          setMode("express");
+        }
+
+        if (modeExpressBtn) {
+          modeExpressBtn.hidden = false;
+        }
+
+        if (btnModeSwitch) {
+          btnModeSwitch.hidden = false;
+        }
+
+        if (window.editor && typeof window.editor.focus === "function") {
+          try {
+            window.editor.focus();
+          } catch (focusErr) {
+            if (window.HX_LOG_MODE === "verbose") {
+              console.warn("[Holy.Panel] Failed to refocus editor", focusErr);
+            }
+          }
+        }
+
+        window.HX_EDITOR_LOCKED = false;
+
+        try {
+          window.localStorage.removeItem("HX_FULL_EDITOR_OPEN");
+        } catch (storageErr) {
+          if (window.HX_LOG_MODE === "verbose") {
+            console.warn("[Holy.Panel] Failed to clear full editor flag", storageErr);
+          }
+        }
+      };
 
       setMode("express");
+    }
+
+    function openFullEditorPanel() {
+      if (typeof setMode === "function") {
+        setMode("rewrite");
+      }
+
+      if (modeExpressBtn) {
+        modeExpressBtn.hidden = true;
+      }
+
+      if (btnModeSwitch) {
+        btnModeSwitch.hidden = true;
+      }
+
+      window.HX_EDITOR_LOCKED = true;
+
+      try {
+        new CSInterface().openExtension("com.holy.expressor.fulleditor");
+      } catch (err) {
+        console.error("[Holy.UI] Failed to open full editor panel", err);
+        window.HX_EDITOR_LOCKED = false;
+        if (modeExpressBtn) {
+          modeExpressBtn.hidden = false;
+        }
+        if (btnModeSwitch) {
+          btnModeSwitch.hidden = false;
+        }
+        if (typeof setMode === "function") {
+          setMode("express");
+        }
+        return;
+      }
+
+      try {
+        window.localStorage.setItem("HX_FULL_EDITOR_OPEN", "true");
+      } catch (storageErr) {
+        if (window.HX_LOG_MODE === "verbose") {
+          console.warn("[Holy.UI] Failed to set full editor flag", storageErr);
+        }
+      }
+    }
+
+    Holy.Panel.openFullEditorPanel = openFullEditorPanel;
+
+    if (openFullEditorBtn) {
+      openFullEditorBtn.addEventListener("click", openFullEditorPanel);
+    }
+  });
+
+  window.addEventListener("storage", function (evt) {
+    if (!evt) return;
+
+    if (evt.key === "HX_FULL_EDITOR_OPEN" && evt.newValue === "false") {
+      if (Holy.Panel && typeof Holy.Panel.returnToMainPanel === "function") {
+        Holy.Panel.returnToMainPanel();
+      }
     }
   });
 
@@ -356,40 +460,6 @@ if (btnModeSwitch) {
     console.warn("[Holy.State] Failed to attach LiveSync listener", listenerErr);
   }
 
-
-
-
-
-// 🔗 Open Full Editor Window
-window.addEventListener("DOMContentLoaded", function () {
-  const btn = document.getElementById("openFullEditorBtn");
-  if (!btn) return;
-
-  btn.addEventListener("click", function () {
-    const cs = new CSInterface();
-
-    // 🧩 1️⃣ hide the embedded editor
-    const expressArea = document.getElementById("expressArea");
-    if (expressArea) expressArea.style.display = "none";
-
-    // 🧩 2️⃣ broadcast current CodeMirror contents before opening
-    if (window.Holy && Holy.EXPRESS && typeof Holy.EXPRESS.broadcastEditorText === "function") {
-      Holy.EXPRESS.broadcastEditorText();
-    }
-
-    // 🧩 3️⃣ open the full editor panel
-    cs.requestOpenExtension("com.holy.expressor.fulleditor");
-    console.log("[Holy.UI] Full editor opened + content broadcasted");
-  });
-
-// 🧠 When full editor loses focus or closes, restore main editor visibility
-window.addEventListener("focus", function () {
-  const expressArea = document.getElementById("expressArea");
-  if (expressArea) expressArea.style.display = "";
-});
-
-
-});
 
 
 
