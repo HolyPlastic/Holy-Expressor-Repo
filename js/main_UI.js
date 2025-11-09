@@ -286,7 +286,8 @@ ensureHostReady(() => {
       window.HX_EDITOR_LOCKED = true;
 
       try {
-        new CSInterface().openExtension("com.holy.expressor.fulleditor");
+new CSInterface().requestOpenExtension("com.holy.expressor.fulleditor");
+
       } catch (err) {
         console.error("[Holy.UI] Failed to open full editor panel", err);
         window.HX_EDITOR_LOCKED = false;
