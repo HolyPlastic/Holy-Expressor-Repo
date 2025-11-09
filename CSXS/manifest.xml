@@ -176,7 +176,7 @@
       <AutoVisible>true</AutoVisible>
     </Lifecycle>
     <UI>
-      <Type>Modeless</Type>
+      <Type>Panel</Type>
       <Geometry>
         <Size>
           <Width>1000</Width>
