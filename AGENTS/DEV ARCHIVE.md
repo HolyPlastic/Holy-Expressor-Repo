@@ -343,7 +343,56 @@ Parallel discussion examined upload-cache behavior inside ChatGPT. Renaming ZIP 
 By the end of the session, all repository components for the Full Editor panel were confirmed present and correctly wired. The remaining uncertainty concerned After Effects’ internal manifest cache, which might require manual clearing or duplicate removal. Core architectural truth: manifest registration, not JavaScript execution, governs panel discoverability, and AutoVisible + Modeless ensures compositor stability once recognition occurs.
 
 
+## THREE PART SVG SCALING
 
+2025-11-12 – Holy Expressor SVG Resize Investigation (Condensed)
+
+Initial State:
+The Holy Expressor CEP panel used a single SVG element for its custom search text box frame, combining three visual segments (left, middle, right). The panel relied on JavaScript resize logic via ResizeObserver and a pixel-to-SVG ratio (pxPerSvgUnit) to control scaling. However, the system failed beyond ~196 px panel width, where scaling stopped and the edge caps visibly distorted.
+
+Root Cause:
+The static initialization of pxPerSvgUnit meant the scaling ratio never updated dynamically. This caused a hard width limit where the SVG geometry could no longer stretch correctly. Tests confirmed that expanding the viewBox simply deformed the caps further because the geometry itself was stretched, not the layout logic.
+
+Research Findings:
+Web research confirmed that SVGs lack native nine-slice scaling, making multi-segment layouts (fixed edges, stretchable middle) the standard web solution. Developers usually implement this with three SVGs inside a flex container rather than relying on complex coordinate math.
+
+Fix Design — “Vega Patch”:
+A high-level “Vega Patch” was defined, describing intent rather than code: replace the single SVG with three independent SVGs arranged in a flex row (cap-left, cap-mid, cap-right), delegate all resizing to CSS, and eliminate all JavaScript geometry handling. This design aligns with known, stable web patterns for resolution-independent scaling.
+
+Codex Implementation:
+The patch was executed successfully:
+
+HTML was restructured to include .customSearch-frame-row containing the three SVGs.
+
+CSS handled layout using Flexbox, with .cap-left and .cap-right fixed to 16.82 px and 7.71 px widths.
+
+The mid section (.cap-mid) stretched via flex: 1 and preserveAspectRatio="none".
+
+All JS resize logic (ResizeObserver, getBBox, etc.) was deleted from main_UI.js.
+
+Pointer event transparency was handled by setting .customSearch-frame-row to pointer-events:none while the overlaid <input> re-enabled interaction.
+
+Color handling switched to currentColor inheritance for consistency across enabled/disabled states.
+
+Outcome:
+The redesigned component scaled perfectly across panel widths without deformation. The user verified: “Oh my god, it fucking worked. Huge.”
+The final system is pure CSS, lightweight, and fully stable inside AE’s Chromium-based CEP environment. Geometry is static and consistent; variables now affect only style (color and opacity).
+
+Key Truths & Lessons:
+
+JS ratio math caused fixed-width lockout; CSS flex solves scaling naturally.
+
+vector-effect:non-scaling-stroke stabilizes line weight but not geometry.
+
+Multi-SVG segmentation is the correct scalable pattern; no native SVG nine-slice exists.
+
+The Holy Expressor UI now uses static HTML + CSS as its geometry source of truth.
+
+No residual contradictions or unresolved uncertainties remain.
+
+End State:
+Triple-SVG flex layout; fixed caps, stretchable mid; CSS-only scaling; no deformation.
+All prior JS scaling logic obsolete.
 
 
 
