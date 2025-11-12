@@ -1846,6 +1846,7 @@ button.btn-discreet svg {
   fill: currentColor;
   stroke: currentColor;
   transition: inherit;
+  stroke-width:0.5px;
 }
 
 button.btn-discreet .icon-collapse {
@@ -1942,9 +1943,19 @@ button.btn-discreet.is-active .icon-collapse {
   margin-top: 5px;
   margin-bottom: 2px;
 
+
+}
+
+.rhombus-middle {
+  transform: scale(1.25) translateY(2px);
+
 }
 
 
+.f21.snippet-btn:nth-child(2) .label {
+
+  top: 18px; /* or 3px if you want a bit more drop */
+}
 .btn-rhombus:hover {
   --btn-stroke: var(--G-color-1-light);
   --btn-fill: var(--G-color-1);
@@ -2033,8 +2044,11 @@ button.btn-discreet.is-active .icon-collapse {
   border-radius: 0;
   background: transparent;
   color: var(--btn-Rs-fill);
+    stroke-width: 0px;
+  stroke: var(--G-color-1);
   cursor: pointer;
   transition: color 0.2s ease;
+  vector-effect: non-scaling-stroke;
 }
 
 .snippet-btn:hover {
