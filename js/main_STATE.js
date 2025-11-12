@@ -340,13 +340,26 @@ if (typeof Holy !== "object") {
     var doc = document;
     var customToggle = doc.getElementById("useCustomSearch");
     var customInput = doc.getElementById("customSearch");
+    var customFrame = doc.querySelector(".customSearch-textBox-frame");
     var targetBox = doc.getElementById("TargetBox");
     var absoluteToggle = doc.getElementById("useAbsoluteComp");
     var fallbackInput = doc.getElementById("exprInput");
 
     function applyCustomSearchUI(isChecked) {
       if (customInput) {
-        customInput.disabled = !isChecked;
+        if (isChecked) {
+          customInput.removeAttribute("disabled");
+          customInput.disabled = false;
+        } else {
+          customInput.setAttribute("disabled", "disabled");
+          customInput.disabled = true;
+        }
+        customInput.classList.toggle("enabled", isChecked);
+        customInput.classList.toggle("disabled", !isChecked);
+      }
+      if (customFrame) {
+        customFrame.classList.toggle("enabled", isChecked);
+        customFrame.classList.toggle("disabled", !isChecked);
       }
       if (targetBox) {
         targetBox.style.opacity = isChecked ? "0.5" : "1";

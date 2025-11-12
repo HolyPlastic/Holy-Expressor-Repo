@@ -647,17 +647,31 @@ if (typeof Holy !== "object") Holy = {};
             var customToggle = Holy.UI.DOM("#useCustomSearch");
             var customBox = Holy.UI.DOM("#customSearch");
             var targetBox = Holy.UI.DOM("#TargetBox");
-            if (customToggle && customBox && targetBox) {
+            var customFrame = Holy.UI.DOM(".customSearch-textBox-frame");
+            if (customToggle && customBox) {
               customToggle.addEventListener("change", function () {
-                if (customToggle.checked) {
+                var isEnabled = !!customToggle.checked;
+
+                if (isEnabled) {
+                  customBox.removeAttribute("disabled");
                   customBox.disabled = false;
-                  targetBox.style.opacity = "0.5";
-                  targetBox.style.pointerEvents = "none";
                 } else {
+                  customBox.setAttribute("disabled", "disabled");
                   customBox.disabled = true;
                   customBox.value = "";
-                  targetBox.style.opacity = "1";
-                  targetBox.style.pointerEvents = "auto";
+                }
+
+                customBox.classList.toggle("enabled", isEnabled);
+                customBox.classList.toggle("disabled", !isEnabled);
+
+                if (customFrame) {
+                  customFrame.classList.toggle("enabled", isEnabled);
+                  customFrame.classList.toggle("disabled", !isEnabled);
+                }
+
+                if (targetBox) {
+                  targetBox.style.opacity = isEnabled ? "0.5" : "1";
+                  targetBox.style.pointerEvents = isEnabled ? "none" : "auto";
                 }
               });
             }
