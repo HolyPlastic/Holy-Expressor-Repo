@@ -35,7 +35,7 @@
 
   ### EXAMPLES
 
-    #### EXAMPLE 1:
+    #### EXAMPLE 1 (Button):
 
       ```html
       <button 
@@ -75,7 +75,7 @@
       </button>
   ```
 
-    #### EXAMPLE 2:
+    #### EXAMPLE 2 (Button):
 
       ```html
       <button 
