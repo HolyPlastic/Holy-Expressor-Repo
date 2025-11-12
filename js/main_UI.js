@@ -22,10 +22,9 @@ if (typeof Holy !== "object") Holy = {};
   window.HX_LOG_MODE = "verbose";
   // -----------------------------------------------------------
 
-// V11 - CustomSearch dynamic scaling overhaul
-// Summary: maintain fixed-size SVG caps while stretching only the mid segment.
-// Approach: derive the initial px→SVG ratio, resize the viewBox to preserve the
-//           caps, and lengthen the mid lines without scaling their stroke.
+// V12 - CustomSearch single-SVG grouped scaling
+// Summary: keep cap geometry fixed, stretch only mid lines in X based on container width.
+// Method: recompute units-per-px on every resize, do not mutate viewBox, translate groups.
 
 (() => {
   if (typeof ResizeObserver !== "function") return;
@@ -34,62 +33,41 @@ if (typeof Holy !== "object") Holy = {};
   if (!frame) return;
 
   const svg   = frame.querySelector(".customSearch-textBox-icon");
-  const mid   = svg?.querySelector(".customSearch-textBox-mid");
-  const left  = svg?.querySelector(".customSearch-textBox-left");
-  const right = svg?.querySelector(".customSearch-textBox-right");
+  const mid   = svg?.querySelector(".customSearch-mid");
+  const left  = svg?.querySelector(".customSearch-cap-left");
+  const right = svg?.querySelector(".customSearch-cap-right");
   if (!svg || !mid || !left || !right) return;
 
   svg.setAttribute("preserveAspectRatio", "none");
 
-  const vbAttr = svg.getAttribute("viewBox") || "0 0 136.8 19.09";
-  const vbParts = vbAttr.trim().split(/\s+/).map(Number);
-  const baseWidth = vbParts[2] || svg.viewBox.baseVal?.width || 136.8;
-  const baseHeight = vbParts[3] || svg.viewBox.baseVal?.height || 19.09;
+  const vbAttr    = svg.getAttribute("viewBox") || "0 0 136.8 19.09";
+  const vbParts   = vbAttr.trim().split(/\s+/).map(Number);
+  const baseWidth = vbParts[2] || (svg.viewBox && svg.viewBox.baseVal?.width)  || 136.8;
 
-  const initialRect = frame.getBoundingClientRect();
-  const fallbackWidth = svg.getBoundingClientRect().width || baseWidth;
-  const initialWidthPx = initialRect.width || fallbackWidth;
+  const getFrameWidthPx = () => (frame.getBoundingClientRect().width || svg.getBoundingClientRect().width || 0);
 
   const leftW = left.getBBox().width;
   const rightW = right.getBBox().width;
   const midLines = Array.prototype.slice.call(mid.querySelectorAll("line"));
   const round = (n) => Math.round(n * 1000) / 1000;
 
-  let pxPerSvgUnit = null;
-  let minFrameWidthPx = 0;
+  // avoid cap collision at tiny widths
+  const MIN_INNER_UNITS = 2;
 
-  const establishScale = (widthPx) => {
-    const candidate = widthPx && widthPx > 0 ? widthPx : svg.getBoundingClientRect().width || 0;
-    if (!candidate) {
-      return false;
-    }
-
-    pxPerSvgUnit = candidate / baseWidth;
-    minFrameWidthPx = Math.max((leftW + rightW) * pxPerSvgUnit, 0);
-
-    if (minFrameWidthPx > 0) {
-      frame.style.minWidth = `${Math.ceil(minFrameWidthPx)}px`;
-    }
-
-    return true;
+  const computeInnerUnits = (framePx) => {
+    if (!framePx) return 0;
+    const svgWidthPx = svg.getBoundingClientRect().width || framePx;
+    if (!svgWidthPx) return 0;
+    const unitsPerPx = baseWidth / svgWidthPx;
+    const frameUnits = framePx * unitsPerPx;
+    return Math.max(frameUnits - leftW - rightW, MIN_INNER_UNITS);
   };
 
   const applyWidth = (widthPx) => {
-    if (!pxPerSvgUnit) {
-      const initialized = establishScale(widthPx || initialWidthPx);
-      if (!initialized) {
-        return;
-      }
-    }
+    const wPx = widthPx || getFrameWidthPx();
+    if (!wPx) return;
 
-    const effectiveWidth = widthPx && widthPx > 0 ? widthPx : Math.max(initialWidthPx, minFrameWidthPx);
-    if (!effectiveWidth) return;
-
-    const vbWidth = effectiveWidth / pxPerSvgUnit;
-
-    svg.setAttribute("viewBox", `0 0 ${round(vbWidth)} ${baseHeight}`);
-
-    const inner = Math.max(vbWidth - leftW - rightW, 0);
+    const inner = computeInnerUnits(wPx);
 
     for (var i = 0; i < midLines.length; i += 1) {
       var line = midLines[i];
@@ -101,17 +79,12 @@ if (typeof Holy !== "object") Holy = {};
     right.setAttribute("transform", `translate(${round(leftW + inner)},0)`);
   };
 
-  if (establishScale(initialWidthPx)) {
-    const measuredInitial = frame.getBoundingClientRect().width || initialWidthPx;
-    applyWidth(measuredInitial);
-  }
+  applyWidth(getFrameWidthPx());
 
   const observer = new ResizeObserver((entries) => {
-    for (let i = 0; i < entries.length; i += 1) {
-      const entry = entries[i];
-      const widthPx = entry.contentRect?.width || frame.getBoundingClientRect().width;
-      applyWidth(widthPx);
-    }
+    const entry = entries && entries[0];
+    const widthPx = (entry && entry.contentRect && entry.contentRect.width) || getFrameWidthPx();
+    applyWidth(widthPx);
   });
 
   observer.observe(frame);
