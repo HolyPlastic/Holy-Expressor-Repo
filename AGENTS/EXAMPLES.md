@@ -1,25 +1,35 @@
-﻿
+﻿## SVG Buttons
 
+  ### Rules
 
-
-btn-icon goes in the svg class.
+"btn-icon" goes in the svg class.
 
 stroke-miterlimit may be necessary. It depends on if angular sharpness is required. If the user has not specifed then look at the coordinates for intentional sharp angles. If such angles are percieved, include it where appropriate. If not, do not include it.
 
+lines don't need fills, elements that do should use "currentColor". If the user specified that they want the button to have a transparent background, then fill should be set to "none" where appropriate.
 
+"btn-clearSVG" is the main class used for svg buttons. CSS rules should not be touched for this class at all. If further rules are required then add another class, and add an appendage for it in the CSS and put it below the already exisiting relevant CSS classs. 
+    Example CSS Appendage:
+      "
+      .btn-clearSVG .new-class-example {
+      example contents
+      }
+      "
 
+  ### EXAMPLES
 
-  ###EXAMPLE 2:
-
+  #### EXAMPLE 1:
 
     <button 
-    id="bankSelectBtn" 
+    id="[insert appropriate content]" 
     class="btn-clearSVG" 
-    title="Select Bank"
+    type="button"
+    title="[brief summary of what the button does, to display on tooltip]"
+    aria-label="[insert appropriate content]" 
     >
       <svg 
       class="btn-icon"
-      viewBox="[fill as appropriate]"
+      viewBox="[insert appropriate content]"
       >
         
         <path 
@@ -48,19 +58,19 @@ stroke-miterlimit may be necessary. It depends on if angular sharpness is requir
 
 
 
-  ###EXAMPLE 2:
+  #### EXAMPLE 2:
 
     <button 
-    id="[fill as appropriate]" 
-    class="[fill as appropriate]" 
-    type="button" 
-    aria-label="[fill as appropriate]" 
+    id="[insert appropriate content]" 
+    class="btn-clearSVG" 
+    type="button"
     title="[brief summary of what the button does, to display on tooltip]"
+    aria-label="[insert appropriate content]" 
     >
 
       <svg 
       class="btn-icon"
-      viewBox="[fill as appropriate]"
+      viewBox="[insert appropriate content]"
       >
         <path
           d="[insert path coordinates here]"
