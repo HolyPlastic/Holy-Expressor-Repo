@@ -561,6 +561,38 @@ h4 {
 
 
 
+.checkbox-Diamond {
+  --size: 25px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--G-color-1-mid);
+  stroke: var(--G-color-1);
+  transition: color 0.2s ease-out, transform 0.2s ease-out;
+  transform: translateZ(0);
+  cursor: pointer;
+}
+
+.checkbox-Diamond input {
+  display: none;
+}
+
+.checkbox-Diamond input:checked + svg rect {
+  fill: var(--G-color-1-mid);
+}
+
+.checkbox-Diamond:hover svg rect {
+  stroke: var(--G-color-1-midlight2);
+  transform: scale(1.05) translateZ(0);
+}
+
+.checkbox-Diamond:active svg rect {
+  transform: scale(0.95) translateZ(0);
+}
+
 .checkbox-custom-1 {
   transform:
     translateX(33px) translateY(4px);
