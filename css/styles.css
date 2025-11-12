@@ -2038,8 +2038,8 @@ button.btn-discreet:focus-visible {
 button.btn-discreet svg {
   width: 16px;
   height: 16px;
-  fill: currentColor;
-  stroke: currentColor;
+ fill: var(--G-color-1);
+  stroke: var(--G-color-1);
   transition: inherit;
   stroke-width:0.5px;
 }
