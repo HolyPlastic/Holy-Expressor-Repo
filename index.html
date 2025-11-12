@@ -638,32 +638,66 @@ ____________________ -------->
     </div>
     <div class="row">
       <div class="customSearch-textBox-frame disabled">
-        <svg
-          class="customSearch-textBox-icon"
-          viewBox="0 0 136.8 19.09"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-        >
-          <!-- Left cap: fixed geometry, never scales -->
-          <g class="customSearch-cap-left">
+        <div class="customSearch-frame-row" aria-hidden="true">
+          <svg
+            class="cap-left"
+            xmlns="http://www.w3.org/2000/svg"
+            width="16.82"
+            height="19.09"
+            viewBox="0 0 16.82 19.09"
+            focusable="false"
+          >
             <path
               d="M16.82,18.59H1.89c-1.02,0-1.7-1.07-1.25-1.99L13.89,1.81c.75-.83,1.82-1.31,2.94-1.31"
-              fill="none" stroke="currentColor" stroke-miterlimit="10" vector-effect="non-scaling-stroke"
+              fill="none"
+              stroke="currentColor"
+              stroke-miterlimit="10"
+              vector-effect="non-scaling-stroke"
             />
-          </g>
-          <!-- Mid segment: two horizontal lines that stretch in X only -->
-          <g class="customSearch-mid" transform="translate(16.82,0)">
-            <line x1="0" y1="0.5"   x2="103.16" y2="0.5"   stroke="currentColor" stroke-miterlimit="10" vector-effect="non-scaling-stroke"/>
-            <line x1="0" y1="18.59" x2="103.16" y2="18.59" stroke="currentColor" stroke-miterlimit="10" vector-effect="non-scaling-stroke"/>
-          </g>
-          <!-- Right cap: fixed geometry, JS repositions via translate() -->
-          <g class="customSearch-cap-right" transform="translate(119.98,0)">
+          </svg>
+          <svg
+            class="cap-mid"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 100 19.09"
+            preserveAspectRatio="none"
+            focusable="false"
+          >
+            <line
+              x1="0"
+              y1="0.5"
+              x2="100"
+              y2="0.5"
+              stroke="currentColor"
+              stroke-miterlimit="10"
+              vector-effect="non-scaling-stroke"
+            />
+            <line
+              x1="0"
+              y1="18.59"
+              x2="100"
+              y2="18.59"
+              stroke="currentColor"
+              stroke-miterlimit="10"
+              vector-effect="non-scaling-stroke"
+            />
+          </svg>
+          <svg
+            class="cap-right"
+            xmlns="http://www.w3.org/2000/svg"
+            width="7.71"
+            height="19.09"
+            viewBox="0 0 7.71 19.09"
+            focusable="false"
+          >
             <path
               d="M0,18.59c1.26,0,2.4-.76,2.87-1.93L7.71,4.77c.83-2.04-.67-4.27-2.87-4.27H0"
-              fill="none" stroke="currentColor" stroke-miterlimit="10" vector-effect="non-scaling-stroke"
+              fill="none"
+              stroke="currentColor"
+              stroke-miterlimit="10"
+              vector-effect="non-scaling-stroke"
             />
-          </g>
-        </svg>
+          </svg>
+        </div>
 
 
         <input

@@ -1368,10 +1368,39 @@ textarea {
   display: block;
 }
 
-.customSearch-textBox-icon{
+.customSearch-frame-row{
+  display:flex;
+  align-items:center;
+  justify-content:stretch;
   width:100%;
   height:100%;
+  pointer-events:none;
+  color:inherit;
+}
+
+.customSearch-frame-row svg{
   display:block;
+  height:100%;
+  shape-rendering:geometricPrecision;
+}
+
+.customSearch-frame-row .cap-left,
+.customSearch-frame-row .cap-right{
+  flex:0 0 auto;
+}
+
+.customSearch-frame-row .cap-left{width:16.82px;}
+
+.customSearch-frame-row .cap-right{width:7.71px;}
+
+.customSearch-frame-row .cap-mid{
+  flex:1 1 auto;
+  width:100%;
+  min-width:0;
+}
+
+.customSearch-frame-row .cap-mid line{
+  vector-effect:non-scaling-stroke;
 }
 
 /* input overlays the SVG but is transparent */
@@ -1385,6 +1414,7 @@ textarea {
   border:none;
   padding:0 8px;
   outline:none;
+  pointer-events:auto;
 }
 
 #customSearch.enabled{
@@ -1400,17 +1430,12 @@ textarea {
   opacity:.7;
 }
 
-/* ensure SVG containers do not introduce stray spacing */
-.customSearch-cap-left,
-.customSearch-cap-right,
-.customSearch-mid{shape-rendering:geometricPrecision}
-
 /* 🔹 Frame color states */
-.customSearch-textBox-frame.enabled .customSearch-textBox-icon {
+.customSearch-textBox-frame.enabled .customSearch-frame-row {
   color: var(--search-enabled-color, var(--G-color-1));
 }
 
-.customSearch-textBox-frame.disabled .customSearch-textBox-icon {
+.customSearch-textBox-frame.disabled .customSearch-frame-row {
   color: var(--search-disabled-color, #2b3d44);
 }
 
