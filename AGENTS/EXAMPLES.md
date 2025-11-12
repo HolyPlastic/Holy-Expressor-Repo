@@ -1,18 +1,40 @@
 ﻿## SVG Buttons
 
-  ### Rules
+### Rules
 
-  * "btn-icon" goes in the svg class.
+* All SVGs provided are exported directly from **Adobe Illustrator**.  
+  These should be treated as the source of truth for structure and attribute data such as  
+  `stroke-linecap`, `stroke-linejoin`, and `stroke-miterlimit`.  
+  Codex should preserve these attributes exactly as given, with the exception of `fill`, `stroke`, and `stroke-width`, clarified in the rules below.
 
-  * stroke-miterlimit may be necessary. It depends on if angular sharpness is required. If the user has not specifed then look at the coordinates for intentional sharp angles. If such angles are percieved, include it where appropriate. If not, do not include it.
+* `btn-icon` goes in the SVG class.  
 
-  * lines don't need fills, elements that do should use "currentColor". If the user specified that they want the button to have a transparent background, then fill should be set to "none" where appropriate.
+* Lines do not require fills.  
+  Elements that do should use `currentColor`.  
+  If the user specifies that the button should have a transparent background,  
+  then `fill` should be set to `none` where appropriate.  
 
-  * "btn-clearSVG" is the main class used for svg buttons. CSS rules should not be touched for this class at all. If further rules are required then add another class, and add an appendage for it in the CSS and put it below the already exisiting "btn-clearSVG" block. 
-      Example CSS Appendage: 
-      ```css
-      .btn-clearSVG .new-class-example { example contents } 
-    ```
+* `stroke-width` and `stroke` should never be used in the HTML.  
+  The color and width of the stroke will be handled exclusively in CSS.
+
+* `btn-clearSVG` is the main class used for SVG buttons.  
+  CSS rules for this class should not be edited directly.  
+  If further rules are required, add another class and create an appendage for it  
+  in the CSS **below** the existing `btn-clearSVG` block.  
+  
+* Code structure and formatting should match the layout shown in the examples exactly.  
+  Maintain the same indentation, line breaks, and element spacing so that each attribute, tag, and nested element appears on its own line where demonstrated.  
+  Do not condense multiple tags or attributes onto a single line — readability and visual hierarchy take priority over file size.
+
+
+
+  Example CSS Appendage:  
+
+  ```css
+  .btn-clearSVG .new-class-example {
+    example contents
+  }
+
 ---
 
   ### EXAMPLES
