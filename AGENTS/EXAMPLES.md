@@ -9,7 +9,7 @@ stroke-miterlimit may be necessary. It depends on if angular sharpness is requir
 
 
 
-  ###EXAMPLE 2:
+  ### EXAMPLE 2:
 
 
     <button 
@@ -48,7 +48,7 @@ stroke-miterlimit may be necessary. It depends on if angular sharpness is requir
 
 
 
-  ###EXAMPLE 2:
+  ### EXAMPLE 2:
 
     <button 
     id="[fill as appropriate]" 
