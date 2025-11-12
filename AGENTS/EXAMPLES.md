@@ -21,7 +21,7 @@
   CSS rules for this class should not be edited directly.  
   If further rules are required, add another class and create an appendage for it  
   in the CSS **below** the existing `btn-clearSVG` block.  
-  
+
 * Code structure and formatting should match the layout shown in the examples exactly.  
   Maintain the same indentation, line breaks, and element spacing so that each attribute, tag, and nested element appears on its own line where demonstrated.  
   Do not condense multiple tags or attributes onto a single line — readability and visual hierarchy take priority over file size.
