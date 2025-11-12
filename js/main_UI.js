@@ -22,7 +22,62 @@ if (typeof Holy !== "object") Holy = {};
   window.HX_LOG_MODE = "verbose";
   // -----------------------------------------------------------
 
+// V10 - CustomSearch dynamic mid-only scaling
+// Summary: convert CSS px to SVG units, scale mid on X only, pin right cap at end.
+// Relies on: <svg ... viewBox="0 0 136.8 19.09" preserveAspectRatio="none">
 
+(() => {
+  const frame = document.querySelector(".customSearch-textBox-frame");
+  if (!frame) return;
+
+  const svg   = frame.querySelector(".customSearch-textBox-icon");
+  const mid   = svg?.querySelector(".customSearch-textBox-mid");
+  const left  = svg?.querySelector(".customSearch-textBox-left");
+  const right = svg?.querySelector(".customSearch-textBox-right");
+  if (!svg || !mid || !left || !right) return;
+
+  // Ensure correct scaling behavior on the element itself
+  svg.setAttribute("preserveAspectRatio", "none");
+
+  // Cache invariant widths in SVG units
+  const vb = svg.viewBox.baseVal;
+  const viewBoxWidth = vb?.width || 136.8;   // fallback to your art width
+  const leftW  = left.getBBox().width;       // SVG units
+  const rightW = right.getBBox().width;      // SVG units
+  const midW   = mid.getBBox().width;        // SVG units
+
+  // Optional: minimum inner width so caps never overlap at tiny widths
+  const MIN_INNER = 4; // in SVG units - tweak to taste
+
+  const observer = new ResizeObserver(entries => {
+    for (const entry of entries) {
+      // CSS px to SVG unit conversion
+      const renderedPx = svg.getBoundingClientRect().width || entry.contentRect.width;
+      if (!renderedPx) continue;
+
+      const pxToSvg = viewBoxWidth / renderedPx;
+      const targetSvgWidth = entry.contentRect.width * pxToSvg;
+
+      // compute available center width in SVG units
+      let inner = targetSvgWidth - leftW - rightW;
+      if (inner < MIN_INNER) inner = MIN_INNER;
+
+      // scale factor for the mid piece - X only
+      let scaleX = inner / midW;
+
+      // rounding to reduce subpixel jitter
+      scaleX = Math.round(scaleX * 1000) / 1000;
+      const midTranslateX = Math.round(leftW * 1000) / 1000;
+      const rightTranslateX = Math.round((leftW + midW * scaleX) * 1000) / 1000;
+
+      // apply transforms in SVG space
+      mid.setAttribute("transform", `translate(${midTranslateX},0) scale(${scaleX},1)`);
+      right.setAttribute("transform", `translate(${rightTranslateX},0)`);
+    }
+  });
+
+  observer.observe(frame);
+})();
 
 
 
@@ -419,6 +474,9 @@ ensureHostReady(() => {
     });
   }
 
+
+
+  
   // ---------------------------------------------------------
   // 🚀 MODULE EXPORT
   // ---------------------------------------------------------
