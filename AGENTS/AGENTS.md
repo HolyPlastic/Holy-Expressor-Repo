@@ -287,7 +287,12 @@ Section currently unused.
 	•	AUTOVISIBLE-MODELESS – [unclear-decision] – The rationale for pairing <AutoVisible>true</AutoVisible> with <Type>Modeless</Type> is unrecorded though empirically effective.
 	•	MANIFEST-DUALITY – [assumed-behaviour] – It is assumed every CEP extension must appear in both <ExtensionList> and <DispatchInfoList> for AE to register it, but no documentation confirms this.
 	•	PORT-UNIQUENESS – [assumed-behaviour] – Unique remote-debugging ports are treated as required; the behavior on port collision remains unverified.
-
+- **cep-flex — [unknown-structure] — Interaction between CEP panel scaling and CSS flexbox rendering in AE remains undocumented.**  
+- **pointer-events — [unknown-structure] — Behavior of `pointer-events:none` within AE’s hit-testing stack for nested SVG + input overlays is unverified.**  
+- **cap-width — [unclear-decision] — Fixed edge widths (16.82 px / 7.71 px) accepted without source documentation.**  
+- **flex-scaling — [assumed-behaviour] — Pixel-perfect Flexbox rendering across AE UI scale factors (100 % / 125 % / 150 %) untested.**  
+- **theme-colors — [unknown-structure] — Propagation path from AE theme settings to `var(--hx-accent)` and related custom variables undefined.**  
+- **rendering — [assumed-behaviour] — `shape-rendering:geometricPrecision` presumed visually identical across CEP Chromium versions; no verification logged.**  
 
 
 ### B. Established Architectural Facts
@@ -358,7 +363,16 @@ Section currently unused.
 	•	WINDOW-CREATION-POLICY – [permanent-decision] – New windows are implemented as manifest-declared modeless panels instead of JavaScript-spawned windows.
 	•	FULLEDITOR-PARITY – [permanent-decision] – The Full Editor mirrors the manifest-based structure of Color Picker and Quick Panel for UI and architectural consistency.
 	•	CODEMIRROR-SYNC – [confirmed-mechanism] – CodeMirror editors broadcast and receive text updates through CSEvent JSON payloads managed by main_EXPRESS.js.
-
+- **search-frame — [confirmed-mechanism] — Frame scales purely via CSS Flexbox; no JS mutates SVG geometry.**  
+- **svg-layout — [confirmed-mechanism] — Each visual segment (left / mid / right) is an independent SVG within `.customSearch-frame-row`.**  
+- **edge-lock — [confirmed-mechanism] — Fixed-width edge SVGs remain rigid, excluded from flex growth.**  
+- **mid-stretch — [confirmed-mechanism] — Mid SVG expands horizontally using `preserveAspectRatio="none"` and `vector-effect:non-scaling-stroke`.**  
+- **color-inheritance — [established-pattern] — Visual color states propagate via `currentColor`, replacing per-SVG targeting.**  
+- **interaction-layer — [established-pattern] — `.customSearch-frame-row` ignores pointer events; `<input>` restores interactivity.**  
+- **layout-shift — [established-pattern] — All JS resize logic removed from `main_UI.js`; CSS now manages layout entirely.**  
+- **ui-philosophy — [permanent-decision] — Static HTML + CSS layout designated as geometry source of truth; JS limited to state/data flow.**  
+- **three-svg-rule — [permanent-decision] — Future search-field updates must retain three-SVG architecture to prevent distortion bugs.**  
+- **stroke-stability — [permanent-decision] — `vector-effect:non-scaling-stroke` mandatory on frame lines to maintain stroke weight.**  
 
 
 
