@@ -186,7 +186,7 @@ This allows targeted control via CSS selectors without global conflicts.
 
 
 
-#### EXAMPLE 4 (Three-Part SVG Element, using `<button>` as an example
+#### EXAMPLE 4 (Three-Part SVG Element, using `<button>` as an example)
 
 ```html
 <button 
