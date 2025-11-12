@@ -1,4 +1,4 @@
-﻿## SVG Buttons
+﻿## SVG elements
 
 ### Rules
 
@@ -11,13 +11,13 @@
 
 * Lines do not require fills.  
   Elements that do should use `currentColor`.  
-  If the user specifies that the button should have a transparent background,  
+  If the user specifies that the element should have a transparent background,  
   then `fill` should be set to `none` where appropriate.  
 
 * `stroke-width` and `stroke` should never be used in the HTML.  
   The color and width of the stroke will be handled exclusively in CSS.
 
-* `btn-clearSVG` is the main class used for SVG buttons.  
+* `btn-clearSVG` is the main class used for SVG elements.  
   CSS rules for this class should not be edited directly.  
   If further rules are required, add another class and create an appendage for it  
   in the CSS **below** the existing `btn-clearSVG` block.  
@@ -57,7 +57,7 @@
           <path 
             d="[insert path coordinates here]"
             fill="currentColor"
-            stroke-miterlimit="10">
+            stroke-miterlimit="[insert relevant]">
           </path>
 
           <line class="inner-contents" 
@@ -81,6 +81,7 @@
 
 
     #### EXAMPLE 2:
+
       ```html
       <button 
       id="[insert appropriate content]" 
@@ -113,7 +114,28 @@
             stroke-linecap="round"
             stroke-linejoin="round"
           />
-          
         </svg>
       </button>
+      ```
+
+    #### EXAMPLE 3 (Checkbox):
+
+      ```html
+      <label class="[appropriate class]">
+        <input 
+        id="[insert appropriate id]"
+        type="checkbox" 
+        >
+        <svg 
+        class="btn-icon" 
+        viewBox="[insert appropriate content]"
+        >
+
+          <rect 
+          d="[insert shape data]" 
+          fill="currentColor" 
+          stroke-miterlimit="[insert relevant]" 
+          />
+        </svg>
+      </label>
       ```
