@@ -74,6 +74,14 @@ var(--G-color-1);
   --G-colour-1-opac-10: rgba(var(--G-colour-1-RGB), 0.1);
 
   --G-faded-text: rgba(255, 255, 255, 0.151);
+
+
+
+
+    /* === After Effects Theme Colors === */
+  --AE-theme-darkest: #1d1d1d;
+  --AE-theme-dark: #323232;
+  --AE-theme-light: #f8f8f8;
 }
 
 /*#endregion 🌐🎨 */
@@ -567,13 +575,15 @@ h4 {
   align-items: center;
   justify-content: center;
   padding: 0;
-  background: none;
   border: none;
-  color: var(--G-color-1-mid);
+  cursor: pointer;
+  color: var(--AE-theme-darkest);
   stroke: var(--G-color-1);
   transition: color 0.2s ease-out, transform 0.2s ease-out;
+
+
   transform: translateZ(0);
-  cursor: pointer;
+
 }
 
 .checkbox-Diamond input {
@@ -581,24 +591,23 @@ h4 {
 }
 
 .checkbox-Diamond input:checked + svg rect {
-  fill: var(--G-color-1-mid);
+  fill: var(--G-color-1-midup);
 }
 
-.checkbox-Diamond:hover svg rect {
+.checkbox-Diamond svg:hover {
   stroke: var(--G-color-1-midlight2);
-  transform: scale(1.05) translateZ(0);
+  transform: scale(1.2);
 }
 
-.checkbox-Diamond:active svg rect {
+.checkbox-Diamond:active {
   transform: scale(0.95) translateZ(0);
 }
 
-.checkbox-custom-1 {
-  transform:
-    translateX(33px) translateY(4px);
 
-  z-index: 11;
-}
+
+
+
+
 
 .checkbox-label {
   display: flex;
@@ -612,7 +621,8 @@ h4 {
   display: flex;
   align-items: center;
   gap: 6px;
-      margin-left: auto !important;
+  margin-left: auto !important;
+  transform: translateX(-4px) translateY(2px) translateZ(0);
 }
 
 
@@ -1220,6 +1230,62 @@ textarea {
   gap: 6px;
 }
 
+
+/* Overlay button group that floats on the panel border */
+.express-editor-overlay {
+
+  padding: 4px 6px;
+  border-radius: 999px;
+  background: none;
+  border: none;
+
+    position: absolute;
+  right: 12px;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transform: translateY(64%) translateX(17px); /* required */
+  z-index: 100; /* overlay above the document UI */
+}
+
+/* === Checkbox container (always above buttons) === */
+.express-editor-overlay-checkbox {
+  position: relative;
+  transform:     translateX(31.5px) translateY(4px) translateZ(0); /* its own stacking context */
+  z-index: 10; /* guarantees entire checkbox plane renders above buttons */
+}
+
+
+/* === Buttons container === */
+.express-editor-overlay-buttons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transform: translateZ(0); /* creates its own stacking context for buttons */
+  position: relative;
+  z-index: 1; /* sits below the checkbox block */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ /* ========================larger container just for the maximise button */
 .express-editor-top-overlay {
   position: absolute;
   right: 12px;
@@ -1240,26 +1306,17 @@ textarea {
 .express-editor-top-overlay>* {
   pointer-events: auto;
 }
-
-/* Overlay button group that floats on the panel border */
-.express-editor-overlay {
-  position: absolute;
-  right: 12px;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 6px;
-  border-radius: 999px;
-  background: none;
-  border: none;
-
-  transform:
-    translateY(64%) translateX(17px);
-  pointer-events: auto;
-  /* prevent the wrapper from blocking editor clicks */
+/*
+.eeo-z-Main {
   z-index: 9;
 }
+
+
+.eeo-z-Checkbox {
+  z-index: 10;
+}
+*/
+
 
 .express-editor-overlay-btn {
   pointer-events: auto;
@@ -1743,36 +1800,36 @@ button:disabled {
   --icon-offset-y: 0;
   width: var(--size);
   height: var(--size);
+  color: var(--G-color-1-mid);
+  stroke: var(--G-color-1);
 
   border: none;
   background: none;
-
   display: inline-flex;
   /* 🔧 changed from flex to inline-flex so it doesn’t stretch rows */
   align-items: center;
   justify-content: center;
-
   padding: 0;
   line-height: 0;
-
   cursor: pointer;
 
-  /* 🔧 these two belong on the SVG, not the button itself */
-  /* shape-rendering: geometricPrecision; */
-  /* vector-effect: non-scaling-stroke; */
-  /* stroke-width: 0.35px; */
 
-  color: var(--G-color-1-mid);
-  stroke: var(--G-color-1);
 
   transition: color 0.2s ease-out, transform 0.2s ease-out;
-  transform: translateZ(0);
+
+  position: relative;
+  transform: translateZ(0); /* isolates for GPU safety */
+
 }
 
-.btn-clearSVG:hover {
+
+
+.btn-clearSVG svg:hover {
   color: var(--G-color-1);
   stroke: var(--G-color-1-midlight2);
-  transform: scale(1.05) translateZ(0);
+  transform: scale(1.2) translateZ(0);
+  
+  transition: color 0.2s ease-out, transform 0.2s 
 }
 
 .btn-clearSVG:hover .inner-contents {

@@ -278,7 +278,7 @@ ____________________ -------->
   <!-- Bank name (editable text) -->
   <span id="bankNameLabel" class="f18-c">Bank 1</span>
 
-  <label class="checkbox-layercontrols text-sm checkbox-Diamond">
+  <label class="checkbox-layercontrols checkbox-Diamond">
     <input
     id="snipLoadControls"
     type="checkbox"
@@ -292,14 +292,11 @@ ____________________ -------->
     >
       <g id="checkbox-diamond">
         <rect
-          x="1.76"
-          y="1.74"
-          width="8.95"
+          x="1.76" y="1.74"    width="8.95"
           height="8.98"
-          rx="1.46"
-          ry="1.46"
+          rx="1.46" ry="1.46"
           transform="translate(6.23 -2.58) rotate(45)"
-          fill="none"
+          fill="currentColor"
           stroke-miterlimit="10"
         />
       </g>
@@ -429,111 +426,128 @@ ____________________ -------->
     <!-- Editor row -->
     <div id="codeEditor"></div>
     <!-- Overlay action buttons anchored to the bottom-right of the Express area -->
+    
     <div class="express-editor-overlay" role="group" aria-label="Editor quick actions">
 
+        <div class="express-editor-overlay-checkbox">
+          <label class="checkbox-Diamond">
+            <input
+            id="useAbsoluteComp"
+            type="checkbox"
+            >
+            <svg
+            class="btn-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            width="12.47"
+            height="12.47"
+            viewBox="0 0 12.47 12.47"
+            >
+              <g id="checkbox-diamond">
+                <rect
+                  x="1.76"y="1.74"
+                  width="8.95"
+                  height="8.98"
+                  rx="1.46"
+                  ry="1.46"
+                  transform="translate(6.23 -2.58) rotate(45)"
+                  fill="currentColor"
+                  stroke-miterlimit="10"
+                />
+              </g>
+            </svg>
+          </label>
+        </div>
 
-
-      <label class="checkbox-custom-1 text-sm checkbox-Diamond">
-        <input
-        id="useAbsoluteComp"
-        type="checkbox"
-        >
-        <svg
-        class="btn-icon"
-        xmlns="http://www.w3.org/2000/svg"
-        width="12.47"
-        height="12.47"
-        viewBox="0 0 12.47 12.47"
-        >
-          <g id="checkbox-diamond">
-            <rect
-              x="1.76"
-              y="1.74"
-              width="8.95"
-              height="8.98"
-              rx="1.46"
-              ry="1.46"
-              transform="translate(6.23 -2.58) rotate(45)"
-              fill="none"
-              stroke-miterlimit="10"
-            />
-          </g>
-        </svg>
-      </label>
-
-
-      <button id="loadPathFromSelectionBtn" class="btn-clearSVG express-editor-overlay-btn" type="button" aria-label="Load path from selection" title="Load path from selection">
-        <svg class="btn-icon" viewBox="-0.42 -0.43 19.59 19.02">
-          <path
-            d="M18.37,9.67v8.12s-9.29,0-9.29,0L.52,9.22c-.09-.09-.14-.22-.14-.34V.86c0-.27.22-.49.49-.49h8.01c.13,0,.25.05.34.14l9.15,9.15Z"
-            fill="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-         
-          />
-          
-            <line class="inner-contents"
-              x1="5.9" y1="5.2" x2="12.85" y2="12.15"
-              fill="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <circle class="inner-contents"
-              cx="9.37" cy="8.67" r="1.88"
-              fill="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+        <div class="express-editor-overlay-buttons">
+          <button id="loadPathFromSelectionBtn" class="btn-clearSVG express-editor-overlay-btn" type="button" aria-label="Load path from selection" title="Load path from selection">
+            <svg class="btn-icon" viewBox="-0.42 -0.43 19.59 19.02">
+              <path
+                d="M18.37,9.67v8.12s-9.29,0-9.29,0L.52,9.22c-.09-.09-.14-.22-.14-.34V.86c0-.27.22-.49.49-.49h8.01c.13,0,.25.05.34.14l9.15,9.15Z"
+                fill="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            
+              />
               
-            />
-         
-        </svg>
-      </button>
-      <button id="loadFromSelectionBtn" class="btn-clearSVG express-editor-overlay-btn" type="button" aria-label="Load expression from selection" title="Load expression from selection">
-        <svg viewBox="-0.42 -0.43 19.59 19.02" class="btn-icon">
-          <path
-            d="M18.37,9.67v8.12s-9.29,0-9.29,0L.52,9.22c-.09-.09-.14-.22-.14-.34V.86c0-.27.22-.49.49-.49h8.01c.13,0,.25.05.34.14l9.15,9.15Z"
-            fill="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width=".75"
-          />
-          <g>
-            <line class="inner-contents"
-              x1="12.63" y1="8.09" x2="6.3" y2="8.09"
-              fill="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width=".75"
-            />
-            <line class="inner-contents"
-              x1="11.71" y1="10.26" x2="8.88" y2="10.26"
-              fill="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width=".75"
-            />
-            <line class="inner-contents"
-              x1="10.05" y1="5.99" x2="7.22" y2="5.99"
-              fill="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width=".75"
-            />
-          </g>
-        </svg>
-      </button>
-      <button id="editorClearBtn" class="btn-clearSVG express-editor-overlay-btn" type="button" aria-label="Clear editor" title="Clear editor">
-        <svg viewBox="-0.43 -0.42 25.71 52.68" class="btn-icon">
-          <path
-            d="M24.48,26.26c-9.38.66-14.29,6.21-23.15,25.2,7.75-19.06,7.67-24.83-.96-25.88,9.38-.66,14.29-6.21,23.15-25.2-7.75,19.06-7.67,24.83.96,25.88Z"
-            fill="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
-      </button>
+                <line class="inner-contents"
+                  x1="5.9" y1="5.2" x2="12.85" y2="12.15"
+                  fill="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <circle class="inner-contents"
+                  cx="9.37" cy="8.67" r="1.88"
+                  fill="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  
+                />
+            
+            </svg>
+          </button>
+          <button id="loadFromSelectionBtn" class="btn-clearSVG express-editor-overlay-btn" type="button" aria-label="Load expression from selection" title="Load expression from selection">
+            <svg viewBox="-0.42 -0.43 19.59 19.02" class="btn-icon">
+              <path
+                d="M18.37,9.67v8.12s-9.29,0-9.29,0L.52,9.22c-.09-.09-.14-.22-.14-.34V.86c0-.27.22-.49.49-.49h8.01c.13,0,.25.05.34.14l9.15,9.15Z"
+                fill="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width=".75"
+              />
+              <g>
+                <line class="inner-contents"
+                  x1="12.63" y1="8.09" x2="6.3" y2="8.09"
+                  fill="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width=".75"
+                />
+                <line class="inner-contents"
+                  x1="11.71" y1="10.26" x2="8.88" y2="10.26"
+                  fill="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width=".75"
+                />
+                <line class="inner-contents"
+                  x1="10.05" y1="5.99" x2="7.22" y2="5.99"
+                  fill="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width=".75"
+                />
+              </g>
+            </svg>
+          </button>
+          <button id="editorClearBtn" class="btn-clearSVG express-editor-overlay-btn" type="button" aria-label="Clear editor" title="Clear editor">
+            <svg viewBox="-0.43 -0.42 25.71 52.68" class="btn-icon">
+              <path
+                d="M24.48,26.26c-9.38.66-14.29,6.21-23.15,25.2,7.75-19.06,7.67-24.83-.96-25.88,9.38-.66,14.29-6.21,23.15-25.2-7.75,19.06-7.67,24.83.96,25.88Z"
+                fill="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
+
     </div>
-      </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       <div id="modeViewRewrite" class="he-mode-view panel search-replace-panel is-hidden" role="tabpanel" aria-labelledby="modeRewriteBtn" hidden>
         <label for="searchField" class="text-sm block-label">Search</label>
@@ -563,7 +577,7 @@ ____________________ -------->
                   rx="1.46"
                   ry="1.46"
                   transform="translate(6.23 -2.58) rotate(45)"
-                  fill="none"
+                  fill="currentColor"
                   stroke-miterlimit="10"
                 />
               </g>
@@ -573,7 +587,7 @@ ____________________ -------->
         </div>
         <button id="runSearchReplace" class="tab-btn">Run Search &amp; Replace</button>
       </div>
-    </div>
+    </div> <!-- end of modeviews-->
   </section>
 <!-- #endregion ^^^ End Express 🖥️ ^^^ -->
 
@@ -615,7 +629,7 @@ ____________________ -------->
               rx="1.46"
               ry="1.46"
               transform="translate(6.23 -2.58) rotate(45)"
-              fill="none"
+              fill="currentColor"
               stroke-miterlimit="10"
             />
           </g>
