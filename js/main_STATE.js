@@ -340,17 +340,26 @@ if (typeof Holy !== "object") {
     var doc = document;
     var customToggle = doc.getElementById("useCustomSearch");
     var customInput = doc.getElementById("customSearch");
+    var customWrapper = doc.querySelector(".customSearch-textBox-frame");
     var targetBox = doc.getElementById("TargetBox");
     var absoluteToggle = doc.getElementById("useAbsoluteComp");
     var fallbackInput = doc.getElementById("exprInput");
 
     function applyCustomSearchUI(isChecked) {
+      var enabled = !!isChecked;
       if (customInput) {
-        customInput.disabled = !isChecked;
+        customInput.toggleAttribute("disabled", !enabled);
+        customInput.disabled = !enabled;
+        customInput.classList.toggle("enabled", enabled);
+        customInput.classList.toggle("disabled", !enabled);
+      }
+      if (customWrapper) {
+        customWrapper.classList.toggle("enabled", enabled);
+        customWrapper.classList.toggle("disabled", !enabled);
       }
       if (targetBox) {
-        targetBox.style.opacity = isChecked ? "0.5" : "1";
-        targetBox.style.pointerEvents = isChecked ? "none" : "auto";
+        targetBox.style.opacity = enabled ? "0.5" : "1";
+        targetBox.style.pointerEvents = enabled ? "none" : "auto";
       }
     }
 
@@ -358,7 +367,6 @@ if (typeof Holy !== "object") {
 
     if (customToggle) {
       customToggle.checked = !!snapshot.useCustomSearch;
-      applyCustomSearchUI(customToggle.checked);
       if (!customToggle.dataset.holyStateBound) {
         customToggle.dataset.holyStateBound = "1";
         customToggle.addEventListener("change", function () {
@@ -387,6 +395,8 @@ if (typeof Holy !== "object") {
       }
     }
 
+    applyCustomSearchUI(!!snapshot.useCustomSearch);
+
     if (absoluteToggle) {
       absoluteToggle.checked = !!snapshot.useAbsoluteComp;
       if (!absoluteToggle.dataset.holyStateBound) {
@@ -412,22 +422,23 @@ if (typeof Holy !== "object") {
         if (meta && meta.origin === instanceId) {
           return;
         }
-        if (customToggle && typeof current.useCustomSearch === "boolean" && customToggle.checked !== current.useCustomSearch) {
-          customToggle.checked = current.useCustomSearch;
-          applyCustomSearchUI(customToggle.checked);
+        var useCustomSearch = typeof current.useCustomSearch === "boolean" ? current.useCustomSearch : null;
+        if (customToggle && useCustomSearch !== null && customToggle.checked !== useCustomSearch) {
+          customToggle.checked = useCustomSearch;
         }
         if (customInput) {
-          if (current.useCustomSearch) {
+          if (useCustomSearch) {
             if (customInput.value !== (current.customSearch || "")) {
               customInput.value = current.customSearch || "";
             }
-            customInput.disabled = false;
-          } else {
+          } else if (useCustomSearch === false) {
             if (customInput.value !== "") {
               customInput.value = "";
             }
-            customInput.disabled = true;
           }
+        }
+        if (useCustomSearch !== null) {
+          applyCustomSearchUI(useCustomSearch);
         }
         if (absoluteToggle && typeof current.useAbsoluteComp === "boolean") {
           absoluteToggle.checked = !!current.useAbsoluteComp;
