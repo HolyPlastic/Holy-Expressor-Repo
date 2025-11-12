@@ -22,11 +22,14 @@ if (typeof Holy !== "object") Holy = {};
   window.HX_LOG_MODE = "verbose";
   // -----------------------------------------------------------
 
-// V10 - CustomSearch dynamic mid-only scaling
-// Summary: convert CSS px to SVG units, scale mid on X only, pin right cap at end.
-// Relies on: <svg ... viewBox="0 0 136.8 19.09" preserveAspectRatio="none">
+// V11 - CustomSearch dynamic scaling overhaul
+// Summary: maintain fixed-size SVG caps while stretching only the mid segment.
+// Approach: derive the initial px→SVG ratio, resize the viewBox to preserve the
+//           caps, and lengthen the mid lines without scaling their stroke.
 
 (() => {
+  if (typeof ResizeObserver !== "function") return;
+
   const frame = document.querySelector(".customSearch-textBox-frame");
   if (!frame) return;
 
@@ -36,43 +39,78 @@ if (typeof Holy !== "object") Holy = {};
   const right = svg?.querySelector(".customSearch-textBox-right");
   if (!svg || !mid || !left || !right) return;
 
-  // Ensure correct scaling behavior on the element itself
   svg.setAttribute("preserveAspectRatio", "none");
 
-  // Cache invariant widths in SVG units
-  const vb = svg.viewBox.baseVal;
-  const viewBoxWidth = vb?.width || 136.8;   // fallback to your art width
-  const leftW  = left.getBBox().width;       // SVG units
-  const rightW = right.getBBox().width;      // SVG units
-  const midW   = mid.getBBox().width;        // SVG units
+  const vbAttr = svg.getAttribute("viewBox") || "0 0 136.8 19.09";
+  const vbParts = vbAttr.trim().split(/\s+/).map(Number);
+  const baseWidth = vbParts[2] || svg.viewBox.baseVal?.width || 136.8;
+  const baseHeight = vbParts[3] || svg.viewBox.baseVal?.height || 19.09;
 
-  // Optional: minimum inner width so caps never overlap at tiny widths
-  const MIN_INNER = 4; // in SVG units - tweak to taste
+  const initialRect = frame.getBoundingClientRect();
+  const fallbackWidth = svg.getBoundingClientRect().width || baseWidth;
+  const initialWidthPx = initialRect.width || fallbackWidth;
 
-  const observer = new ResizeObserver(entries => {
-    for (const entry of entries) {
-      // CSS px to SVG unit conversion
-      const renderedPx = svg.getBoundingClientRect().width || entry.contentRect.width;
-      if (!renderedPx) continue;
+  const leftW = left.getBBox().width;
+  const rightW = right.getBBox().width;
+  const midLines = Array.prototype.slice.call(mid.querySelectorAll("line"));
+  const round = (n) => Math.round(n * 1000) / 1000;
 
-      const pxToSvg = viewBoxWidth / renderedPx;
-      const targetSvgWidth = entry.contentRect.width * pxToSvg;
+  let pxPerSvgUnit = null;
+  let minFrameWidthPx = 0;
 
-      // compute available center width in SVG units
-      let inner = targetSvgWidth - leftW - rightW;
-      if (inner < MIN_INNER) inner = MIN_INNER;
+  const establishScale = (widthPx) => {
+    const candidate = widthPx && widthPx > 0 ? widthPx : svg.getBoundingClientRect().width || 0;
+    if (!candidate) {
+      return false;
+    }
 
-      // scale factor for the mid piece - X only
-      let scaleX = inner / midW;
+    pxPerSvgUnit = candidate / baseWidth;
+    minFrameWidthPx = Math.max((leftW + rightW) * pxPerSvgUnit, 0);
 
-      // rounding to reduce subpixel jitter
-      scaleX = Math.round(scaleX * 1000) / 1000;
-      const midTranslateX = Math.round(leftW * 1000) / 1000;
-      const rightTranslateX = Math.round((leftW + midW * scaleX) * 1000) / 1000;
+    if (minFrameWidthPx > 0) {
+      frame.style.minWidth = `${Math.ceil(minFrameWidthPx)}px`;
+    }
 
-      // apply transforms in SVG space
-      mid.setAttribute("transform", `translate(${midTranslateX},0) scale(${scaleX},1)`);
-      right.setAttribute("transform", `translate(${rightTranslateX},0)`);
+    return true;
+  };
+
+  const applyWidth = (widthPx) => {
+    if (!pxPerSvgUnit) {
+      const initialized = establishScale(widthPx || initialWidthPx);
+      if (!initialized) {
+        return;
+      }
+    }
+
+    const effectiveWidth = widthPx && widthPx > 0 ? widthPx : Math.max(initialWidthPx, minFrameWidthPx);
+    if (!effectiveWidth) return;
+
+    const vbWidth = effectiveWidth / pxPerSvgUnit;
+
+    svg.setAttribute("viewBox", `0 0 ${round(vbWidth)} ${baseHeight}`);
+
+    const inner = Math.max(vbWidth - leftW - rightW, 0);
+
+    for (var i = 0; i < midLines.length; i += 1) {
+      var line = midLines[i];
+      line.setAttribute("x1", "0");
+      line.setAttribute("x2", round(inner));
+    }
+
+    mid.setAttribute("transform", `translate(${round(leftW)},0)`);
+    right.setAttribute("transform", `translate(${round(leftW + inner)},0)`);
+  };
+
+  if (establishScale(initialWidthPx)) {
+    const measuredInitial = frame.getBoundingClientRect().width || initialWidthPx;
+    applyWidth(measuredInitial);
+  }
+
+  const observer = new ResizeObserver((entries) => {
+    for (let i = 0; i < entries.length; i += 1) {
+      const entry = entries[i];
+      const widthPx = entry.contentRect?.width || frame.getBoundingClientRect().width;
+      applyWidth(widthPx);
     }
   });
 
