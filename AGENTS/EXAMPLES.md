@@ -11,7 +11,9 @@
   * "btn-clearSVG" is the main class used for svg buttons. CSS rules should not be touched for this class at all. If further rules are required then add another class, and add an appendage for it in the CSS and put it below the already exisiting "btn-clearSVG" block. 
       Example CSS Appendage: 
       ```css
-      .btn-clearSVG .new-class-example { example contents } 
+      .btn-clearSVG .new-class-example {
+      example contents
+      } 
     ```
 ---
 
