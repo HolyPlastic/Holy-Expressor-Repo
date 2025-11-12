@@ -637,7 +637,68 @@ ____________________ -------->
       </label>
     </div>
     <div class="row">
-      <input type="text" id="customSearch" placeholder="e.g. Stroke 1 > Opacity" disabled />
+      <div class="customSearch-textBox-frame disabled">
+        <svg
+        class="customSearch-textBox-icon"
+        xmlns="http://www.w3.org/2000/svg"
+        width="100%"
+        height="100%"
+        viewBox="0 0 360 46"
+        >
+          <g class="customSearch-textBox-left">
+            <path
+              d="M128 1 L32 1 L8 17 L8 29 L32 45 L128 45 Z"
+              fill="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-miterlimit="10"
+            />
+          </g>
+          <g class="customSearch-textBox-mid">
+            <rect
+              x="128"
+              y="1"
+              width="104"
+              height="44"
+              fill="currentColor"
+              stroke="none"
+            />
+            <line
+              x1="128"
+              y1="1"
+              x2="232"
+              y2="1"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <line
+              x1="128"
+              y1="45"
+              x2="232"
+              y2="45"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </g>
+          <g class="customSearch-textBox-right">
+            <path
+              d="M232 1 L328 1 L352 17 L352 29 L328 45 L232 45 Z"
+              fill="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-miterlimit="10"
+            />
+          </g>
+        </svg>
+
+        <input
+        type="text"
+        id="customSearch"
+        class="disabled"
+        placeholder="e.g. Stroke 1 > Opacity"
+        disabled
+        />
+      </div>
     </div>
 
 </div>
