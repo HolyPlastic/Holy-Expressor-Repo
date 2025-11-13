@@ -43,6 +43,20 @@ if (typeof Holy !== "object") Holy = {};
         } else if (Holy.UI && typeof Holy.UI.toast === "function") {
           Holy.UI.toast("No matches found");
         }
+        if (Holy.BUTTONS && typeof Holy.BUTTONS.logPanelEvent === "function") {
+          var context = {
+            action: "Search & Replace",
+            searchTerm: searchVal,
+            replaceValue: replaceVal,
+            matchCase: matchCase,
+            replacements: summary && summary.replacements,
+            layersChanged: summary && summary.layersChanged,
+            layersCount: summary && summary.layersCount,
+            note: summary && summary.message
+          };
+          var applyReport = summary && summary.applyReport ? summary.applyReport : null;
+          Holy.BUTTONS.logPanelEvent("Search & Replace", context, applyReport);
+        }
         return summary;
       })
       .catch(function (err) {
@@ -51,6 +65,15 @@ if (typeof Holy !== "object") Holy = {};
         console.error("[Holy.SEARCH] runSearchReplace error", err);
         if (Holy.UI && typeof Holy.UI.toast === "function") {
           Holy.UI.toast(msg);
+        }
+        if (Holy.BUTTONS && typeof Holy.BUTTONS.logPanelEvent === "function") {
+          Holy.BUTTONS.logPanelEvent("Search & Replace (Error)", {
+            action: "Search & Replace",
+            searchTerm: searchVal,
+            replaceValue: replaceVal,
+            matchCase: matchCase,
+            error: msg
+          }, err);
         }
         throw err;
       });

@@ -509,6 +509,23 @@ Holy.SNIPPETS.banks = [
 
           const jsxCommand = `holy_applyControlsJSON(${idLiteral}, true)`;
           cs.evalScript(jsxCommand, (response) => {
+            var contextControls = {
+              action: "Snippet Controls Apply",
+              snippetName: snippet.name,
+              snippetId: snippetId,
+              controlsApplied: true
+            };
+            if (Holy.BUTTONS && typeof Holy.BUTTONS.logPanelEvent === "function") {
+              var payloadControls = response;
+              if (typeof response === "string" && response.trim()) {
+                try {
+                  payloadControls = JSON.parse(response);
+                } catch (errParse) {
+                  payloadControls = response;
+                }
+              }
+              Holy.BUTTONS.logPanelEvent("Snippet Controls Apply", contextControls, payloadControls);
+            }
             if (typeof response !== "string" || !response.trim()) {
               console.warn("[Holy.SNIPPETS] Apply Controls returned empty response", response);
               toastApplyError();
@@ -524,6 +541,21 @@ Holy.SNIPPETS.banks = [
           const jsxCommand = `holy_applySnippet(${idLiteral})`;
           console.log("[Holy.SNIPPETS] sending to ExtendScript:", jsxCommand);
           cs.evalScript(jsxCommand, (response) => {
+            if (Holy.BUTTONS && typeof Holy.BUTTONS.logPanelEvent === "function") {
+              var payloadSnippet = response;
+              if (typeof response === "string" && response.trim()) {
+                try {
+                  payloadSnippet = JSON.parse(response);
+                } catch (errParse) {
+                  payloadSnippet = response;
+                }
+              }
+              Holy.BUTTONS.logPanelEvent("Snippet Host Apply", {
+                action: "Snippet Host Apply",
+                snippetName: snippet.name,
+                snippetId: snippetId
+              }, payloadSnippet);
+            }
             console.log("[Holy.SNIPPETS] response from ExtendScript:", response, typeof response);
 
             if (!response || response.trim().toLowerCase() === "fail") {
@@ -540,7 +572,14 @@ Holy.SNIPPETS.banks = [
 
         cy_evalApplyExpression(snippet.expr, (res) => {
           if (Holy.BUTTONS && typeof Holy.BUTTONS.updateApplyReport === "function") {
-            Holy.BUTTONS.updateApplyReport(`Snippet: ${snippet.name}`, res);
+            Holy.BUTTONS.updateApplyReport(`Snippet: ${snippet.name}`, res, {
+              action: "Snippet Apply",
+              snippetName: snippet.name,
+              snippetId: snippetId,
+              controlsApplied: shouldApplyControls,
+              expressionPreview: snippet.expr,
+              expressionLength: String(snippet.expr || "").length
+            });
           }
           if (res && res.ok) Holy.UI.toast(`Applied: ${snippet.name}`);
           else Holy.UI.toast(`Snippet error: ${res?.err || "Apply failed"}`);
@@ -872,7 +911,14 @@ function holy_applySnippet(snippetId) {
       const expr = "wiggle(2, 20)";
       cy_evalApplyExpression(expr, (res) => {
         if (Holy.BUTTONS && typeof Holy.BUTTONS.updateApplyReport === "function") {
-          Holy.BUTTONS.updateApplyReport("Snippet: wiggle(2, 20)", res);
+          Holy.BUTTONS.updateApplyReport("Snippet: wiggle(2, 20)", res, {
+            action: "Snippet Apply",
+            snippetName: "wiggle(2, 20)",
+            snippetId: "quick-wiggle",
+            controlsApplied: false,
+            expressionPreview: expr,
+            expressionLength: expr.length
+          });
         }
 
         if (res && res.ok) {

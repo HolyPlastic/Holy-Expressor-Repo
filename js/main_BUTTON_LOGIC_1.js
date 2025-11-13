@@ -14,7 +14,65 @@ if (typeof Holy !== "object") Holy = {};
   var APPLY_LOG_MAX_ENTRIES = 250;
   var applyLogEntries = [];
 
-  function formatApplyLogEntry(title, data) {
+  function truncateForLog(str, max) {
+    if (typeof str !== "string") return "";
+    if (str.length <= max) return str;
+    return str.slice(0, max - 1) + "…";
+  }
+
+  function pushList(lines, label, items) {
+    if (!Array.isArray(items) || !items.length) {
+      return;
+    }
+    lines.push(label);
+    for (var i = 0; i < items.length; i++) {
+      if (items[i] == null) continue;
+      lines.push("- " + String(items[i]));
+    }
+  }
+
+  function normalizeApplyResult(payload) {
+    var normalized = { parsed: null, raw: null, text: "" };
+    if (payload === undefined || payload === null) {
+      return normalized;
+    }
+
+    if (typeof payload === "string") {
+      var trimmed = payload.trim();
+      normalized.raw = trimmed;
+      normalized.text = trimmed;
+      if (trimmed) {
+        try {
+          normalized.parsed = JSON.parse(trimmed);
+        } catch (err) {
+          normalized.parsed = null;
+        }
+      }
+      return normalized;
+    }
+
+    if (typeof payload === "object") {
+      normalized.raw = payload;
+      if (payload && typeof payload.parsed === "object" && payload.parsed) {
+        // Support pre-normalized payloads
+        normalized.parsed = payload.parsed;
+      } else {
+        normalized.parsed = payload;
+      }
+      try {
+        normalized.text = JSON.stringify(payload);
+      } catch (err2) {
+        normalized.text = "" + payload;
+      }
+      return normalized;
+    }
+
+    normalized.raw = payload;
+    normalized.text = String(payload);
+    return normalized;
+  }
+
+  function formatApplyLogEntry(title, normalized, context) {
     var lines = [];
 
     try {
@@ -23,15 +81,7 @@ if (typeof Holy !== "object") Holy = {};
       var label = (title && typeof title === "string") ? title : "Apply";
       lines.push("[" + stamp + "] " + label);
 
-      var raw = data;
-      var parsed = null;
-      if (typeof raw === "string" && raw.trim()) {
-        try { parsed = JSON.parse(raw); }
-        catch (err) { parsed = null; }
-      } else if (raw && typeof raw === "object") {
-        parsed = raw;
-      }
-
+      var parsed = normalized && normalized.parsed;
       if (parsed && typeof parsed === "object") {
         if (typeof parsed.ok === "boolean") {
           lines.push("Status: " + (parsed.ok ? "ok" : "error"));
@@ -39,13 +89,19 @@ if (typeof Holy !== "object") Holy = {};
         if (parsed.applied != null) lines.push("Applied: " + parsed.applied);
         if (parsed.skipped != null) lines.push("Skipped: " + parsed.skipped);
         if (parsed.expressionName) lines.push("Expression: " + parsed.expressionName);
+        if (parsed.note) lines.push("Note: " + parsed.note);
 
         var targets = parsed.targets || parsed.paths;
+        if (!targets && Array.isArray(parsed.targetPaths)) {
+          targets = parsed.targetPaths;
+        }
         if (Array.isArray(targets) && targets.length) {
-          lines.push("Targets:");
-          for (var i = 0; i < targets.length; i++) {
-            lines.push("- " + targets[i]);
-          }
+          pushList(lines, "Targets:", targets);
+        }
+
+        var layers = parsed.layers;
+        if (Array.isArray(layers) && layers.length) {
+          pushList(lines, "Layers:", layers);
         }
 
         var errs = parsed.errors;
@@ -54,7 +110,7 @@ if (typeof Holy !== "object") Holy = {};
           lines.push("Errors:");
           for (var j = 0; j < errs.length; j++) {
             var e = errs[j] || {};
-            var path = e.path || e.target || "?";
+            var path = e.path || e.target || e.layer || "?";
             var errMsg = e.err || e.message || String(e);
             lines.push("- " + path + " -> " + errMsg);
           }
@@ -63,13 +119,68 @@ if (typeof Holy !== "object") Holy = {};
         if (parsed.details && typeof parsed.details === "string") {
           lines.push("Details: " + parsed.details);
         }
-      } else if (typeof raw === "string" && raw.trim()) {
-        lines.push("Raw: " + raw.trim());
-      } else if (raw != null) {
-        try {
-          lines.push("Raw: " + JSON.stringify(raw));
-        } catch (err2) {
-          lines.push("Raw: [unserializable]");
+      } else if (normalized && normalized.text) {
+        lines.push("Raw: " + normalized.text);
+      }
+
+      var ctx = (context && typeof context === "object") ? context : null;
+      if (ctx) {
+        if (ctx.action && ctx.action !== label) {
+          lines.push("Action: " + ctx.action);
+        }
+        if (ctx.selectionType) {
+          lines.push("Selection: " + ctx.selectionType);
+        }
+        if (ctx.searchTerm) {
+          lines.push("Search: " + ctx.searchTerm);
+        }
+        if (ctx.replaceValue !== undefined) {
+          lines.push("Replace: " + ctx.replaceValue);
+        }
+        if (ctx.matchCase !== undefined) {
+          lines.push("Match case: " + (ctx.matchCase ? "true" : "false"));
+        }
+        if (ctx.replacements != null) {
+          lines.push("Replacements: " + ctx.replacements);
+        }
+        if (ctx.layersChanged != null) {
+          lines.push("Layers changed: " + ctx.layersChanged);
+        }
+        if (ctx.layersCount != null && ctx.layersChanged == null) {
+          lines.push("Layers scanned: " + ctx.layersCount);
+        }
+        if (ctx.clearedProperties != null) {
+          lines.push("Cleared properties: " + ctx.clearedProperties);
+        }
+        if (ctx.clearedLayers != null) {
+          lines.push("Cleared layers: " + ctx.clearedLayers);
+        }
+        if (ctx.expressionPreview) {
+          lines.push("Expression preview: " + truncateForLog(ctx.expressionPreview, 140));
+        }
+        if (ctx.expressionLength != null) {
+          lines.push("Expression length: " + ctx.expressionLength);
+        }
+        if (ctx.snippetName) {
+          lines.push("Snippet: " + ctx.snippetName);
+        }
+        if (ctx.snippetId) {
+          lines.push("Snippet ID: " + ctx.snippetId);
+        }
+        if (ctx.controlsApplied !== undefined) {
+          lines.push("Controls applied: " + (ctx.controlsApplied ? "true" : "false"));
+        }
+        if (ctx.layers && Array.isArray(ctx.layers) && ctx.layers.length) {
+          pushList(lines, "Layers:", ctx.layers);
+        }
+        if (ctx.targetPaths && Array.isArray(ctx.targetPaths) && ctx.targetPaths.length) {
+          pushList(lines, "Target paths:", ctx.targetPaths);
+        }
+        if (ctx.note) {
+          lines.push("Note: " + ctx.note);
+        }
+        if (ctx.error) {
+          lines.push("Error: " + ctx.error);
         }
       }
     } catch (err3) {
@@ -77,6 +188,23 @@ if (typeof Holy !== "object") Holy = {};
     }
 
     return lines.join("\n");
+  }
+
+  function appendLogEntry(entry, updateApplyBox) {
+    if (!entry) return;
+    applyLogEntries.push(entry);
+    if (applyLogEntries.length > APPLY_LOG_MAX_ENTRIES) {
+      applyLogEntries.shift();
+    }
+
+    if (updateApplyBox) {
+      var box = document.getElementById("applyReport");
+      if (box) {
+        box.textContent = entry;
+      }
+    }
+
+    broadcastApplyLogEntries();
   }
 
   function broadcastApplyLogEntries(targetExtensionId) {
@@ -244,7 +372,13 @@ if (typeof Holy !== "object") Holy = {};
               var payload = JSON.stringify({ expressionText: exprDirect });
               var escaped = payload.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
               Holy.UI.cs.evalScript('he_S_SS_applyExpressionToSelection("' + escaped + '")', function (report) {
-                updateApplyReport("Blue Apply", report);
+                var context = {
+                  action: "Blue Apply (Selection)",
+                  selectionType: "selection",
+                  expressionPreview: exprDirect,
+                  expressionLength: exprDirect.length
+                };
+                updateApplyReport("Blue Apply", report, context);
               });
             } catch (e) {
               console.error("Blue Apply failed:", e);
@@ -316,6 +450,16 @@ if (typeof Holy !== "object") Holy = {};
                     if (Holy.UI && typeof Holy.UI.toast === "function" && toastMsg) {
                       Holy.UI.toast(toastMsg);
                     }
+
+                    var context = {
+                      action: "Delete Expressions",
+                      selectionType: result && result.selectionType,
+                      clearedProperties: result && result.clearedProperties,
+                      clearedLayers: result && result.clearedLayers,
+                      hadErrors: result && result.hadErrors,
+                      errorsCount: result && Array.isArray(result.errors) ? result.errors.length : 0
+                    };
+                    logPanelEvent("Delete Expressions", context, result);
                   })
                   .catch(function (err) {
                     release();
@@ -324,6 +468,11 @@ if (typeof Holy !== "object") Holy = {};
                     if (Holy.UI && typeof Holy.UI.toast === "function") {
                       Holy.UI.toast(msg);
                     }
+                    var errorContext = {
+                      action: "Delete Expressions",
+                      error: msg
+                    };
+                    logPanelEvent("Delete Expressions (Error)", errorContext, err);
                   });
               });
             }
@@ -354,7 +503,13 @@ if (typeof Holy !== "object") Holy = {};
                         return;
                       }
                       Holy.UI.toast("Applied to " + r.applied + " properties");
-                      updateApplyReport("Orange Apply (Custom Search)", r);
+                      var context = {
+                        action: "Orange Apply (Custom Search)",
+                        searchTerm: searchVal,
+                        expressionPreview: expr,
+                        expressionLength: String(expr || "").length
+                      };
+                      updateApplyReport("Orange Apply (Custom Search)", r, context);
                     });
                   });
                 } else {
@@ -384,7 +539,13 @@ if (typeof Holy !== "object") Holy = {};
                         return;
                       }
                       Holy.UI.toast("Applied to " + r.applied + " properties");
-                      updateApplyReport("Orange Apply (Target List)", r);
+                      var context = {
+                        action: "Orange Apply (Target List)",
+                        targetPaths: paths.slice(),
+                        expressionPreview: expr,
+                        expressionLength: String(expr || "").length
+                      };
+                      updateApplyReport("Orange Apply (Target List)", r, context);
                     });
                   }
 
@@ -713,26 +874,42 @@ if (typeof Holy !== "object") Holy = {};
 
 // ======================================
 //  Apply Report Helper (backward-compatible)
-// Accepts updateApplyReport(result)  or  updateApplyReport(title, result)
+// Accepts updateApplyReport(result)  or  updateApplyReport(title, result[, context])
 // ======================================
-function updateApplyReport(arg1, arg2) {
-  var title = (arguments.length === 2 && typeof arg1 === "string") ? arg1 : "";
-  var data  = (arguments.length === 2 && typeof arg1 === "string") ? arg2 : arg1;
+function updateApplyReport(arg1, arg2, arg3) {
+  var title;
+  var data;
+  var context;
 
-  var entry = formatApplyLogEntry(title, data);
-  if (!entry) entry = "[No apply data]";
-
-  applyLogEntries.push(entry);
-  if (applyLogEntries.length > APPLY_LOG_MAX_ENTRIES) {
-    applyLogEntries.shift();
+  if (arguments.length === 1) {
+    title = "";
+    data = arg1;
+    context = undefined;
+  } else if (arguments.length === 2) {
+    title = (typeof arg1 === "string") ? arg1 : "";
+    data = (typeof arg1 === "string") ? arg2 : arg1;
+    context = (typeof arg1 === "string") ? undefined : arg2;
+  } else {
+    title = (typeof arg1 === "string") ? arg1 : "";
+    data = arg2;
+    context = arg3;
   }
 
-  var box = document.getElementById("applyReport");
-  if (box) {
-    box.textContent = entry;
+  var normalized = normalizeApplyResult(data);
+  var entry = formatApplyLogEntry(title, normalized, context);
+  if (!entry) {
+    entry = "[No apply data]";
   }
 
-  broadcastApplyLogEntries();
+  appendLogEntry(entry, true);
+  return normalized.parsed || normalized.raw;
+}
+
+function logPanelEvent(title, context, data) {
+  var normalized = normalizeApplyResult(data);
+  var entry = formatApplyLogEntry(title, normalized, context || {});
+  appendLogEntry(entry, false);
+  return normalized.parsed || normalized.raw;
 }
 
 
@@ -747,6 +924,7 @@ Holy.BUTTONS = {
   HX_LOG_MODE: HX_LOG_MODE,
   wirePanelButtons: wirePanelButtons,
   updateApplyReport: updateApplyReport,
+  logPanelEvent: logPanelEvent,
   openApplyLogWindow: openApplyLogWindow
 };
 

@@ -114,8 +114,13 @@ function HE_applyByStrictSearch(expr, searchVal) {
   var escaped = payload.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
 
   Holy.UI.cs.evalScript('he_P_SC_applyExpressionBySearch("' + escaped + '")', function (report) {
-    // Title first, then the JSON result from host
-    Holy.BUTTONS.updateApplyReport("Blue Apply by Custom Search", report);
+    var context = {
+      action: "Blue Apply (Custom Search)",
+      searchTerm: q,
+      expressionPreview: expr,
+      expressionLength: String(expr || "").length
+    };
+    Holy.BUTTONS.updateApplyReport("Blue Apply by Custom Search", report, context);
   });
 }
 

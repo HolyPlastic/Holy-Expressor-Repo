@@ -13,6 +13,7 @@ ____________________ -------->
 
   <!-- ⚙️ Core CEP dependencies (MUST stay synchronous) -->
   <script src="./js/libs/CSInterface.js"></script>
+  <script src="./js/persistent-store.js"></script>
 
 <!-- #region 🎨⚙️⚙️ CSS STYLE FUNCTION ===================================------------------>
 
@@ -112,11 +113,18 @@ ____________________ -------->
   try {
     var savedColor;
     try {
-      var cs = new CSInterface();
-      savedColor = cs.getPersistentData('he_themeColor');
-    } catch (errCS) {
-      console.warn('[Main] Persistent store unavailable, fallback to localStorage', errCS);
-      savedColor = localStorage.getItem('he_themeColor');
+      if (Holy && Holy.PERSIST && typeof Holy.PERSIST.get === 'function') {
+        savedColor = Holy.PERSIST.get('he_themeColor');
+      }
+    } catch (errPersist) {
+      console.warn('[Main] Persistent store adapter failed, fallback to localStorage', errPersist);
+    }
+    if (!savedColor) {
+      try {
+        savedColor = localStorage.getItem('he_themeColor');
+      } catch (errLocal) {
+        console.warn('[Main] localStorage unavailable for theme color', errLocal);
+      }
     }
     if (savedColor) {
       var root = document.documentElement;
@@ -153,11 +161,15 @@ ____________________ -------->
           root.style.setProperty('--G-color-1', data.hex);
 
           // persist selection via CEP persistent data (fallback to localStorage)
-          try {
-            cs.setPersistentData('he_themeColor', data.hex);
-            console.log('[Main] Saved theme color via CSInterface persistent data', data.hex);
-          } catch (errCS) {
-            console.warn('[Main] Failed to persist theme color via CSInterface', errCS);
+          var persisted = false;
+          if (Holy && Holy.PERSIST && typeof Holy.PERSIST.set === 'function') {
+            try {
+              persisted = Holy.PERSIST.set('he_themeColor', data.hex);
+            } catch (errPersist) {
+              console.warn('[Main] Failed to persist theme color via adapter', errPersist);
+            }
+          }
+          if (!persisted) {
             try {
               localStorage.setItem('he_themeColor', data.hex);
             } catch (errLocal) {
