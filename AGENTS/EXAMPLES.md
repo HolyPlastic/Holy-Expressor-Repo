@@ -282,9 +282,11 @@ The structure consists of:
   </svg>
 
 </div>
+```
+
 CSS Requirements (Summary)
-css
-Copy code
+```css
+
 .[identifier]-frame-row {
   display: flex;
   align-items: center;
@@ -309,4 +311,5 @@ Copy code
   flex: 1 1 auto;
   min-width: 0;
 }
+```
 This structure replaces earlier single-SVG implementations and is now the canonical method for all three-part scalable UI elements in the project.
