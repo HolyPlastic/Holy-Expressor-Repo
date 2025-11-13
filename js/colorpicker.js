@@ -27,6 +27,33 @@
     var pointerId = null;
     var gradientImageData = null;
     var initialHex = '#1EFFD6';
+    var lastBroadcast = 0;
+    var svMarker = null;
+    var svContainer = canvas ? (canvas.parentElement || canvas.parentNode) : null;
+
+    if (svContainer && typeof svContainer.appendChild === 'function') {
+      try {
+        var computedPos = window.getComputedStyle ? window.getComputedStyle(svContainer).position : null;
+        if (!computedPos || computedPos === 'static') {
+          svContainer.style.position = 'relative';
+        }
+      } catch (errPos) {
+        if (!svContainer.style.position) {
+          svContainer.style.position = 'relative';
+        }
+      }
+
+      svMarker = document.createElement('div');
+      svMarker.id = 'svMarker';
+      svMarker.style.position = 'absolute';
+      svMarker.style.width = '12px';
+      svMarker.style.height = '12px';
+      svMarker.style.border = '2px solid rgba(255,255,255,0.9)';
+      svMarker.style.borderRadius = '50%';
+      svMarker.style.pointerEvents = 'none';
+      svMarker.style.transform = 'translate(-6px, -6px)';
+      svContainer.appendChild(svMarker);
+    }
 
     function clamp(v, min, max) {
       return Math.min(Math.max(v, min), max);
@@ -166,33 +193,62 @@
     }
 
     // V9.3 Broadcast color to main panel
-function broadcastHexToMain(hex) {
-  try {
-    if (typeof CSInterface !== 'function') {
-      throw new Error('CSInterface unavailable');
+    function broadcastColorToMain(hex) {
+      try {
+        if (typeof CSInterface !== 'function') {
+          throw new Error('CSInterface unavailable');
+        }
+        var cs = new CSInterface();
+        var evt = new CSEvent('holy.color.change', 'APPLICATION');
+        evt.data = JSON.stringify({ hex: hex });
+        cs.dispatchEvent(evt);
+      } catch (err) {
+        console.warn('[ColorPicker] Failed to dispatch color event', err);
+      }
     }
-    var cs = new CSInterface();
-    var evt = new CSEvent('holy.color.change', 'APPLICATION');
-    evt.data = JSON.stringify({ hex: hex }); // ✅ use the passed-in hex
-    cs.dispatchEvent(evt);
-  } catch (err) {
-    console.warn('[ColorPicker] Failed to dispatch color event', err);
-  }
-}
 
+    function broadcastThrottled(hex) {
+      var now = Date.now();
+      if (now - lastBroadcast < 33) {
+        return;
+      }
+      lastBroadcast = now;
+      broadcastColorToMain(hex);
+    }
 
-    function applyColor(hex) {
+    function previewColor(hex, options) {
       var normalized = normalizeHex(hex);
       if (!normalized) {
         return;
       }
+
       localRoot.style.setProperty('--G-color-1', normalized);
       updateDerivedVariables(localRoot, normalized);
 
-      // send to main panel (authoritative theme owner)
-      broadcastHexToMain(normalized);
+      if (!options || options.updateInput !== false) {
+        input.value = normalized;
+      }
 
-      input.value = normalized;
+      if (options && options.skipBroadcast) {
+        return;
+      }
+
+      if (options && options.immediate) {
+        lastBroadcast = Date.now();
+        broadcastColorToMain(normalized);
+      } else {
+        broadcastThrottled(normalized);
+      }
+    }
+
+    function updateMarkerPosition() {
+      if (!svMarker) {
+        return;
+      }
+      var sRatio = clamp(state.s / 100, 0, 1);
+      var lRatio = clamp(state.l / 100, 0, 1);
+      svMarker.style.left = (sRatio * canvas.width) + 'px';
+      svMarker.style.top = ((1 - lRatio) * canvas.height) + 'px';
     }
 
     function buildCanvas() {
@@ -211,6 +267,7 @@ function broadcastHexToMain(hex) {
         }
       }
       ctx.putImageData(gradientImageData, 0, 0);
+      updateMarkerPosition();
     }
 
     function updateStateFromPointer(clientX, clientY) {
@@ -220,10 +277,11 @@ function broadcastHexToMain(hex) {
       state.s = xRatio * 100;
       state.l = 100 - yRatio * 100;
       var rgb = hslToRgb(state.h, state.s, state.l);
-      applyColor(rgbToHex(rgb[0], rgb[1], rgb[2]));
+      updateMarkerPosition();
+      previewColor(rgbToHex(rgb[0], rgb[1], rgb[2]));
     }
 
-    function syncStateFromHex(hex) {
+    function syncStateFromHex(hex, options) {
       var rgb = hexToRgb(hex);
       if (!rgb) {
         return;
@@ -235,14 +293,16 @@ function broadcastHexToMain(hex) {
       hueSlider.value = String(hsl.h);
       buildCanvas();
       var rgbFromState = hslToRgb(state.h, state.s, state.l);
-      applyColor(rgbToHex(rgbFromState[0], rgbFromState[1], rgbFromState[2]));
+      updateMarkerPosition();
+      previewColor(rgbToHex(rgbFromState[0], rgbFromState[1], rgbFromState[2]), options);
     }
 
     hueSlider.addEventListener('input', function () {
       state.h = parseFloat(hueSlider.value) || 0;
       buildCanvas();
       var rgb = hslToRgb(state.h, state.s, state.l);
-      applyColor(rgbToHex(rgb[0], rgb[1], rgb[2]));
+      updateMarkerPosition();
+      previewColor(rgbToHex(rgb[0], rgb[1], rgb[2]));
     });
 
     canvas.addEventListener('pointerdown', function (event) {
@@ -287,7 +347,7 @@ function broadcastHexToMain(hex) {
     input.addEventListener('input', function () {
       var normalized = normalizeHex(input.value);
       if (normalized) {
-        syncStateFromHex(normalized);
+        syncStateFromHex(normalized, { immediate: true });
       }
     });
 
@@ -318,8 +378,8 @@ function broadcastHexToMain(hex) {
           }
         }
 
-        // local preview + CSEvent broadcast already happen inside applyColor
-        applyColor(normalized);
+        // local preview + CSEvent broadcast already happen inside previewColor
+        previewColor(normalized, { immediate: true });
 
         // Fallback path: call main panel directly if available
         try {
@@ -334,7 +394,7 @@ function broadcastHexToMain(hex) {
     });
 
     cancelBtn.addEventListener('click', function () {
-      applyColor(initialHex);
+      syncStateFromHex(initialHex, { immediate: true });
       window.close();
     });
 
@@ -378,7 +438,7 @@ function broadcastHexToMain(hex) {
         if (normalizedPersisted) {
           initialHex = normalizedPersisted;
           input.value = normalizedPersisted;
-          syncStateFromHex(normalizedPersisted);
+          syncStateFromHex(normalizedPersisted, { skipBroadcast: true });
           console.log('[ColorPicker] Loaded persisted color', normalizedPersisted);
           return;
         }
@@ -386,7 +446,7 @@ function broadcastHexToMain(hex) {
 
       var hex = readInitialHex();
       input.value = hex;
-      syncStateFromHex(hex);
+      syncStateFromHex(hex, { skipBroadcast: true });
     }
 
     init();

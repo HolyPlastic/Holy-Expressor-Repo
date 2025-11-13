@@ -31,6 +31,14 @@ if (typeof Holy !== "object") Holy = {};
     }
   }
 
+  function toNumberOrNull(value) {
+    if (value == null || value === "") {
+      return null;
+    }
+    var num = Number(value);
+    return isNaN(num) ? null : num;
+  }
+
   function normalizeApplyResult(payload) {
     var normalized = { parsed: null, raw: null, text: "" };
     if (payload === undefined || payload === null) {
@@ -188,6 +196,75 @@ if (typeof Holy !== "object") Holy = {};
     }
 
     return lines.join("\n");
+  }
+
+  function maybeToastBlueApply(title, normalized, context) {
+    if (!window.Holy || !Holy.UI || typeof Holy.UI.toast !== "function") {
+      return;
+    }
+
+    var label = (typeof title === "string") ? title : "";
+    var ctx = (context && typeof context === "object") ? context : {};
+    var action = (typeof ctx.action === "string") ? ctx.action : "";
+    var isBlue = false;
+
+    if (label.indexOf("Blue Apply") === 0) {
+      isBlue = true;
+    } else if (action.indexOf("Blue Apply") === 0) {
+      isBlue = true;
+    }
+
+    if (!isBlue) {
+      return;
+    }
+
+    var parsed = normalized && normalized.parsed;
+    var toastMsg = null;
+
+    if (parsed && typeof parsed === "object") {
+      if (parsed.toastMessage) {
+        toastMsg = parsed.toastMessage;
+      } else {
+        var appliedNum = toNumberOrNull(parsed.applied);
+        var skippedNum = toNumberOrNull(parsed.skipped);
+        var okFlag = (parsed.ok === undefined) ? (appliedNum != null && appliedNum > 0) : !!parsed.ok;
+
+        if (okFlag && appliedNum != null) {
+          toastMsg = "Applied to " + appliedNum + " " + (appliedNum === 1 ? "property" : "properties");
+        } else if (okFlag && skippedNum != null) {
+          toastMsg = "Skipped " + skippedNum + " " + (skippedNum === 1 ? "property" : "properties");
+        } else if (okFlag) {
+          toastMsg = "Apply complete";
+        } else if (parsed.note) {
+          toastMsg = parsed.note;
+        } else if (parsed.err || parsed.error) {
+          toastMsg = parsed.err || parsed.error;
+        } else if (appliedNum != null) {
+          toastMsg = "Applied to " + appliedNum + " " + (appliedNum === 1 ? "property" : "properties");
+        } else if (skippedNum != null) {
+          toastMsg = "Skipped " + skippedNum + " " + (skippedNum === 1 ? "property" : "properties");
+        }
+      }
+    } else if (normalized && typeof normalized.raw === "string" && normalized.raw) {
+      var rawTrimmed = String(normalized.raw).trim();
+      if (rawTrimmed && rawTrimmed.charAt(0) !== "{" && rawTrimmed.charAt(0) !== "[") {
+        toastMsg = rawTrimmed;
+      }
+    }
+
+    if (!toastMsg) {
+      if (parsed && parsed.ok === false) {
+        toastMsg = parsed.note || parsed.err || parsed.error || "Apply failed";
+      } else if (parsed && parsed.ok) {
+        toastMsg = "Apply complete";
+      }
+    }
+
+    if (!toastMsg) {
+      return;
+    }
+
+    Holy.UI.toast(toastMsg);
   }
 
   function appendLogEntry(entry, updateApplyBox) {
@@ -902,6 +979,7 @@ function updateApplyReport(arg1, arg2, arg3) {
   }
 
   appendLogEntry(entry, true);
+  maybeToastBlueApply(title, normalized, context);
   return normalized.parsed || normalized.raw;
 }
 
