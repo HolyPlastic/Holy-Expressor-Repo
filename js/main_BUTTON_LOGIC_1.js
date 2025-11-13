@@ -184,6 +184,22 @@ if (typeof Holy !== "object") Holy = {};
             V4 – use editor expression for Custom Search; fallback to builder only if editor is empty
             ============================ */
           function onApply() {
+            var modePanelEl = document.getElementById("modePanel");
+            var isRewriteMode = modePanelEl && modePanelEl.dataset.mode === "rewrite";
+
+            if (isRewriteMode) {
+              if (Holy.SEARCH && typeof Holy.SEARCH.runSearchReplace === "function") {
+                var rewriteBtn = document.getElementById("applyBtn");
+                Holy.SEARCH.runSearchReplace(rewriteBtn);
+              } else {
+                console.warn("[Holy.BUTTONS] Search & Replace helper unavailable in rewrite mode");
+                if (Holy.UI && typeof Holy.UI.toast === "function") {
+                  Holy.UI.toast("Search & Replace unavailable");
+                }
+              }
+              return;
+            }
+
             console.log("Blue Apply button clicked");
 
             var expr = Holy.EXPRESS.PORTAL_getCurrentExpression();
