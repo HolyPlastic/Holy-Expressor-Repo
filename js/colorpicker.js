@@ -299,12 +299,18 @@ function broadcastHexToMain(hex) {
     applyBtn.addEventListener('click', function () {
       var normalized = normalizeHex(input.value);
       if (normalized) {
-        try {
-          var cs = new CSInterface();
-          cs.setPersistentData('he_themeColor', normalized);
-          console.log('[ColorPicker] Saved theme color via CSInterface persistent data', normalized);
-        } catch (errCS) {
-          console.warn('[ColorPicker] Failed to persist theme color via CSInterface', errCS);
+        var persisted = false;
+        if (typeof Holy === 'object' && Holy !== null && Holy.PERSIST && typeof Holy.PERSIST.set === 'function') {
+          try {
+            persisted = Holy.PERSIST.set('he_themeColor', normalized);
+            if (persisted) {
+              console.log('[ColorPicker] Saved theme color via adapter', normalized);
+            }
+          } catch (errPersist) {
+            console.warn('[ColorPicker] Failed to persist theme color via adapter', errPersist);
+          }
+        }
+        if (!persisted) {
           try {
             localStorage.setItem('he_themeColor', normalized);
           } catch (errLocal) {
@@ -354,20 +360,28 @@ function broadcastHexToMain(hex) {
     function init() {
       var persistedHex = null;
       try {
-        var cs = new CSInterface();
-        persistedHex = cs.getPersistentData('he_themeColor');
-        if (persistedHex) {
-          var normalizedPersisted = normalizeHex(persistedHex);
-          if (normalizedPersisted) {
-            initialHex = normalizedPersisted;
-            input.value = normalizedPersisted;
-            syncStateFromHex(normalizedPersisted);
-            console.log('[ColorPicker] Loaded persisted color', normalizedPersisted);
-            return;
-          }
+        if (typeof Holy === 'object' && Holy !== null && Holy.PERSIST && typeof Holy.PERSIST.get === 'function') {
+          persistedHex = Holy.PERSIST.get('he_themeColor');
         }
       } catch (errPersist) {
-        console.warn('[ColorPicker] Failed to load persisted color', errPersist);
+        console.warn('[ColorPicker] Adapter load failed', errPersist);
+      }
+      if (!persistedHex) {
+        try {
+          persistedHex = localStorage.getItem('he_themeColor');
+        } catch (errLocal) {
+          console.warn('[ColorPicker] localStorage unavailable for theme color', errLocal);
+        }
+      }
+      if (persistedHex) {
+        var normalizedPersisted = normalizeHex(persistedHex);
+        if (normalizedPersisted) {
+          initialHex = normalizedPersisted;
+          input.value = normalizedPersisted;
+          syncStateFromHex(normalizedPersisted);
+          console.log('[ColorPicker] Loaded persisted color', normalizedPersisted);
+          return;
+        }
       }
 
       var hex = readInitialHex();
