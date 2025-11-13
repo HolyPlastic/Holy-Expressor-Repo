@@ -269,5 +269,9 @@ var HE_SHAPE_CONTAINER_MATCHNAMES = (function () {
 
 try {
     logToPanel("✅ host_MAPS.jsx Loaded ⛓️");
+    var NEW_log_event_maps = new CSXSEvent();
+    NEW_log_event_maps.type = "com.holyexpressor.NEW_log_event";
+    NEW_log_event_maps.data = "✅ host_MAPS.jsx Loaded ⛓️";
+    NEW_log_event_maps.dispatch();
 } catch (e) {}
 

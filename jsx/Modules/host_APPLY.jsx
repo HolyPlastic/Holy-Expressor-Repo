@@ -398,6 +398,10 @@ function he_P_SC_applyExpressionBySearch(jsonStr) {
 
 try {
   logToPanel("✅ host_APPLY.jsx Loaded ⛓️");
+  var NEW_log_event_apply = new CSXSEvent();
+  NEW_log_event_apply.type = "com.holyexpressor.NEW_log_event";
+  NEW_log_event_apply.data = "✅ host_APPLY.jsx Loaded ⛓️";
+  NEW_log_event_apply.dispatch();
 } catch (e) {}
 
 function holy_applyControlsJSON(snippetId, shouldApply) {

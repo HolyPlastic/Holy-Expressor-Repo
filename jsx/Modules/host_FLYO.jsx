@@ -30,6 +30,10 @@ function he_launchFlyover() {
 
 try {
   logToPanel("✅ host_FLYO.jsx Loaded ⛓️");
+  var NEW_log_event = new CSXSEvent();
+  NEW_log_event.type = "com.holyexpressor.NEW_log_event";
+  NEW_log_event.data = "✅ host_FLYO.jsx Loaded ⛓️";
+  NEW_log_event.dispatch();
 } catch (e) {}
 
 
