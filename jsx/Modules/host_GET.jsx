@@ -25,6 +25,10 @@ function he_GET_SelPath_Engage(useAbsoluteComp) {
 
     var props = comp.selectedProperties;
     logToPanel("[LEAN-ENGAGE] invoked with " + props.length + " props");
+    var NEW_log_event = new CSXSEvent();
+    NEW_log_event.type = "com.holyexpressor.NEW_log_event";
+    NEW_log_event.data = "[LEAN-ENGAGE] invoked with " + props.length + " props";
+    NEW_log_event.dispatch();
     if (!props || props.length === 0) {
       return JSON.stringify({ error: "no selected properties" });
     }
@@ -196,6 +200,10 @@ function he_GET_SelPath_Build(props, cy_useAbs) {
     }
 
     logToPanel("[LEAN-BUILD] built " + exprOutputAll.length + " paths");
+    var NEW_log_event_build = new CSXSEvent();
+    NEW_log_event_build.type = "com.holyexpressor.NEW_log_event";
+    NEW_log_event_build.data = "[LEAN-BUILD] built " + exprOutputAll.length + " paths";
+    NEW_log_event_build.dispatch();
     return JSON.stringify({ ok: true, built: exprOutputAll.join("\n"), debug: debug });
 
   } catch (err) {
@@ -1054,4 +1062,8 @@ function he_EX_collectExpressionsForLayer(jsonStr) {
 
 try {
     logToPanel("✅ host_GET.jsx Loaded ⛓️");
+    var NEW_log_event_loaded = new CSXSEvent();
+    NEW_log_event_loaded.type = "com.holyexpressor.NEW_log_event";
+    NEW_log_event_loaded.data = "✅ host_GET.jsx Loaded ⛓️";
+    NEW_log_event_loaded.dispatch();
 } catch (e) {}

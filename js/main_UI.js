@@ -5,6 +5,14 @@ if (typeof Holy !== "object") Holy = {};
   "use strict";
 
   var cs = new CSInterface();
+  const NEW_log_history = [];
+  const NEW_LOG_EVENT = "com.holyexpressor.NEW_log_event";
+
+  cs.addEventListener(NEW_LOG_EVENT, function (evt) {
+    const timestamp = new Date().toISOString();
+    const entry = "[" + timestamp + "] " + evt.data;
+    NEW_log_history.push(entry);
+  });
   if (typeof Holy.Panel !== "object") Holy.Panel = {};
 
   var modePanel = null;
@@ -150,12 +158,20 @@ ensureHostReady(() => {
     applyBtnLabel = applyBtn ? applyBtn.querySelector(".label") : null;
 
     var openFullEditorBtn = document.getElementById("openFullEditorBtn");
+    var NEW_log_openDialogButton = document.getElementById("NEW_log_openDialogButton");
     var codeEditor = document.getElementById("codeEditor");
     var expressOverlay = document.querySelector(".express-editor-overlay");
     var useAbsoluteComp = document.getElementById("useAbsoluteComp");
     var loadPathFromSelectionBtn = document.getElementById("loadPathFromSelectionBtn");
     var loadFromSelectionBtn = document.getElementById("loadFromSelectionBtn");
     var editorClearBtn = document.getElementById("editorClearBtn");
+
+    if (NEW_log_openDialogButton) {
+      NEW_log_openDialogButton.onclick = function () {
+        const joined = NEW_log_history.join("\n");
+        cs.evalScript('NEW_log_showDialog(' + JSON.stringify(joined) + ')');
+      };
+    }
 
     expressOnlyElements = [];
 

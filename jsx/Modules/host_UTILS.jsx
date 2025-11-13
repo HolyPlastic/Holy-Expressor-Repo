@@ -1048,7 +1048,13 @@ function cy_deleteExpressions() {
       undoOpen = false;
     }
 
-    try { logToPanel(result.consoleMessage); } catch (_) {}
+    try {
+      logToPanel(result.consoleMessage);
+      var NEW_log_event_console = new CSXSEvent();
+      NEW_log_event_console.type = "com.holyexpressor.NEW_log_event";
+      NEW_log_event_console.data = result.consoleMessage;
+      NEW_log_event_console.dispatch();
+    } catch (_) {}
   } catch (err) {
     result.err = String(err);
   } finally {
@@ -1063,6 +1069,10 @@ function cy_deleteExpressions() {
 
 try {
   logToPanel("✅ host_UTILS.jsx Loaded ⛓️");
+  var NEW_log_event_utils = new CSXSEvent();
+  NEW_log_event_utils.type = "com.holyexpressor.NEW_log_event";
+  NEW_log_event_utils.data = "✅ host_UTILS.jsx Loaded ⛓️";
+  NEW_log_event_utils.dispatch();
 } catch (e) {}
 
 

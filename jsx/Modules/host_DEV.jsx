@@ -94,4 +94,8 @@ function he_U_DEV_exposeSelectedProps() {
 
 try {
   logToPanel("✅ host_Dev.jsx Loaded ⛓️");
+  var NEW_log_event_dev = new CSXSEvent();
+  NEW_log_event_dev.type = "com.holyexpressor.NEW_log_event";
+  NEW_log_event_dev.data = "✅ host_Dev.jsx Loaded ⛓️";
+  NEW_log_event_dev.dispatch();
 } catch (e) {}
