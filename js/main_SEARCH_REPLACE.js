@@ -20,11 +20,11 @@ if (typeof Holy !== "object") Holy = {};
     btn.classList.toggle("is-busy", !!isBusy);
   }
 
-  function runSearchReplace() {
+  function runSearchReplace(triggerButton) {
     var searchVal = getFieldValue("#searchField");
     var replaceVal = getFieldValue("#replaceField");
     var matchCase = getCheckboxState("#matchCase", true);
-    var button = document.querySelector("#runSearchReplace");
+    var button = triggerButton || document.querySelector("#applyBtn");
 
     setButtonState(button, true);
 
@@ -57,12 +57,11 @@ if (typeof Holy !== "object") Holy = {};
   }
 
   function init() {
-    var btn = document.querySelector("#runSearchReplace");
-    if (!btn) return;
-    if (!btn.dataset.cySearchBound) {
-      btn.dataset.cySearchBound = "true";
-      btn.addEventListener("click", function () {
-        runSearchReplace();
+    var legacyBtn = document.querySelector("#runSearchReplace");
+    if (legacyBtn && !legacyBtn.dataset.cySearchBound) {
+      legacyBtn.dataset.cySearchBound = "true";
+      legacyBtn.addEventListener("click", function () {
+        runSearchReplace(legacyBtn);
       });
     }
   }

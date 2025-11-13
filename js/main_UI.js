@@ -14,6 +14,8 @@ if (typeof Holy !== "object") Holy = {};
   var modeViewRewrite = null;
   var btnModeSwitch = null;
   var expressOnlyElements = [];
+  var applyBtn = null;
+  var applyBtnLabel = null;
   var setMode = null;
 
 
@@ -144,6 +146,8 @@ ensureHostReady(() => {
     modeViewExpress = document.getElementById("modeViewExpress");
     modeViewRewrite = document.getElementById("modeViewRewrite");
     btnModeSwitch = document.getElementById("btnModeSwitch");
+    applyBtn = document.getElementById("applyBtn");
+    applyBtnLabel = applyBtn ? applyBtn.querySelector(".label") : null;
 
     var openFullEditorBtn = document.getElementById("openFullEditorBtn");
     var codeEditor = document.getElementById("codeEditor");
@@ -165,6 +169,11 @@ ensureHostReady(() => {
 
     if (useAbsoluteComp && useAbsoluteComp.parentElement) {
       expressOnlyElements.push(useAbsoluteComp.parentElement);
+    }
+
+    var customSearchMaster = document.getElementById("customSearch-Master");
+    if (customSearchMaster) {
+      expressOnlyElements.push(customSearchMaster);
     }
 
     [loadPathFromSelectionBtn, loadFromSelectionBtn, editorClearBtn].forEach(function (btn) {
@@ -190,6 +199,15 @@ ensureHostReady(() => {
         modeRewriteBtn.setAttribute("aria-selected", String(!isExpress));
 
         modePanel.dataset.mode = isExpress ? "express" : "rewrite";
+
+        if (applyBtnLabel) {
+          applyBtnLabel.textContent = isExpress ? "APPLY" : "REWRITE";
+        }
+        if (applyBtn) {
+          var actionLabel = isExpress ? "Apply expression to selection" : "Run search and replace";
+          applyBtn.setAttribute("aria-label", actionLabel);
+          applyBtn.setAttribute("title", actionLabel);
+        }
 
         expressOnlyElements.forEach(function (el) {
           if (!el) return;
