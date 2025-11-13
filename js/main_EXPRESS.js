@@ -113,14 +113,29 @@ function HE_applyByStrictSearch(expr, searchVal) {
   var payload = JSON.stringify({ expressionText: String(expr), searchTerm: q, strictMode: true });
   var escaped = payload.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
 
-  Holy.UI.cs.evalScript('he_P_SC_applyExpressionBySearch("' + escaped + '")', function (report) {
+  Holy.UI.cs.evalScript('he_P_SC_applyExpressionBySearch("' + escaped + '")', function (reportRaw) {
+    // Always guarantee a non-empty report
+    var report = reportRaw || "{}";
+
+    var parsed = {};
+    try { parsed = JSON.parse(report) || {}; }
+    catch (e) { parsed = { raw: report }; }
+
+    // Guarantee minimal meaningful entry
+    if (!parsed.ok && !parsed.applied && !parsed.skipped) {
+        parsed.ok = false;
+        parsed.note = "No matching properties for strict search";
+        parsed.searchTerm = q;
+    }
+
     var context = {
-      action: "Blue Apply (Custom Search)",
-      searchTerm: q,
-      expressionPreview: expr,
-      expressionLength: String(expr || "").length
+        action: "Blue Apply (Custom Search)",
+        searchTerm: q,
+        expressionPreview: expr,
+        expressionLength: String(expr || "").length
     };
-    Holy.BUTTONS.updateApplyReport("Blue Apply by Custom Search", report, context);
+
+    Holy.BUTTONS.updateApplyReport("Blue Apply (Strict Search)", parsed, context);
   });
 }
 
