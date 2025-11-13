@@ -247,8 +247,13 @@
       }
       var sRatio = clamp(state.s / 100, 0, 1);
       var lRatio = clamp(state.l / 100, 0, 1);
-      svMarker.style.left = (sRatio * canvas.width) + 'px';
-      svMarker.style.top = ((1 - lRatio) * canvas.height) + 'px';
+      var rect = canvas.getBoundingClientRect();
+      var w = rect.width || canvas.width;
+      var h = rect.height || canvas.height;
+      var markerX = sRatio * w;
+      var markerY = (1 - lRatio) * h;
+      svMarker.style.left = markerX + 'px';
+      svMarker.style.top = markerY + 'px';
     }
 
     function buildCanvas() {

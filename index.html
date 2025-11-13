@@ -896,14 +896,6 @@ window.__HolyExpressorColorChange = function(hex) {
           var root = document.documentElement;
           root.style.setProperty('--G-color-1', data.hex);
 
-          // persist selection to localStorage so it survives reloads
-          try {
-            localStorage.setItem('he_themeColor', data.hex);
-            console.log('[Main] Saved theme color to localStorage', data.hex);
-          } catch (errLocal) {
-            console.warn('[Main] Failed to persist theme color', errLocal);
-          }
-
           if (typeof window.updateDerivedVariables === 'function') {
             window.updateDerivedVariables(root, data.hex);
           }
