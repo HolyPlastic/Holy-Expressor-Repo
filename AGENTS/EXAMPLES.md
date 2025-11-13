@@ -146,88 +146,170 @@ aria-label="[insert appropriate content]"
 
 ### Three-Part SVG Elements
 
-* Three-part SVG elements should be divided into **three `<g>` groups** representing:
+Three-part SVG elements are used for UI components that require a fixed-width left cap, a fixed-width right cap, and a flexible middle section that expands horizontally. This pattern is used for scalable frames such as the custom search box, and reflects the current architectural model of the extension (Codex diff, 2025-11, replacing the earlier single-SVG JS-scaling system).
 
-  * `[identifier]-left` → the left section or angled cap
-  * `[identifier]-mid` → the middle rectangular or body section
-  * `[identifier]-right` → the right section or angled cap
+The three sections must be defined as **three separate SVG elements**, not `<g>` groups inside a single SVG. Using independent SVGs ensures clean flex-based expansion, prevents transform conflicts, and avoids the need for JavaScript to recalculate widths.
 
-  These groups allow seamless joins between parts while maintaining clean strokes and visual continuity.
+The structure consists of:
 
-* The main identifying class (for example, `.btn-rhombus`, `.btn-hex`, etc.) should either be:
+* **Left cap SVG**  
+  A fixed-size SVG element (e.g., 16.82px width), preserving original Illustrator geometry.  
+  This element must never scale horizontally.
 
-  * **Explicitly specified by the user**, or
-  * **Inferred by the agent** if not provided (using a concise, descriptive identifier).
+* **Mid section SVG**  
+  An SVG whose width is controlled by CSS flex expansion.  
+  The mid section supplies only the horizontal strokes (typically two `<line>` elements).  
+  These lines must use `vector-effect="non-scaling-stroke"` to maintain consistent stroke width.  
+  No fill rectangle is required unless explicitly defined by the user.
 
-  Once an identifier is established, it should be used consistently for **all subclass naming**.
-  For example:
-  .btn-[identifier]
-  .[identifier]-icon
-  .[identifier]-left
-  .[identifier]-mid
-  .[identifier]-right
-  .[identifier]-icon path
-  .[identifier]-icon line
-  .[identifier]-icon rect
-
-This ensures cohesion between the structural grouping and its associated styling layers.
-
-* The **middle section** (`[identifier]-mid`) must not include a full outline stroke.
-
-  * Use `stroke: none` on the `<rect>` inside this group to prevent inner stroke overlap.
-  * Instead, define the top and bottom borders using `<line>` elements with `stroke-linecap="round"` for clean alignment.
-
-* Consistent attribute rules apply across all three sections:
-
-  * Maintain matching `stroke-miterlimit`, `stroke-linecap`, and `stroke-linejoin` values.
-  * Preserve any Illustrator-exported structure, only adjusting `fill`, `stroke`, and `stroke-width` per the general rules above.
-
-* The main SVG container should include a unique **icon class** following the same identifier (e.g., `[identifier]-icon`).
-  This allows targeted control via CSS selectors without global conflicts.
-
-* CSS generation behavior:
-
-  * If the defined identifier already exists, only extend or append **new rules** as needed — do not overwrite working code.
-  * If no such class exists, generate a new one using the standard structure.
+* **Right cap SVG**  
+  A fixed-size SVG element (e.g., 7.71px width), also preserving Illustrator geometry.  
+  This element must never scale horizontally.
 
 ---
 
-#### EXAMPLE 4 (Three-Part SVG Element, using `<button>` as an example)
+### Structural Rules
+
+* **1. Exported Illustrator geometry is the source of truth.**  
+  Preserve all coordinate data, path commands (`d`), and structural attributes exactly.  
+  Only `fill`, `stroke`, and `stroke-width` are adjusted per global SVG rules in this document.
+
+* **2. No JS-driven resizing must be used.**  
+  The earlier single-SVG scaling block has been removed (Codex diff).  
+  All resizing is now CSS-driven via flex on the container.
+
+* **3. Each SVG must be assigned a clear class name.**  
+  Example classes:  
+  - `.cap-left`  
+  - `.cap-mid`  
+  - `.cap-right`  
+
+  If generating a more general component, these names use the pattern:  
+  `[identifier]-left`, `[identifier]-mid`, `[identifier]-right`.
+
+* **4. Containers use flex layout.**  
+  The wrapper (e.g., `.customSearch-frame-row`) must be a flex container with:  
+  - `display: flex;`  
+  - fixed caps using `flex: 0 0 auto;`  
+  - mid section using `flex: 1 1 auto;` and `min-width: 0;`  
+  This allows the mid SVG to expand horizontally while keeping the caps fixed.
+
+* **5. Middle section stroke rules.**  
+  The mid SVG supplies one or more horizontal `<line>` elements.  
+  These must use:  
+  - `vector-effect="non-scaling-stroke"`  
+  - `shape-rendering="geometricPrecision"`  
+  to keep the stroke width visually consistent.
+
+  If top/bottom border strokes are required, they must be separate `<line>` elements, not a stroked rectangle.  
+  This avoids stroke overlap between the mid section and the caps.
+
+* **6. Attribute preservation.**  
+  Illustrator’s native attributes (`stroke-linecap`, `stroke-linejoin`, `stroke-miterlimit`) must be preserved.  
+  Only `stroke`, `stroke-width`, and `fill` are overridden by CSS using `currentColor`.
+
+* **7. Do not merge the SVGs.**  
+  The three-part structure must remain as three separate `<svg>` tags.  
+  This avoids transform override issues, layout conflicts, and the “snapping” behavior seen with nested transforms.
+
+---
+
+### Example Structure (Three Independent SVGs)
 
 ```html
-<button 
-id="[insert appropriate id]"
-class="btn-[identifier]"
-type="button"
-title="[brief description of what this element does]"
-aria-label="[insert appropriate label]"
->
-  <svg 
-  class="[identifier]-icon"
-  xmlns="http://www.w3.org/2000/svg"
-  width="[insert width]" height="[insert height]"
-  viewBox="[insert appropriate content]"
+<div class="[identifier]-frame-row" aria-hidden="true">
+
+  <!-- Left fixed-width SVG -->
+  <svg
+    class="[identifier]-left"
+    xmlns="http://www.w3.org/2000/svg"
+    width="[left-width]"
+    height="[height]"
+    viewBox="[insert Illustrator viewBox]"
+    focusable="false"
   >
-
-    <!-- Left section -->
-    <g class="[identifier]-left">
-      <path d="[insert path coordinates]" fill="currentColor" />
-    </g>
-
-    <!-- Middle section -->
-    <g class="[identifier]-mid">
-      <rect x="[insert]" y="[insert]" width="[insert]" height="[insert]" fill="currentColor" stroke="none" />
-      <line x1="[insert]" y1="[insert]" x2="[insert]" y2="[insert]" stroke-linecap="round" />
-      <line x1="[insert]" y1="[insert]" x2="[insert]" y2="[insert]" stroke-linecap="round" />
-    </g>
-
-    <!-- Right section -->
-    <g class="[identifier]-right">
-      <path d="[insert path coordinates]" fill="currentColor" />
-    </g>
-
+    <path 
+      d="[insert Illustrator path]"
+      fill="none"
+      stroke="currentColor"
+      vector-effect="non-scaling-stroke"
+      stroke-miterlimit="[insert]"
+    />
   </svg>
-</button>
+
+  <!-- Mid flexible SVG -->
+  <svg
+    class="[identifier]-mid"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="[mid viewBox]"
+    preserveAspectRatio="none"
+    focusable="false"
+  >
+    <line
+      x1="[insert]"
+      y1="[insert]"
+      x2="[insert]"
+      y2="[insert]"
+      stroke="currentColor"
+      vector-effect="non-scaling-stroke"
+    />
+    <line
+      x1="[insert]"
+      y1="[insert]"
+      x2="[insert]"
+      y2="[insert]"
+      stroke="currentColor"
+      vector-effect="non-scaling-stroke"
+    />
+  </svg>
+
+  <!-- Right fixed-width SVG -->
+  <svg
+    class="[identifier]-right"
+    xmlns="http://www.w3.org/2000/svg"
+    width="[right-width]"
+    height="[height]"
+    viewBox="[insert Illustrator viewBox]"
+    focusable="false"
+  >
+    <path 
+      d="[insert Illustrator path]"
+      fill="none"
+      stroke="currentColor"
+      vector-effect="non-scaling-stroke"
+      stroke-miterlimit="[insert]"
+    />
+  </svg>
+
+</div>
 ```
 
+CSS Requirements (Summary)
+```css
 
+.[identifier]-frame-row {
+  display: flex;
+  align-items: center;
+  justify-content: stretch;
+  width: 100%;
+  height: [height];
+  pointer-events: none;
+}
+
+.[identifier]-frame-row svg {
+  display: block;
+  height: 100%;
+  shape-rendering: geometricPrecision;
+}
+
+.[identifier]-left,
+.[identifier]-right {
+  flex: 0 0 auto;
+}
+
+.[identifier]-mid {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+```
+This structure replaces earlier single-SVG implementations and is now the canonical method for all three-part scalable UI elements in the project.

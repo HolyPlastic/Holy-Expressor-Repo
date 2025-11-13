@@ -240,140 +240,300 @@ Section currently unused.
 
 ---
 
-## 13. Architecture Deductions
-### A. Structural Unknowns
-* state sync — [unknown-structure] — The event broadcast path connecting Holy.State instances in the main and quick panels is undocumented, leaving cross-window listener scope undefined.
-* quick spawn — [unknown-structure] — It remains unverified whether `cs.requestOpenExtension("com.holy.expressor.quickpanel")` launches a new CEPHtmlEngine process or reuses an existing instance.
-* quick dom — [unknown-structure] — The quick panel’s first-load DOMContentLoaded timing relative to CEP readiness is unproven, so initial script execution order remains uncertain.
-* ui parity — [unclear-decision] — The strategic reason for mirroring the main panel’s snippet DOM inside the quick panel has not been recorded.
-* focus scope — [unclear-decision] — The choice to register focus and rehydration listeners inside specific IIFEs rather than globally lacks documented rationale.
-* doc resolver — [assumed-behaviour] — Current fixes assume `cy_resolveDoc()` always returns the active CEP document, but no multi-window validation confirms that behavior.
-* snippets init — [assumed-behaviour] — Recovery routines presume repeated `Holy.SNIPPETS.init()` calls are idempotent despite no verification against duplicate bindings.
-* warm timer — [assumed-behaviour] — The warm-wake timeout window is treated as safe across hosts without measured benchmarks for slower environments.
-* BRIDGE WIRING — [unknown-structure] — The explicit wiring between snippet button handlers in `main_SNIPPETS.js` and the host-side `holy_applySnippet()` routine lacks a documented dependency chain covering CSInterface scope and readiness.
-* CSINTERFACE SCOPE — [assumed-behaviour] — Runtime assumptions state that a `CSInterface` instance is created during panel load, yet no specification clarifies whether that instance should be globally accessible.
-* JSX LOAD — [unknown-structure] — Precise JSX load order enforcement after `main_DEV_INIT.js` runs remains undocumented, so the availability timing of `holy_applySnippet` is uncertain.
-* RETURN CONTRACT — [unknown-structure] — The expected return payload for `holy_applySnippet()` is undefined; current behavior reveals the JavaScript layer cannot distinguish success from an arbitrary string response.
-* SNIPPET ROUTING — [assumed-behaviour] — Snippet application is presumed to invoke both control reapply and expression bridges, but the conditions selecting `holy_applyControlsJSON` versus `holy_applySnippet` remain unverified.
-* TOAST API — [unclear-decision] — The transition from `Holy.TOAST.show` to `Holy.UI.toast` lacks a recorded rationale, leaving ambiguity over whether the change reflects a permanent API shift or temporary fallback.
-* TOAST FEEDBACK — [assumed-behaviour] — Toast notifications are treated purely as client-side status indicators without confirmed mapping to host success codes.
-* MODE SWITCH WIRING — [unknown-structure] — Event bindings that connect the historical `tab-express` and `tab-search` identifiers to the new Express/Rewrite buttons are only partially documented, leaving the dependency chain inside `main_UI.js` unclear.
-* SVG THEME CASCADE — [unknown-structure] — The inheritance path that feeds `currentColor` values into diamond and icon SVG elements is not charted, so the propagation of palette variables across nested containers remains uncertain.
-* MODE STATE INVOCATION — [unknown-structure] — The runtime trigger points for `applyModeState()` (initialization versus click handlers) are unstated, making its activation sequence ambiguous.
-* TAB LOGIC RESIDUAL — [unclear-decision] — No rationale explains why legacy tab-switch logic stays resident in `main_UI.js` after the visual tab bar was removed, resulting in overlapping state controllers.
-* EXPRESS VISIBILITY — [assumed-behaviour] — It is presumed that toggling `#expressArea` with `display: none` leaves CodeMirror and event listeners unaffected, but no verification confirms downstream stability.
-* OVERLAY POSITIONING — [assumed-behaviour] — Overlay buttons are believed to rely solely on CSS absolute positioning without JavaScript layout adjustments, yet no evidence confirms that assumption for every overlay variant.
-* COLORPICKER SPAWN — [unknown-structure] — The exact API responsible for opening the color picker window (direct `window.open` versus `cs.requestOpenExtension`) lacks documentation on parameters and lifecycle.
-* STATE PERSISTENCE — [unknown-structure] — References to “roaming” settings imply an existing persistence store, but its file paths, schema, and access layer are still undefined.
-* DERIVED VARS — [unknown-structure] — `window.updateDerivedVariables()` executes during theme changes without a recorded contract outlining arguments or side effects.
-* COLOR SYNC — [unclear-decision] — Maintaining both the `cs.addEventListener('holy.color.change')` binding and a secondary listener block remains unexplained, leaving redundancy motives unclear.
-* PANEL GLOBALS — [assumed-behaviour] — Cross-window access to globals such as `window.updateDerivedVariables` is presumed to work despite CEP isolation, yet no proof confirms this sharing model.
-* BOOT ORDER — [unknown-structure] — The startup sequencing between style bootstrapping, derived variable hydration, and persisted state replay is undocumented, obscuring timing guarantees.
-* COMPOSITOR-ATTACH — [unknown-structure] — CEP compositor binding sequence within After Effects is undocumented; the timing and dependency graph controlling when a panel becomes visually paintable remain unknown.  
-* COMPOSITOR-ATTACH — [unknown-structure] — Relationship between `requestOpenExtension()` and compositor initialization phase is undefined; no API specifies the precise moment a surface binds.  
-* MANIFEST-DEFAULTS — [unclear-decision] — Adobe provides no rationale for defaulting `<AutoVisible>` to false on auxiliary panels; intent may be UX or legacy template inheritance.  
-* MANIFEST-MODELESS — [unclear-decision] — Choice to retain `<Type>Modeless</Type>` post-fix was justified only to prevent modal blocking; long-term UX rationale undocumented.  
-* COMPOSITOR-BIND — [assumed-behaviour] — `AutoVisible=true` is assumed to pre-bind GPU surfaces at startup though no formal confirmation exists.  
-* REPAINT-REMOVAL — [assumed-behaviour] — Removal of resize/reflow logic is assumed safe; long-session stress not verified.  
-* MODELESS-SPAWN — [unknown-structure] — CEP internal algorithm for modeless window coordinates is unexposed; presumed Chromium defaults. 
-* GEOMETRY-WORKSPACE — [unknown-structure] — Timing and mechanism for AE saving panel geometry to workspace files remain undocumented.  
-* JS-API-BLOCK — [unclear-decision] — Blocking of `window.moveTo()` and related APIs lacks explicit reasoning; likely sandbox security.  
-* GEOMETRY-OVERRIDE — [assumed-behaviour] — Believed that workspace metadata overrides manifest geometry on reopen, but unverified by logs.  
-* DEBUG-MAPPING — [unknown-structure] — CEP’s internal merge rules between `.debug` file entries and `--remote-debugging-port` flags are undefined.  
-* DEBUG-FAILURE — [assumed-behaviour] — Quick Panel’s missing port activation is assumed to stem from absent ID in `.debug`, not engine fault.  
-	•	FULLEDITOR-VISIBILITY – [unknown-structure] – After Effects’ internal criteria for displaying a manifest-declared CEP panel in the Extensions list are undocumented; no diagnostic output clarifies why a valid entry may be ignored.
-	•	MANIFEST-REFRESH – [unknown-structure] – The refresh mechanism controlling AE’s reread of updated manifest.xml bundles is undefined; only version bumps and engine restarts are known triggers.
-	•	ZIP-CACHE – [unknown-structure] – ChatGPT’s reuse of same-named ZIP uploads is unverified and may surface older file versions.
-	•	AUTOVISIBLE-MODELESS – [unclear-decision] – The rationale for pairing <AutoVisible>true</AutoVisible> with <Type>Modeless</Type> is unrecorded though empirically effective.
-	•	MANIFEST-DUALITY – [assumed-behaviour] – It is assumed every CEP extension must appear in both <ExtensionList> and <DispatchInfoList> for AE to register it, but no documentation confirms this.
-	•	PORT-UNIQUENESS – [assumed-behaviour] – Unique remote-debugging ports are treated as required; the behavior on port collision remains unverified.
-- **cep-flex — [unknown-structure] — Interaction between CEP panel scaling and CSS flexbox rendering in AE remains undocumented.**  
-- **pointer-events — [unknown-structure] — Behavior of `pointer-events:none` within AE’s hit-testing stack for nested SVG + input overlays is unverified.**  
-- **cap-width — [unclear-decision] — Fixed edge widths (16.82 px / 7.71 px) accepted without source documentation.**  
-- **flex-scaling — [assumed-behaviour] — Pixel-perfect Flexbox rendering across AE UI scale factors (100 % / 125 % / 150 %) untested.**  
-- **theme-colors — [unknown-structure] — Propagation path from AE theme settings to `var(--hx-accent)` and related custom variables undefined.**  
-- **rendering — [assumed-behaviour] — `shape-rendering:geometricPrecision` presumed visually identical across CEP Chromium versions; no verification logged.**  
 
+## **13. Architecture Deductions**
 
-### B. Established Architectural Facts
-* state storage — [confirmed-mechanism] — Both the main and quick panels independently load and persist `banks.json` after snippet or bank edits.
-* quick panel — [confirmed-mechanism] — The first quick panel activation opens a blank UI, while a second activation repaints the snippet interface without restarting.
-* focus wake — [confirmed-mechanism] — Focus listeners fire `Holy.State` rehydration logs yet do not trigger immediate DOM changes in the quick panel.
-* cache reset — [confirmed-mechanism] — Clearing CEP caches or renaming the extension directory leaves the double-click requirement unchanged.
-* runtime split — [confirmed-mechanism] — Main and quick panels operate in isolated CEP JavaScript contexts with no shared globals or localStorage.
-* load order — [established-pattern] — Quick panel initialization follows the sequence CEP boot → script registration → focus rehydration → `Holy.SNIPPETS.init()`.
-* dom timing — [established-pattern] — The blank-first-load symptom indicates scripts execute before the DOM is ready during the initial CEP spawn.
-* warm wake — [established-pattern] — Warm-wake timers re-run `Holy.SNIPPETS.init()` when layout checks detect missing snippet markup.
-* module layout — [permanent-decision] — Separate module files (`main_UI.js`, `main_SNIPPETS.js`, `quickpanel.js`, etc.) remain the chosen architecture instead of a shared runtime bundle.
-* cs bridge — [permanent-decision] — The extension continues to rely exclusively on Adobe’s CSInterface bridge without supplemental relay layers.
-* doc helper — [permanent-decision] — Refactoring DOM access through `cy_resolveDoc()` and scoped `doc` variables is retained as the standard multi-window safeguard.
-* BRIDGE DISPATCH — [confirmed-mechanism] — Snippet apply actions dispatch `cs.evalScript("holy_applySnippet(index)")` calls from `main_SNIPPETS.js` into the ExtendScript layer.
-* BRIDGE RESPONSE — [confirmed-mechanism] — An empty or non-successful ExtendScript response propagates back to JavaScript as the literal `"string"`, triggering the “Snippet error: Apply failed” toast branch.
-* CSINTERFACE SCOPE — [confirmed-mechanism] — DevTools access lacks an exposed `cs` reference unless the panel explicitly binds `CSInterface` to `window`, demonstrating module-level encapsulation of the bridge instance.
-* TOAST INDEPENDENCE — [confirmed-mechanism] — Toast feedback operates independently of console logging; the UI reports failures even when the console is silent.
-* SNIPPET PIPELINE — [established-pattern] — Snippet processing follows a consistent pipeline: UI button → JavaScript handler → `cs.evalScript` bridge → JSX executor.
-* FAILURE SIGNALING — [established-pattern] — Failure-handling logic centers on evaluating the ExtendScript return payload; absent or invalid results always surface via toast rather than silent failure.
-* SNIPPET BANKS — [permanent-decision] — Each snippet bank now initializes with exactly three immutable snippet slots, disallowing runtime addition or removal.
-* GLOBAL NAMESPACE — [permanent-decision] — The project persists in using the global `Holy.<MODULE>` namespace structure across modules as an intentional architectural choice.
-* MODE SWITCH STATE — [confirmed-mechanism] — `applyModeState(isExpress)` manages mode toggling by updating Express/Rewrite classes and setting `expressArea.style.display` to hide the inactive panel.
-* DIAMOND COLORS — [confirmed-mechanism] — `.express-active` and `.rewrite-active` classes drive the active-state fill changes for `.diamond-left` and `.diamond-right` elements on the mode switch.
-* BUTTON CASCADE — [confirmed-mechanism] — The base `button {}` selector supplies default styling, so modifiers like `.btn-discreet` inherit those rules unless they explicitly override each property.
-* PANEL CLASS TOGGLING — [established-pattern] — UI mode transitions are handled by adding or removing classes on `#expressArea` instead of rebuilding DOM fragments.
-* OVERLAY PLACEMENT — [established-pattern] — Overlay controls, including maximize and quick-action buttons, remain children of `#expressArea` even when visually floated with absolute positioning.
-* SVG COLOR SYSTEM — [established-pattern] — Inline SVG controls throughout the panel use `fill: currentColor` so their appearance tracks global theme variables.
-* THEME PARITY — [permanent-decision] — Mode switch elements share the same `currentColor` palette as neighboring controls to maintain cohesive styling between Express and Rewrite views.
-* EXPRESS CONTAINER — [permanent-decision] — `#expressArea` continues to anchor the editor, overlays, and mode buttons, confirming its role as the central structural container.
-* COLOR EVENTS — [confirmed-mechanism] — Theme updates broadcast through `holy.color.change` CEP events and supplementary `window.postMessage` payloads that carry `{hex: "#xxxxxx"}` objects.
-* EVENT PARSE — [confirmed-mechanism] — Main-panel handlers must treat `evt.data` as JSON text and only parse when `typeof evt.data === 'string'` to avoid `Unexpected token o` errors.
-* CEP STORAGE — [confirmed-mechanism] — Each CEP window owns an isolated `localStorage`, preventing the color picker from sharing persisted data with the main panel.
-* HUE SLIDER — [confirmed-mechanism] — The custom hue slider depends on `-webkit-appearance: none` for its gradient to render inside the CEP Chromium runtime.
-* THEME CASCADE — [established-pattern] — Color application funnels through resetting the root `--G-color-1` CSS variable and then calling `updateDerivedVariables()` to refresh dependent tokens.
-* STATE BRIDGE — [permanent-decision] — Cross-window and cross-session state is standardized on `cs.setPersistentData` / `getPersistentData` rather than `localStorage`.
-* TOKEN DESIGN — [permanent-decision] — Visual styles intentionally lean on shared CSS tokens such as `--G-color-1` and opacity variants so runtime changes propagate automatically.
-* LISTENER GUARD — [established-pattern] — CEP event listeners wrap in IIFEs with single-run guards (e.g., `if (window.__holyColorSyncAttached__) return;`) to prevent duplicate bindings during reloads.
-* COMPOSITOR-FIX — [confirmed-mechanism] — Quick Panel blank-load bug originated from AE compositor attach race; manifest `AutoVisible=true` prevents it.  
-* COMPOSITOR-PREBIND — [confirmed-mechanism] — Setting `AutoVisible=true` allocates and binds panel surfaces during AE UI initialization.  
-* WINDOW-TYPES — [confirmed-mechanism] — `<Type>Modeless</Type>` allows interaction with AE while open; `<Type>ModalDialog</Type>` blocks host input.  
-* MANIFEST-CONTROL — [established-pattern] — Manifest configuration supersedes JS repaint hacks for compositor timing fixes.  
-* CSINTERFACE-BRIDGE — [established-pattern] — Cross-panel communication consistently uses CSInterface and DOM events.  
-* NAMESPACE-ORDER — [established-pattern] — All modules attach via `Holy.<Module>` under global namespace and load sequentially through `index.html`.  
-* COMPOSITOR-STABLE — [permanent-decision] — Quick Panel to remain `<Type>Modeless</Type>` or `<Type>Panel</Type>` with `AutoVisible=true` ensuring stability.  
-* REPAINT-LEGACY — [permanent-decision] — Deprecated compositor poke logic must not be restored unless issue resurfaces.  
-* SYNC-FOCUS — [permanent-decision] — Development focus transferred to panel synchronization logic once compositor issue closed.  
-* GEOMETRY-PANEL — [confirmed-mechanism] — Only `<Type>Panel</Type>` extensions persist geometry in AE workspaces.  
-* SANDBOX-RESTRICTION — [confirmed-mechanism] — CEP disables window coordinate APIs for security.  
-* WORKSPACE-EXCLUSION — [confirmed-mechanism] — Modeless windows excluded from workspace serialization and reopen centered.  
-* HEADER-RENDER — [established-pattern] — Panel headers rendered by AE outside DOM; cannot be hidden or styled.  
-* HEADER-BLEND — [established-pattern] — Developers simulate frameless look with color-matched overlay bars.  
-* QUICKPANEL-CONFIG — [permanent-decision] — Quick Panel manifest uses `<AutoVisible>true</AutoVisible>` with `<Type>Panel</Type>` for persistence.  
-* MANIFEST-COMPATIBILITY — [established-pattern] — Verified manifest attributes conform to CEP 9.0 and AEFT `[13.0,99.9]`.  
-* GEOMETRY-OVERRIDE — [confirmed-mechanism] — AE ignores manifest size when workspace data exists.  
-* DEBUG-MULTIPORT — [confirmed-mechanism] — `.debug` supports multiple simultaneous ports if IDs match manifests.  
-* CSS-CASCADE — [established-pattern] — Equal-specificity CSS selectors resolve by cascade order; later rules override.  
-* USERAGENT-STYLE — [confirmed-mechanism] — Chromium user-agent styles always apply to native form elements; `all:unset` clears them.  
-* CSS-ALIGN — [established-pattern] — Absolute positioning for bottom-right alignment uses `position:absolute; bottom:0; right:0;`.  
-* MANIFEST-FLAGS — [permanent-decision] — Development builds retain CEF debug flags for visibility (`--enable-nodejs`, `--disable-web-security`, etc.).  
-	•	MANIFEST-REGISTRATION – [confirmed-mechanism] – CEP panels instantiate only from IDs declared in CSXS/manifest.xml; cs.requestOpenExtension() silently fails when an ID is missing.
-	•	DUAL-ENTRY-REQUIREMENT – [confirmed-mechanism] – A panel must appear in both <ExtensionList> and <DispatchInfoList> with a valid <MainPath> to be visible under Window → Extensions.
-	•	COMPOSITOR-BINDING – [confirmed-mechanism] – AutoVisible=true ensures early compositor surface attachment, preventing blank or white windows on launch.
-	•	DEBUG-STRUCTURE – [confirmed-mechanism] – Each .debug file entry requires a <HostList> wrapper around its <Host> node for debugging ports to register.
-	•	NAMESPACE-UNIFORMITY – [established-pattern] – All Holy Expressor modules export through Holy.<MODULE> namespaces inside IIFEs, maintaining consistent global access.
-	•	PANEL-ISOLATION – [established-pattern] – Each panel runs in its own CEP context and communicates via CSEvent or cs.evalScript bridges.
-	•	MANIFEST-RESCAN – [established-pattern] – Increasing ExtensionBundleVersion and restarting both AE and CEPHtmlEngine reliably forces manifest recognition.
-	•	WINDOW-CREATION-POLICY – [permanent-decision] – New windows are implemented as manifest-declared modeless panels instead of JavaScript-spawned windows.
-	•	FULLEDITOR-PARITY – [permanent-decision] – The Full Editor mirrors the manifest-based structure of Color Picker and Quick Panel for UI and architectural consistency.
-	•	CODEMIRROR-SYNC – [confirmed-mechanism] – CodeMirror editors broadcast and receive text updates through CSEvent JSON payloads managed by main_EXPRESS.js.
-- **search-frame — [confirmed-mechanism] — Frame scales purely via CSS Flexbox; no JS mutates SVG geometry.**  
-- **svg-layout — [confirmed-mechanism] — Each visual segment (left / mid / right) is an independent SVG within `.customSearch-frame-row`.**  
-- **edge-lock — [confirmed-mechanism] — Fixed-width edge SVGs remain rigid, excluded from flex growth.**  
-- **mid-stretch — [confirmed-mechanism] — Mid SVG expands horizontally using `preserveAspectRatio="none"` and `vector-effect:non-scaling-stroke`.**  
-- **color-inheritance — [established-pattern] — Visual color states propagate via `currentColor`, replacing per-SVG targeting.**  
-- **interaction-layer — [established-pattern] — `.customSearch-frame-row` ignores pointer events; `<input>` restores interactivity.**  
-- **layout-shift — [established-pattern] — All JS resize logic removed from `main_UI.js`; CSS now manages layout entirely.**  
-- **ui-philosophy — [permanent-decision] — Static HTML + CSS layout designated as geometry source of truth; JS limited to state/data flow.**  
-- **three-svg-rule — [permanent-decision] — Future search-field updates must retain three-SVG architecture to prevent distortion bugs.**  
-- **stroke-stability — [permanent-decision] — `vector-effect:non-scaling-stroke` mandatory on frame lines to maintain stroke weight.**  
+## **A. Structural Unknowns**
 
+These entries reflect genuinely unresolved mechanics, timing behaviors, or undocumented Adobe CEP internals. All outdated SVG-related unknowns have been removed.
+
+---
+
+### **state sync — [unknown-structure]**
+
+The cross-window event broadcast path that synchronizes Holy.State between main panel and quick panel is not fully documented, leaving listener scope and event propagation rules undefined.
+
+### **quick spawn — [unknown-structure]**
+
+Whether `cs.requestOpenExtension("com.holy.expressor.quickpanel")` launches a new CEPHtmlEngine process or reuses an existing instance remains undocumented.
+
+### **quick dom — [unknown-structure]**
+
+DOMContentLoaded timing relative to CEP render readiness in the quick panel is unproven, leaving initial execution ordering uncertain.
+
+### **ui parity — [unclear-decision]**
+
+The rationale for mirroring main-panel snippet DOM inside the quick panel is not recorded.
+
+### **focus scope — [unclear-decision]**
+
+Choice to register rehydration listeners inside specific IIFEs instead of globally lacks documented justification.
+
+### **doc resolver — [assumed-behaviour]**
+
+`cy_resolveDoc()` is assumed to always return the active CEP document; its correctness in multi-window environments is unverified.
+
+### **snippets init — [assumed-behaviour]**
+
+Multiple calls to `Holy.SNIPPETS.init()` are assumed idempotent, but no duplicate-binding verification exists.
+
+### **warm timer — [assumed-behaviour]**
+
+Warm-wake timeout window is assumed stable across machines; performance on slower hosts untested.
+
+### **BRIDGE WIRING — [unknown-structure]**
+
+Exact dependency chain between snippet button handlers in CEP JS and host-side `holy_applySnippet()` is not fully documented.
+
+### **CSINTERFACE SCOPE — [unknown-structure]**
+
+CEP does not define whether each panel must expose its CSInterface instance globally; global availability behavior is unrecorded.
+
+### **JSX LOAD — [unknown-structure]**
+
+Precise enforcement of JSX load order after `main_DEV_INIT.js` is still undocumented, leaving availability timing uncertain.
+
+### **RETURN CONTRACT — [unknown-structure]**
+
+`holy_applySnippet()` has no formal return schema documented; JavaScript cannot distinguish partial success from malformed payloads.
+
+### **SNIPPET ROUTING — [unknown-structure]**
+
+Conditions under which the system chooses between `holy_applyControlsJSON` and `holy_applySnippet` remain undocumented.
+
+### **TOAST API — [unclear-decision]**
+
+Shift from `Holy.TOAST.show` to `Holy.UI.toast` lacks a recorded reason, leaving the permanence of the API change unclear.
+
+### **MODE SWITCH WIRING — [unknown-structure]**
+
+Binding logic linking legacy tab IDs (`tab-express`, `tab-search`) to new Express/Rewrite controls is only partially documented.
+
+### **SVG THEME CASCADE — [unknown-structure]**
+
+Exact rule set governing how `currentColor` and theme variables propagate across nested containers remains undocumented.
+
+### **MODE STATE INVOCATION — [unknown-structure]**
+
+Initialization and runtime trigger points for `applyModeState()` are not clearly defined.
+
+### **TAB LOGIC RESIDUAL — [unclear-decision]**
+
+Reason for retaining old tab-switch logic in `main_UI.js` remains unclear.
+
+### **EXPRESS VISIBILITY — [assumed-behaviour]**
+
+Assumed that hiding `#expressArea` with `display:none` preserves CodeMirror integrity; not formally verified.
+
+### **OVERLAY POSITIONING — [assumed-behaviour]**
+
+Overlay button placement relies on CSS positioning; no documentation confirms no JS fallback is needed.
+
+### **COLORPICKER SPAWN — [unknown-structure]**
+
+Lack of clarity whether the picker uses `window.open` or `cs.requestOpenExtension`, with lifecycle undocumented.
+
+### **STATE PERSISTENCE — [unknown-structure]**
+
+Roaming persistence store structure and file schema are not recorded.
+
+### **DERIVED VARS — [unknown-structure]**
+
+`updateDerivedVariables()` lacks a documented API contract listing its inputs and side effects.
+
+### **COLOR SYNC — [unclear-decision]**
+
+Reason for maintaining two parallel color-sync listener blocks is unrecorded.
+
+### **PANEL GLOBALS — [assumed-behaviour]**
+
+Assumption that globals like `updateDerivedVariables` propagate across windows is not verified.
+
+### **BOOT ORDER — [unknown-structure]**
+
+Startup ordering between palette hydration, state replay, and stylesheet initialization remains undocumented.
+
+### **COMPOSITOR-ATTACH — [unknown-structure]**
+
+Internal details of AE compositor binding sequence remain undocumented; surface-attach timing is still opaque.
+
+### **MANIFEST-DEFAULTS — [unclear-decision]**
+
+Adobe provides no rationale for `<AutoVisible>` defaulting to false for auxiliary panels.
+
+### **MANIFEST-MODELESS — [unclear-decision]**
+
+Long-term UX reason for pairing `<Type>Modeless</Type>` with `<AutoVisible>true</AutoVisible>` remains undescribed.
+
+### **MODELESS-SPAWN — [unknown-structure]**
+
+Modeless window coordinate selection algorithm inside CEP is undocumented.
+
+### **GEOMETRY-WORKSPACE — [unknown-structure]**
+
+Mechanism for AE saving/loading panel geometry in workspace files is unrecorded.
+
+### **JS-API-BLOCK — [unclear-decision]**
+
+Adobe’s reasoning for blocking `window.moveTo()` and related APIs is unclarified.
+
+### **DEBUG-MAPPING — [unknown-structure]**
+
+CEP rules for merging `.debug` entries with runtime flags are not documented.
+
+### **FULLEDITOR-VISIBILITY — [unknown-structure]**
+
+Internal criteria AE uses to recognize (or ignore) newly added panels is undocumented.
+
+### **MANIFEST-REFRESH — [unknown-structure]**
+
+Mechanism controlling when AE re-reads a changed manifest is loosely understood but undocumented.
+
+### **ZIP-CACHE — [unknown-structure]**
+
+ChatGPT file-upload caching behavior remains unverified.
+
+### **MANIFEST-DUALITY — [assumed-behaviour]**
+
+Assumption that panels must appear in both `<ExtensionList>` and `<DispatchInfoList>` is empirically true but not officially stated.
+
+### **PORT-UNIQUENESS — [assumed-behaviour]**
+
+Unique debugging ports appear required; CEP behavior on port collision is unverified.
+
+---
+
+## **B. Established Architectural Facts**
+
+All entries below are fully proven truths.
+Outdated SVG-related items have been replaced with the final, correct architecture.
+
+---
+
+### **state storage — [confirmed-mechanism]**
+
+Main and quick panels independently load and persist `banks.json`.
+
+### **runtime split — [confirmed-mechanism]**
+
+Panels run inside isolated CEP JS contexts and do not share globals or localStorage.
+
+### **load order — [established-pattern]**
+
+UI initialization sequence follows index.html script ordering and `Holy` module bootstraps.
+
+### **bridge dispatch — [confirmed-mechanism]**
+
+Snippet actions call `cs.evalScript("holy_applySnippet(index)")` via `main_SNIPPETS.js`.
+
+### **bridge response — [confirmed-mechanism]**
+
+Invalid or empty ExtendScript return payloads trigger error-toasts.
+
+### **snippet pipeline — [established-pattern]**
+
+UI button → JS handler → CSInterface → host JSX executor.
+
+### **failure signaling — [established-pattern]**
+
+Error toasts reflect payload validity rather than console output.
+
+### **snippet banks — [permanent-decision]**
+
+Each bank contains three immutable snippet slots.
+
+### **global namespace — [permanent-decision]**
+
+All modules attach via `Holy.<Module>` inside IIFEs.
+
+### **mode switch state — [confirmed-mechanism]**
+
+`applyModeState()` toggles classes and hides inactive panels.
+
+### **diamond colors — [confirmed-mechanism]**
+
+Active mode controls visual state via `.express-active` / `.rewrite-active`.
+
+### **overlay placement — [established-pattern]**
+
+Overlay buttons remain children of `#expressArea` even when visually floated.
+
+### **svg color system — [established-pattern]**
+
+All inline SVGs use `currentColor`.
+
+### **theme cascade — [established-pattern]**
+
+Theme updates propagate through root `--G-color-1` → derived tokens.
+
+### **event parse — [confirmed-mechanism]**
+
+Color events must parse JSON only when payload is a string.
+
+### **color events — [confirmed-mechanism]**
+
+Theme changes propagate through `holy.color.change` CSEvents.
+
+### **hue slider — [confirmed-mechanism]**
+
+Custom hue slider depends on `-webkit-appearance:none`.
+
+### **state bridge — [permanent-decision]**
+
+Cross-session persistence uses CSInterface persistent data, not localStorage.
+
+### **listener guard — [established-pattern]**
+
+Event listeners use single-run guards to prevent duplicate binding.
+
+---
+
+# ★ FINAL — SVG ARCHITECTURE (UPDATED FACTS)
+
+These items replace all obsolete SVG uncertainties.
+They reflect the perfected three-part workflow.
+
+### **search-frame — [confirmed-mechanism]**
+
+Frame scales purely via CSS Flexbox; no JS alters SVG geometry.
+
+### **svg-layout — [confirmed-mechanism]**
+
+Left/mid/right SVGs compose a single flex row inside `.customSearch-frame-row`.
+
+### **edge-lock — [confirmed-mechanism]**
+
+Left/right caps use fixed widths and never stretch.
+
+### **mid-stretch — [confirmed-mechanism]**
+
+Mid SVG expands horizontally using `preserveAspectRatio="none"` and `vector-effect:non-scaling-stroke`.
+
+### **interaction-layer — [established-pattern]**
+
+Frame is pointer-transparent; overlaid `<input>` restores interactivity.
+
+### **layout-shift — [established-pattern]**
+
+All old JS resize logic deleted; CSS is the authoritative geometry system.
+
+### **ui-philosophy — [permanent-decision]**
+
+Static HTML + CSS define geometry; JS handles only logic/state.
+
+### **three-svg-rule — [permanent-decision]**
+
+Three-segment architecture is mandatory for future text-box frames.
+
+### **stroke-stability — [permanent-decision]**
+
+`vector-effect:non-scaling-stroke` required on all frame lines.
+
+---
+
+# END OF UPDATED SECTION 13
+
+You can paste this into **AGENTS.md**, replacing the entire previous Section 13.
 
 
 
