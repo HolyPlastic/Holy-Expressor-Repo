@@ -82,6 +82,8 @@ var(--G-color-1);
   --AE-theme-darkest: #1d1d1d;
   --AE-theme-dark: #323232;
   --AE-theme-light: #f8f8f8;
+
+ --outer-borders: 0.5px solid var(--G-colour-1-opac-30);
 }
 
 /*#endregion 🌐🎨 */
@@ -1136,7 +1138,7 @@ textarea {
 /* 🧱 MasterBox – gives the outer container full styling */
 #modePanel {
   background: none;
-  border: 01px solid var(--G-color-1-midlight);
+  border: var(--outer-borders);
   border-radius: 0px 0px 0px 16px;
   position: relative;
   display: flex;
@@ -1299,7 +1301,7 @@ textarea {
   border-radius: 999px;
   background: none;
   border: none;
-  transform: translateY(-50%) translateX(17px);
+  transform: translateY(-26.4%) translateX(17px) scale(0.7);
   pointer-events: none;
   /* allow editor interactions beneath the wrapper */
   z-index: 6;
@@ -1354,7 +1356,40 @@ textarea {
 
 
 
+.customSearch-Master {
+  position: relative;
+  transform: translateY(-3px); /* move the entire system down */
+}
 
+.customSearch-checkbox{
+    --size: 12px;  
+      width: 12px !important;  /* tightly wrap the SVG */
+       height: 12px !important;
+  position: relative; /* create stacking context */
+  z-index: 5;         /* ensures it sits above .customSearch-textBox-frame */
+  display: inline-flex;       /* preserve SVG layout */
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  line-height: 0;             /* removes inline spacing */
+  width: auto;
+  height: auto;
+  flex: 0 0 auto;             /* prevent stretch */
+    transform: translate(1.5px, 17.7px);
+}
+
+/* SVG inherits exact intrinsic size */
+.customSearch-checkbox svg {
+  display: block;
+  width: 12.47px;
+  height: 12.47px;
+  flex: 0 0 auto;
+}
+
+.customSearch-checkbox:active {
+      transform: translate(1.5px, 17.7px) scale(0.95) translateZ(0);
+}
 
 
 
@@ -1366,6 +1401,7 @@ textarea {
   line-height: 19px;
   color: var(--hx-accent, #043542);
   display: block;
+      transform: translate(0px, 0px);
 }
 
 .customSearch-frame-row{
@@ -1403,6 +1439,13 @@ textarea {
   vector-effect:non-scaling-stroke;
 }
 
+
+#customSearch{
+  font-size: 12px;
+transform:translateX(10px)
+
+}
+
 /* input overlays the SVG but is transparent */
 .customSearch-textBox-frame input#customSearch{
   position:absolute;
@@ -1410,7 +1453,7 @@ textarea {
   width:100%;
   height:100%;
   background:transparent;
-  color:var(--hx-text, #e8e8e8);
+  color:var(--G-color-1-light);
   border:none;
   padding:0 8px;
   outline:none;
@@ -1418,11 +1461,11 @@ textarea {
 }
 
 #customSearch.enabled{
-  color:var(--hx-text, #e8e8e8);
+  color:var(--G-color-1-light);
 }
 
 #customSearch.disabled{
-  color:var(--search-disabled-text, rgba(232,232,232,0.55));
+  color:var(--search-disabled-text, rgba(255, 0, 0, 0.55));
 }
 
 /* disabled state tint remains while strokes keep currentColor */
@@ -1749,7 +1792,7 @@ body.editor-maximized #toast {
   background: none;
   padding: 0;
   margin: 0;
-      border: 1px solid var(--G-color-1-midlight);
+  border: var(--outer-borders);
     border-radius: 0px 16px 0px 0px;
 }
 
@@ -2038,8 +2081,8 @@ button.btn-discreet:focus-visible {
 button.btn-discreet svg {
   width: 16px;
   height: 16px;
-  fill: currentColor;
-  stroke: currentColor;
+ fill: var(--G-color-1);
+  stroke: var(--G-color-1);
   transition: inherit;
   stroke-width:0.5px;
 }
