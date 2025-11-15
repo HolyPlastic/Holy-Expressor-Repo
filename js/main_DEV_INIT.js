@@ -47,12 +47,12 @@ if (typeof Holy !== "object") Holy = {};
 
     // Explicitly load all host modules in correct order
     var hostModules = [
-      "/jsx/modules/host_UTILS.jsx",
-      "/jsx/modules/host_MAPS.jsx",
-      "/jsx/modules/host_GET.jsx",
-      "/jsx/modules/host_APPLY.jsx",
-      "/jsx/modules/host_DEV.jsx",
-      "/jsx/modules/host_FLYO.jsx", // 🆕 added for flyover launcher
+      "/jsx/Modules/host_UTILS.jsx",
+      "/jsx/Modules/host_MAPS.jsx",
+      "/jsx/Modules/host_GET.jsx",
+      "/jsx/Modules/host_APPLY.jsx",
+      "/jsx/Modules/host_DEV.jsx",
+      "/jsx/Modules/host_FLYO.jsx", // 🆕 added for flyover launcher
       "/jsx/host.jsx" // load main host last
     ];
 

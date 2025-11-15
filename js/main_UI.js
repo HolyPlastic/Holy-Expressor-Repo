@@ -82,6 +82,14 @@ if (typeof Holy !== "object") Holy = {};
       });
     }
 
+
+const safe = encodeURIComponent("TEST_LOG");
+cs.evalScript('NEW_log_showDialog("' + safe + '")', function(r) {
+    console.log("[NEW_log] static test result:", r);
+});
+
+
+
     // ---------------------------------------------------------
     // ⚡ Quick Access Panel Launcher (with Warm-Wake Fix)
     // ---------------------------------------------------------

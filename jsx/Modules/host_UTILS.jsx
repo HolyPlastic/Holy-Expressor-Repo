@@ -1067,6 +1067,37 @@ function cy_deleteExpressions() {
   return JSON.stringify(result);
 }
 
+function NEW_log_showDialog(logText) {
+    if (logText === undefined || logText === null) {
+        logText = "";
+    }
+
+    var w = new Window("dialog", "Holy Expressor Log", undefined, { resizeable: true });
+    w.orientation = "column";
+
+    var txt = w.add("edittext", undefined, logText, {
+        multiline: true,
+        scrolling: true
+    });
+
+    txt.alignment = ["fill", "fill"];
+    txt.minimumSize = [400, 200];
+
+    var g = w.add("group");
+    g.alignment = "right";
+    var closeBtn = g.add("button", undefined, "Close");
+
+    w.onResizing = w.onResize = function () {
+        txt.size = [w.size[0] - 40, w.size[1] - 80];
+    };
+
+    closeBtn.onClick = function () {
+        w.close();
+    };
+
+    w.show();
+}
+
 try {
   logToPanel("✅ host_UTILS.jsx Loaded ⛓️");
   var NEW_log_event_utils = new CSXSEvent();
