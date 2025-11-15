@@ -179,6 +179,10 @@ Holy.SNIPPETS.banks = [
     renderBankHeader();
     renderSnippets();
     console.log(`[Holy.SNIPPETS] Active bank switched → ${bank.name}`);
+    if (typeof Holy === "object" && Holy && Holy.UTILS && typeof Holy.UTILS.NEW_forCustomer_emit === "function") {
+      var NEW_forCustomer_bankMessage = 'Switched bank: ' + bank.name;
+      Holy.UTILS.NEW_forCustomer_emit(NEW_forCustomer_bankMessage);
+    }
   }
 
   // expose for cross-module safety
@@ -531,6 +535,20 @@ Holy.SNIPPETS.banks = [
               toastApplyError();
               return;
             }
+
+            var NEW_forCustomer_controlsResult = null;
+            try { NEW_forCustomer_controlsResult = JSON.parse(response); }
+            catch (NEW_forCustomer_controlsErr) { NEW_forCustomer_controlsResult = null; }
+            if (NEW_forCustomer_controlsResult && !NEW_forCustomer_controlsResult.error && NEW_forCustomer_controlsResult.ok !== false) {
+              if (typeof Holy === "object" && Holy && Holy.UTILS && typeof Holy.UTILS.NEW_forCustomer_emit === "function") {
+                var NEW_forCustomer_effectsCount = Array.isArray(NEW_forCustomer_controlsResult.effects) ? NEW_forCustomer_controlsResult.effects.length : 0;
+                var NEW_forCustomer_controlsMessage = 'Snippet controls applied: ' + snippet.name;
+                if (NEW_forCustomer_effectsCount) {
+                  NEW_forCustomer_controlsMessage += ' (' + NEW_forCustomer_effectsCount + ' effect' + (NEW_forCustomer_effectsCount === 1 ? '' : 's') + ')';
+                }
+                Holy.UTILS.NEW_forCustomer_emit(NEW_forCustomer_controlsMessage);
+              }
+            }
           });
         } else if (cs && typeof cs.evalScript === "function") {
           // ✅ Normal snippet application fallback
@@ -581,8 +599,19 @@ Holy.SNIPPETS.banks = [
               expressionLength: String(snippet.expr || "").length
             });
           }
-          if (res && res.ok) Holy.UI.toast(`Applied: ${snippet.name}`);
-          else Holy.UI.toast(`Snippet error: ${res?.err || "Apply failed"}`);
+          if (res && res.ok) {
+            Holy.UI.toast(`Applied: ${snippet.name}`);
+            if (typeof Holy === "object" && Holy && Holy.UTILS && typeof Holy.UTILS.NEW_forCustomer_emit === "function") {
+              var NEW_forCustomer_appliedCount = typeof res.applied === "number" ? res.applied : null;
+              var NEW_forCustomer_snippetMessage = 'Snippet applied: ' + snippet.name;
+              if (NEW_forCustomer_appliedCount !== null) {
+                NEW_forCustomer_snippetMessage += ' (' + NEW_forCustomer_appliedCount + (NEW_forCustomer_appliedCount === 1 ? ' property' : ' properties') + ')';
+              }
+              Holy.UTILS.NEW_forCustomer_emit(NEW_forCustomer_snippetMessage);
+            }
+          } else {
+            Holy.UI.toast(`Snippet error: ${res?.err || "Apply failed"}`);
+          }
         });
       });
 
@@ -830,6 +859,14 @@ function holy_applySnippet(snippetId) {
           }
 
           console.log(`[Holy.SNIPPETS] Saved controls for snippet: ${snippet.name}`);
+          if (typeof Holy === "object" && Holy && Holy.UTILS && typeof Holy.UTILS.NEW_forCustomer_emit === "function") {
+            var NEW_forCustomer_savedEffects = Array.isArray(payload.effects) ? payload.effects.length : 0;
+            var NEW_forCustomer_savedMessage = 'Snippet controls saved: ' + snippet.name;
+            if (NEW_forCustomer_savedEffects) {
+              NEW_forCustomer_savedMessage += ' (' + NEW_forCustomer_savedEffects + ' effect' + (NEW_forCustomer_savedEffects === 1 ? '' : 's') + ')';
+            }
+            Holy.UTILS.NEW_forCustomer_emit(NEW_forCustomer_savedMessage);
+          }
         });
       });
     }
@@ -923,6 +960,14 @@ function holy_applySnippet(snippetId) {
 
         if (res && res.ok) {
           Holy.UI?.toast?.("Applied: wiggle(2, 20)");
+          if (typeof Holy === "object" && Holy && Holy.UTILS && typeof Holy.UTILS.NEW_forCustomer_emit === "function") {
+            var NEW_forCustomer_wiggleCount = typeof res.applied === "number" ? res.applied : null;
+            var NEW_forCustomer_wiggleMessage = 'Snippet applied: wiggle(2, 20)';
+            if (NEW_forCustomer_wiggleCount !== null) {
+              NEW_forCustomer_wiggleMessage += ' (' + NEW_forCustomer_wiggleCount + (NEW_forCustomer_wiggleCount === 1 ? ' property' : ' properties') + ')';
+            }
+            Holy.UTILS.NEW_forCustomer_emit(NEW_forCustomer_wiggleMessage);
+          }
         } else {
           Holy.UI?.toast?.("Snippet error: " + (res?.err || "Apply failed"));
         }

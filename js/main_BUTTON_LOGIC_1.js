@@ -31,6 +31,41 @@ if (typeof Holy !== "object") Holy = {};
     }
   }
 
+  function NEW_forCustomer_emitIfAvailable(message) {
+    if (!message) return;
+    if (typeof Holy !== "object" || !Holy || !Holy.UTILS) return;
+    if (typeof Holy.UTILS.NEW_forCustomer_emit !== "function") return;
+    Holy.UTILS.NEW_forCustomer_emit(message);
+  }
+
+  function NEW_forCustomer_emitPathSummary(builtString) {
+    if (!builtString) return;
+    var NEW_forCustomer_lines = String(builtString).split(/\r?\n/);
+    var NEW_forCustomer_preview = (NEW_forCustomer_lines[0] || builtString || "").trim();
+    if (!NEW_forCustomer_preview && builtString) {
+      NEW_forCustomer_preview = String(builtString).trim();
+    }
+    if (NEW_forCustomer_preview.length > 120) {
+      NEW_forCustomer_preview = NEW_forCustomer_preview.slice(0, 117) + "…";
+    }
+    var NEW_forCustomer_lineCount = 0;
+    for (var NEW_forCustomer_i = 0; NEW_forCustomer_i < NEW_forCustomer_lines.length; NEW_forCustomer_i++) {
+      if (NEW_forCustomer_lines[NEW_forCustomer_i] && NEW_forCustomer_lines[NEW_forCustomer_i].trim()) {
+        NEW_forCustomer_lineCount++;
+      }
+    }
+    if (!NEW_forCustomer_lineCount) {
+      NEW_forCustomer_lineCount = 1;
+    }
+    var NEW_forCustomer_label = NEW_forCustomer_lineCount === 1
+      ? "Path built"
+      : "Paths built (" + NEW_forCustomer_lineCount + " entries)";
+    var NEW_forCustomer_message = NEW_forCustomer_preview
+      ? NEW_forCustomer_label + ": " + NEW_forCustomer_preview
+      : NEW_forCustomer_label;
+    NEW_forCustomer_emitIfAvailable(NEW_forCustomer_message);
+  }
+
   function toNumberOrNull(value) {
     if (value == null || value === "") {
       return null;
@@ -850,6 +885,7 @@ if (typeof Holy !== "object") Holy = {};
                     if (parsed.built) {
                       Holy.EXPRESS.EDITOR_insertText(parsed.built);
                       Holy.UI.toast("Lean builder path inserted");
+                      NEW_forCustomer_emitPathSummary(parsed.built);
                     } else Holy.UI.toast("No path returned from lean builder");
                   } catch (err) {
                     console.error("Lean builder parse error:", err, raw);
@@ -879,6 +915,7 @@ if (typeof Holy !== "object") Holy = {};
                         "color:#9C27B0;font-weight:bold;",
                         builtStr
                       );
+                      NEW_forCustomer_emitPathSummary(builtStr);
                     } else Holy.UI.toast("No built string returned");
                   } catch (e) {
                     console.error("Parse fail:", e, raw);
@@ -980,6 +1017,70 @@ function updateApplyReport(arg1, arg2, arg3) {
 
   appendLogEntry(entry, true);
   maybeToastBlueApply(title, normalized, context);
+
+  var NEW_forCustomer_parsed = (normalized && typeof normalized === "object") ? normalized.parsed : null;
+  var NEW_forCustomer_isObject = NEW_forCustomer_parsed && typeof NEW_forCustomer_parsed === "object";
+  if (NEW_forCustomer_isObject) {
+    var NEW_forCustomer_success = false;
+    if (NEW_forCustomer_parsed.ok === false) {
+      NEW_forCustomer_success = false;
+    } else if (NEW_forCustomer_parsed.ok === true) {
+      NEW_forCustomer_success = true;
+    } else if (typeof NEW_forCustomer_parsed.applied === "number" || NEW_forCustomer_parsed.toastMessage || NEW_forCustomer_parsed.note) {
+      NEW_forCustomer_success = true;
+    }
+
+    if (NEW_forCustomer_success) {
+      var NEW_forCustomer_label = "";
+      if (context && context.snippetName) {
+        NEW_forCustomer_label = 'Snippet "' + context.snippetName + '"';
+      } else if (context && context.action) {
+        NEW_forCustomer_label = context.action;
+      } else if (title) {
+        NEW_forCustomer_label = title;
+      } else {
+        NEW_forCustomer_label = "Apply";
+      }
+
+      var NEW_forCustomer_details = [];
+      if (typeof NEW_forCustomer_parsed.applied === "number") {
+        var NEW_forCustomer_applyLabel = NEW_forCustomer_parsed.applied === 1 ? "property" : "properties";
+        NEW_forCustomer_details.push(NEW_forCustomer_parsed.applied + " " + NEW_forCustomer_applyLabel + " updated");
+      }
+      if (typeof NEW_forCustomer_parsed.skipped === "number" && NEW_forCustomer_parsed.skipped > 0) {
+        var NEW_forCustomer_skipLabel = NEW_forCustomer_parsed.skipped === 1 ? "property" : "properties";
+        NEW_forCustomer_details.push(NEW_forCustomer_parsed.skipped + " " + NEW_forCustomer_skipLabel + " skipped");
+      }
+      if (context && context.controlsApplied) {
+        NEW_forCustomer_details.push("Controls applied");
+      }
+      if (context && context.searchTerm) {
+        NEW_forCustomer_details.push('Search: ' + context.searchTerm);
+      }
+      if (context && context.selectionType && !context.snippetName) {
+        NEW_forCustomer_details.push('Selection: ' + context.selectionType);
+      }
+      if (context && Array.isArray(context.targetPaths) && context.targetPaths.length) {
+        NEW_forCustomer_details.push('Targets: ' + context.targetPaths.length);
+      }
+      if (!NEW_forCustomer_details.length && NEW_forCustomer_parsed.toastMessage) {
+        NEW_forCustomer_details.push(NEW_forCustomer_parsed.toastMessage);
+      }
+      if (!NEW_forCustomer_details.length && NEW_forCustomer_parsed.note) {
+        NEW_forCustomer_details.push(NEW_forCustomer_parsed.note);
+      }
+      if (!NEW_forCustomer_details.length && NEW_forCustomer_parsed.ok) {
+        NEW_forCustomer_details.push("Apply complete");
+      }
+
+      var NEW_forCustomer_message = NEW_forCustomer_label;
+      if (NEW_forCustomer_details.length) {
+        NEW_forCustomer_message += " – " + NEW_forCustomer_details.join(", ");
+      }
+
+      NEW_forCustomer_emitIfAvailable(NEW_forCustomer_message);
+    }
+  }
   return normalized.parsed || normalized.raw;
 }
 

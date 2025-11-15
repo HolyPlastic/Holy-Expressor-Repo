@@ -1067,35 +1067,33 @@ function cy_deleteExpressions() {
   return JSON.stringify(result);
 }
 
-function NEW_log_showDialog(logText) {
-    if (logText === undefined || logText === null) {
-        logText = "";
-    }
+function NEW_forCustomer_showDialog(logText) {
+  logText = decodeURIComponent(logText || "");
 
-    var w = new Window("dialog", "Holy Expressor Log", undefined, { resizeable: true });
-    w.orientation = "column";
+  var w = new Window("dialog", "History Log", undefined, { resizeable: true });
+  w.orientation = "column";
 
-    var txt = w.add("edittext", undefined, logText, {
-        multiline: true,
-        scrolling: true
-    });
+  var txt = w.add("edittext", undefined, logText, {
+    multiline: true,
+    scrolling: true
+  });
 
-    txt.alignment = ["fill", "fill"];
-    txt.minimumSize = [400, 200];
+  txt.alignment = ["fill", "fill"];
+  txt.minimumSize = [400, 200];
 
-    var g = w.add("group");
-    g.alignment = "right";
-    var closeBtn = g.add("button", undefined, "Close");
+  var g = w.add("group");
+  g.alignment = "right";
+  var closeBtn = g.add("button", undefined, "Close");
 
-    w.onResizing = w.onResize = function () {
-        txt.size = [w.size[0] - 40, w.size[1] - 80];
-    };
+  w.onResizing = w.onResize = function () {
+    txt.size = [w.size[0] - 40, w.size[1] - 80];
+  };
 
-    closeBtn.onClick = function () {
-        w.close();
-    };
+  closeBtn.onClick = function () {
+    w.close();
+  };
 
-    w.show();
+  w.show();
 }
 
 try {
