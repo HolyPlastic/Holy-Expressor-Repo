@@ -135,7 +135,7 @@ function HE_applyByStrictSearch(expr, searchVal) {
         expressionLength: String(expr || "").length
     };
 
-    Holy.BUTTONS.updateApplyReport("Blue Apply (Strict Search)", parsed, context);
+    Holy.BUTTONS.updateApplyReport("Blue Apply (Strict Search)", report, context);
   });
 }
 
