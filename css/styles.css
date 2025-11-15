@@ -1289,7 +1289,7 @@ textarea {
 
 
 
- /* ========================larger container just for the maximise button */
+/* ========================larger container just for the maximise button */
 .express-editor-top-overlay {
   position: absolute;
   right: 12px;
@@ -1309,6 +1309,288 @@ textarea {
 
 .express-editor-top-overlay>* {
   pointer-events: auto;
+}
+
+/* ================================
+   REWRITE MODE – NEW UI CLASSES
+   ================================ */
+
+#modeViewRewrite {
+  position: relative;
+  padding: 72px 24px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  overflow: visible;
+}
+
+#rewriteUnderlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.rewrite-underlay-line {
+  position: absolute;
+  width: 160%;
+  height: 1px;
+  background: rgba(var(--G-colour-1-RGB), 0.18);
+  opacity: 0.55;
+}
+
+#rewriteUnderlay .rewrite-underlay-line:nth-child(1) {
+  top: 22%;
+  left: -20%;
+  transform: rotate(10deg);
+}
+
+#rewriteUnderlay .rewrite-underlay-line:nth-child(2) {
+  top: 52%;
+  left: -18%;
+  transform: rotate(14deg);
+  opacity: 0.35;
+}
+
+#rewriteUnderlay .rewrite-underlay-line:nth-child(3) {
+  bottom: 12%;
+  left: -22%;
+  transform: rotate(8deg);
+  opacity: 0.25;
+}
+
+#rewriteOverlay {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(var(--G-colour-1-RGB), 0.08);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+  z-index: 3;
+  pointer-events: none;
+}
+
+#rewriteOverlay > * {
+  pointer-events: auto;
+}
+
+.rewrite-checkbox-block {
+  display: flex;
+  align-items: center;
+}
+
+.rewrite-checkbox-block .row {
+  margin: 0;
+}
+
+.rewrite-checkbox-block .checkbox-label {
+  gap: 8px;
+}
+
+.rewrite-typography-label {
+  font-family: var(--f-pixel);
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--G-color-1-midlight2);
+  -webkit-font-smoothing: none;
+  pointer-events: none;
+}
+
+.rewrite-typography-diamond {
+  width: 18px;
+  height: 18px;
+  color: var(--G-color-1-mid);
+}
+
+#rewriteClearBtn {
+  --size: 22px;
+  color: var(--G-color-1-midlight2);
+  stroke: var(--G-color-1-midlight2);
+}
+
+#rewriteSearchWrapper,
+#rewriteReplaceWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1;
+}
+
+#rewriteSearchWrapper {
+  padding: 32px 0 40px;
+}
+
+#rewriteReplaceWrapper {
+  padding: 40px 0 24px;
+}
+
+#rewriteSearchWrapper .text-input,
+#rewriteReplaceWrapper .text-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#rewriteSearchWrapper > label.block-label,
+#rewriteReplaceWrapper > label.block-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  border: 0;
+}
+
+.rewrite-label-search,
+.rewrite-label-replace {
+  font-family: var(--f-pixel);
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--G-color-1-midlight2);
+  -webkit-font-smoothing: none;
+}
+
+.rewrite-label-search {
+  position: absolute;
+  top: -16px;
+  left: 0;
+}
+
+.rewrite-label-replace {
+  position: absolute;
+  top: -16px;
+  right: 0;
+  text-align: right;
+}
+
+.rewrite-edge-line-bottom,
+.rewrite-edge-line-top {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--G-color-1-midlight2);
+  pointer-events: none;
+}
+
+.rewrite-edge-line-bottom {
+  bottom: 40px;
+}
+
+.rewrite-edge-line-top {
+  top: 40px;
+}
+
+.rewrite-gradient-down,
+.rewrite-gradient-up {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 40px;
+  pointer-events: none;
+}
+
+.rewrite-gradient-down {
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(var(--G-colour-1-RGB), 0.32) 0%, rgba(var(--G-colour-1-RGB), 0) 100%);
+}
+
+.rewrite-gradient-up {
+  top: 0;
+  background: linear-gradient(180deg, rgba(var(--G-colour-1-RGB), 0) 0%, rgba(var(--G-colour-1-RGB), 0.32) 100%);
+}
+
+.rewrite-action-button {
+  width: 100%;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 999px;
+  font-family: var(--f-pixel);
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, rgba(var(--G-colour-1-RGB), 0.6) 0%, rgba(var(--G-colour-1-RGB), 1) 100%);
+  color: var(--AE-theme-darkest);
+  box-shadow: 0 0 0 rgba(var(--G-colour-1-RGB), 0.35), 0 0 24px rgba(var(--G-colour-1-RGB), 0.3);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.rewrite-action-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 18px rgba(var(--G-colour-1-RGB), 0.45);
+}
+
+.rewrite-action-button:active {
+  transform: translateY(0);
+  box-shadow: 0 0 12px rgba(var(--G-colour-1-RGB), 0.35);
+}
+
+.rewrite-action-button.is-busy,
+.rewrite-action-button:disabled {
+  opacity: 0.65;
+  cursor: progress;
+}
+
+/* Mode switch arrow v2 */
+.modeSwitchBar .mode-switch-svg.modeSwitchSvg {
+  width: 18px;
+  height: auto;
+}
+
+.modeSwitchSvg {
+  width: 18px;
+  height: auto;
+  display: block;
+  transition: transform 0.25s ease;
+}
+
+.modeSwitchSvg #inactivearrow {
+  color: var(--G-grey-1);
+  opacity: 0.65;
+  transition: color 0.25s ease, opacity 0.25s ease;
+}
+
+.modeSwitchSvg #bigarrow {
+  color: var(--G-color-1-midlight2);
+  transition: color 0.25s ease;
+}
+
+.modeSwitchSvg #lilarrow {
+  color: var(--G-color-1-mid);
+  transition: color 0.25s ease;
+}
+
+#modePanel[data-mode="express"] .modeSwitchSvg {
+  transform: scaleX(1);
+}
+
+#modePanel[data-mode="rewrite"] .modeSwitchSvg {
+  transform: scaleX(-1);
+}
+
+#modePanel[data-mode="rewrite"] .modeSwitchSvg #inactivearrow {
+  color: var(--G-color-1-mid-3);
+  opacity: 0.85;
+}
+
+#modePanel[data-mode="rewrite"] .modeSwitchSvg #bigarrow {
+  color: var(--G-color-1);
+}
+
+#modePanel[data-mode="rewrite"] .modeSwitchSvg #lilarrow {
+  color: var(--G-color-1-midlight2);
 }
 /*
 .eeo-z-Main {
