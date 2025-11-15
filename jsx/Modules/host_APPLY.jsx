@@ -193,6 +193,11 @@ function he_S_SS_applyExpressionToSelection(jsonStr) {
     return JSON.stringify({ ok:false, err:"SelectionStriker error: " + String(e) });
   }
 }
+
+
+
+
+
 // LIST STRIKER: Apply expression to properties listed in the Target box
 function he_S_LS_applyExpressionToTargetList(jsonStr) {
   try {

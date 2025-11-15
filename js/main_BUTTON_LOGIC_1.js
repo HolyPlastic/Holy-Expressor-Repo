@@ -74,46 +74,74 @@ if (typeof Holy !== "object") Holy = {};
     return isNaN(num) ? null : num;
   }
 
-  function normalizeApplyResult(payload) {
-    var normalized = { parsed: null, raw: null, text: "" };
-    if (payload === undefined || payload === null) {
-      return normalized;
-    }
+function normalizeApplyResult(payload) {
+  var normalized = { parsed: null, raw: null, text: "" };
 
-    if (typeof payload === "string") {
-      var trimmed = payload.trim();
-      normalized.raw = trimmed;
-      normalized.text = trimmed;
-      if (trimmed) {
-        try {
-          normalized.parsed = JSON.parse(trimmed);
-        } catch (err) {
-          normalized.parsed = null;
-        }
-      }
-      return normalized;
-    }
+  // Helper → enforce final schema for Customer Log
+  function enforceSchema(obj) {
+    if (!obj || typeof obj !== "object") obj = {};
 
-    if (typeof payload === "object") {
-      normalized.raw = payload;
-      if (payload && typeof payload.parsed === "object" && payload.parsed) {
-        // Support pre-normalized payloads
-        normalized.parsed = payload.parsed;
-      } else {
-        normalized.parsed = payload;
-      }
-      try {
-        normalized.text = JSON.stringify(payload);
-      } catch (err2) {
-        normalized.text = "" + payload;
-      }
-      return normalized;
-    }
+    return {
+      ok: typeof obj.ok === "boolean" ? obj.ok : false,
+      applied: typeof obj.applied === "number" ? obj.applied : 0,
+      skipped: typeof obj.skipped === "number" ? obj.skipped : 0,
+      errors: Array.isArray(obj.errors) ? obj.errors : []
+    };
+  }
 
-    normalized.raw = payload;
-    normalized.text = String(payload);
+  // 1) Undefined/null
+  if (payload == null) {
+    normalized.parsed = enforceSchema(null);
     return normalized;
   }
+
+  // 2) Payload is string
+  if (typeof payload === "string") {
+    var trimmed = payload.trim();
+    normalized.raw = trimmed;
+    normalized.text = trimmed;
+
+    if (trimmed) {
+      try {
+        var parsed = JSON.parse(trimmed);
+        normalized.parsed = enforceSchema(parsed);
+      } catch (err) {
+        normalized.parsed = enforceSchema(null);
+      }
+    } else {
+      normalized.parsed = enforceSchema(null);
+    }
+
+    return normalized;
+  }
+
+  // 3) Payload is object (already parsed)
+  if (typeof payload === "object") {
+    normalized.raw = payload;
+
+    var baseObj =
+      payload && typeof payload.parsed === "object"
+        ? payload.parsed
+        : payload;
+
+    normalized.parsed = enforceSchema(baseObj);
+
+    try {
+      normalized.text = JSON.stringify(payload);
+    } catch (err2) {
+      normalized.text = "" + payload;
+    }
+
+    return normalized;
+  }
+
+  // 4) Anything else
+  normalized.raw = payload;
+  normalized.text = String(payload);
+  normalized.parsed = enforceSchema(null);
+  return normalized;
+}
+
 
   function formatApplyLogEntry(title, normalized, context) {
     var lines = [];
@@ -490,7 +518,14 @@ if (typeof Holy !== "object") Holy = {};
                   expressionPreview: exprDirect,
                   expressionLength: exprDirect.length
                 };
-                updateApplyReport("Blue Apply", report, context);
+var parsed = null;
+try {
+    parsed = JSON.parse(report || "{}");
+} catch (e) {
+    console.warn("Apply report JSON parse failed:", e, report);
+    parsed = { applied: 0, errors: ["JSON parse failed"] };
+}
+updateApplyReport("Blue Apply", parsed, context);
               });
             } catch (e) {
               console.error("Blue Apply failed:", e);
