@@ -9,6 +9,18 @@ if (typeof Holy !== "object") Holy = {};
 
   var cs = new CSInterface();
 
+  function NEW_forCustomer_emit(txt) {
+    try {
+      if (!txt) return;
+      const timestamp = new Date().toISOString();
+      const entry = "[" + timestamp + "] " + txt;
+      if (!window.NEW_forCustomer_history) window.NEW_forCustomer_history = [];
+      window.NEW_forCustomer_history.push(entry);
+    } catch (err) {
+      // Never throw – Customer log must never break app
+    }
+  }
+
 
 
 // ---------------------------------------------------------
@@ -149,4 +161,5 @@ Holy.UTILS = {
   cy_getThemeVars: cy_getThemeVars,
   cy_getSelectedLayers: cy_getSelectedLayers
 };
+Holy.UTILS.NEW_forCustomer_emit = NEW_forCustomer_emit;
 })();

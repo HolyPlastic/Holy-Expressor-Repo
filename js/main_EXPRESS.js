@@ -301,6 +301,29 @@ function cy_deleteExpressions() {
           return;
         }
 
+        if (typeof Holy === "object" && Holy && Holy.UTILS && typeof Holy.UTILS.NEW_forCustomer_emit === "function") {
+          var NEW_forCustomer_parts = [];
+          if (typeof result.clearedProperties === "number") {
+            var NEW_forCustomer_propLabel = result.clearedProperties === 1 ? "property" : "properties";
+            NEW_forCustomer_parts.push(result.clearedProperties + " " + NEW_forCustomer_propLabel + " cleared");
+          }
+          if (typeof result.clearedLayers === "number" && result.clearedLayers > 0) {
+            var NEW_forCustomer_layerLabel = result.clearedLayers === 1 ? "layer" : "layers";
+            NEW_forCustomer_parts.push(result.clearedLayers + " " + NEW_forCustomer_layerLabel);
+          }
+          if (result.selectionType) {
+            NEW_forCustomer_parts.push("Selection: " + result.selectionType);
+          }
+          if (result.toastMessage && !NEW_forCustomer_parts.length) {
+            NEW_forCustomer_parts.push(result.toastMessage);
+          }
+          var NEW_forCustomer_message = "Expressions deleted";
+          if (NEW_forCustomer_parts.length) {
+            NEW_forCustomer_message += " – " + NEW_forCustomer_parts.join(", ");
+          }
+          Holy.UTILS.NEW_forCustomer_emit(NEW_forCustomer_message);
+        }
+
         resolve(result || {});
       });
     } catch (err) {
@@ -435,6 +458,13 @@ function cy_replaceInExpressions(searchStr, replaceStr, options) {
         var msg = '[Holy.SEARCH] ' + totalReplacements + ' replacements made across ' + affectedLayers + ' layer(s).';
         msg += ' (matchCase=' + matchCase + ')';
         console.log(msg);
+        if (typeof Holy === "object" && Holy && Holy.UTILS && typeof Holy.UTILS.NEW_forCustomer_emit === "function") {
+          var NEW_forCustomer_summary = 'Search & Replace – ' + totalReplacements + ' replacement' + (totalReplacements === 1 ? '' : 's');
+          if (affectedLayers) {
+            NEW_forCustomer_summary += ' across ' + affectedLayers + ' layer' + (affectedLayers === 1 ? '' : 's');
+          }
+          Holy.UTILS.NEW_forCustomer_emit(NEW_forCustomer_summary);
+        }
         var categorizedErrors = categorizeApplyErrors(applyReport && applyReport.errors);
         if (categorizedErrors.critical.length) {
           console.warn('[Holy.SEARCH] Apply errors', categorizedErrors.critical);
