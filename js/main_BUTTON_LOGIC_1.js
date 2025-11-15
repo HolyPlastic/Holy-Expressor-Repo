@@ -621,7 +621,7 @@ if (typeof Holy !== "object") Holy = {};
                         expressionPreview: expr,
                         expressionLength: String(expr || "").length
                       };
-                      updateApplyReport("Orange Apply (Custom Search)", r, context);
+                      updateApplyReport("Orange Apply (Custom Search)", raw, context);
                     });
                   });
                 } else {
@@ -657,7 +657,7 @@ if (typeof Holy !== "object") Holy = {};
                         expressionPreview: expr,
                         expressionLength: String(expr || "").length
                       };
-                      updateApplyReport("Orange Apply (Target List)", r, context);
+                      updateApplyReport("Orange Apply (Target List)", raw, context);
                     });
                   }
 
