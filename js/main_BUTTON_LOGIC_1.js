@@ -1045,6 +1045,11 @@ function updateApplyReport(arg1, arg2, arg3) {
   }
 
   var normalized = normalizeApplyResult(data);
+  // DEBUG: detect missing applied count
+if (normalized.parsed && normalized.parsed.applied === undefined) {
+    console.warn("⚠ Host returned apply payload WITHOUT 'applied' field:", normalized.parsed);
+}
+
   var entry = formatApplyLogEntry(title, normalized, context);
   if (!entry) {
     entry = "[No apply data]";
