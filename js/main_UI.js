@@ -158,7 +158,7 @@ ensureHostReady(() => {
     applyBtnLabel = applyBtn ? applyBtn.querySelector(".label") : null;
 
     var openFullEditorBtn = document.getElementById("openFullEditorBtn");
-    var NEW_log_openDialogButton = document.getElementById("NEW_log_openDialogButton");
+    var NEW_forCustomer_openLogButton = document.getElementById("NEW_forCustomer_openLogButton");
     var codeEditor = document.getElementById("codeEditor");
     var expressOverlay = document.querySelector(".express-editor-overlay");
     var useAbsoluteComp = document.getElementById("useAbsoluteComp");
@@ -166,10 +166,13 @@ ensureHostReady(() => {
     var loadFromSelectionBtn = document.getElementById("loadFromSelectionBtn");
     var editorClearBtn = document.getElementById("editorClearBtn");
 
-    if (NEW_log_openDialogButton) {
-      NEW_log_openDialogButton.onclick = function () {
-        const joined = NEW_log_history.join("\n");
-        cs.evalScript('NEW_log_showDialog(' + JSON.stringify(joined) + ')');
+    if (NEW_forCustomer_openLogButton) {
+      NEW_forCustomer_openLogButton.onclick = function () {
+        const NEW_forCustomer_hist = window.NEW_forCustomer_history || [];
+        const NEW_forCustomer_joined = NEW_forCustomer_hist.join("\n");
+
+        const NEW_forCustomer_safe = encodeURIComponent(NEW_forCustomer_joined);
+        cs.evalScript('NEW_forCustomer_showDialog("' + NEW_forCustomer_safe + '")');
       };
     }
 
