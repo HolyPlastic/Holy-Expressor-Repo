@@ -1,11 +1,11 @@
-/*#region ÃƒÂ°Ã…Â¸Ã…â€™Ã‚ÂÃƒÂ°Ã…Â¸Ã…â€™Ã‚ÂÃƒÂ°Ã…Â¸Ã…â€™Ã‚ÂÃƒÂ°Ã…Â¸Ã…Â½Ã‚Â¨ÃƒÂ°Ã…Â¸Ã…Â½Ã‚Â¨ÃƒÂ°Ã…Â¸Ã…Â½Ã‚Â¨ GLOBAL COLOURS */
-/* =====ÃƒÂ°Ã…Â¸Ã…Â½Ã‚Â¨ GLOBAL COLORS =========== _-_-_-_ 
+/*#region Ã°Å¸Å’ÂÃ°Å¸Å’ÂÃ°Å¸Å’ÂÃ°Å¸Å½Â¨Ã°Å¸Å½Â¨Ã°Å¸Å½Â¨ GLOBAL COLOURS */
+/* =====Ã°Å¸Å½Â¨ GLOBAL COLORS =========== _-_-_-_ 
 var(--G-color-1);
 ===================================== _-_-_-_*/
 
 
 :root {
-  /* Fallback theme colour ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â used until JS overrides */
+  /* Fallback theme colour Ã¢â‚¬â€ used until JS overrides */
   --G-color-1: #1effd6;
   --G-grey-1: #3a3a3a;
   /* JS will overwrite these at runtime */
@@ -13,52 +13,66 @@ var(--G-color-1);
   --G-color-1-S: 0;
   --G-color-1-L: 0;
   --G-colour-1-RGB: 0, 0, 0;
+
   --G-color-1-mid: hsl(var(--G-color-1-H),
       calc(var(--G-color-1-S) * 0.75),
       calc(var(--G-color-1-L) * 2 * 0.08));
+
   --G-color-1-mid-2: hsl(
       /* mid desat */
       var(--G-color-1-H),
       calc(var(--G-color-1-S) * 0.45),
       calc(var(--G-color-1-L) * 2 * 0.18));
+
   --G-color-1-mid-3: hsl(
       /* mid desat but darker */
       var(--G-color-1-H),
       calc(var(--G-color-1-S) * 0),
       calc(var(--G-color-1-L) * 2 * 0.15));
+
   --G-color-1-mid-4: hsl(
       /* balance of mid desat 1 and 2 */
       var(--G-color-1-H),
       calc(var(--G-color-1-S) * 0.45),
       calc(var(--G-color-1-L) * 2 * 0.18));
+
   --G-color-1-dark-bg: hsl(var(--G-color-1-H),
       calc(var(--G-color-1-S) * 0.9),
       calc(var(--G-color-1-L) * 2 * 0.04));
+
   --G-color-1-deepdark-bg: hsl(var(--G-color-1-H),
       calc(var(--G-color-1-S) * 1),
       calc(var(--G-color-1-L) * 2 * 0.02));
+
   --G-color-1-lowsatdark-bg: hsl(var(--G-color-1-H),
       calc(var(--G-color-1-S) * 0.1),
       calc(var(--G-color-1-L) * 2 * 0.04));
+
   --G-color-1-offwhite: hsl(var(--G-color-1-H),
       calc(var(--G-color-1-S) * 1),
       calc(var(--G-color-1-L) * 2 * 0.8));
+
   --G-color-1-light: hsl(var(--G-color-1-H),
       calc(var(--G-color-1-S) * 1),
       calc(var(--G-color-1-L) * 2 * 0.8));
+
   --G-color-1-midlight: hsl(var(--G-color-1-H),
       var(--G-color-1-S),
       calc(var(--G-color-1-L) * 2 * 0.3));
+
   --G-color-1-midlight2: hsl(var(--G-color-1-H),
       var(--G-color-1-S),
       calc(var(--G-color-1-L) * 2 * 0.65));
+
   --G-color-1-midup: hsl(var(--G-color-1-H),
       calc(var(--G-color-1-S) * 0.75),
       calc(var(--G-color-1-L) * 2 * 0.2));
+
   --G-colour-1-opac-75: rgba(var(--G-colour-1-RGB), 0.75);
   --G-colour-1-opac-50: rgba(var(--G-colour-1-RGB), 0.5);
   --G-colour-1-opac-30: rgba(var(--G-colour-1-RGB), 0.3);
   --G-colour-1-opac-10: rgba(var(--G-colour-1-RGB), 0.1);
+
   --G-faded-text: rgba(255, 255, 255, 0.151);
 
 
@@ -68,19 +82,20 @@ var(--G-color-1);
   --AE-theme-darkest: #1d1d1d;
   --AE-theme-dark: #323232;
   --AE-theme-light: #f8f8f8;
-  --outer-borders: 0.5px solid var(--G-colour-1-opac-50);
+
+  --outer-borders: 0.5px solid var(--G-colour-1-opac-30);
 }
 
-/*#endregion ÃƒÂ°Ã…Â¸Ã…â€™Ã‚ÂÃƒÂ°Ã…Â¸Ã…Â½Ã‚Â¨ */
+/*#endregion Ã°Å¸Å’ÂÃ°Å¸Å½Â¨ */
 
 .is-hidden {
   display: none !important;
 }
 
-/*#region - ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â  FONT ÃƒÂ¢Ã…â€œÃ¢â‚¬â„¢ÃƒÂ¯Ã‚Â¸Ã‚ÂÃƒÂ¢Ã…â€œÃ¢â‚¬â„¢ÃƒÂ¯Ã‚Â¸Ã‚ÂÃƒÂ°Ã…Â¸Ã¢â‚¬Â Ã¢â‚¬Â */
+/*#region - Ã°Å¸â€Â  FONT Ã¢Å“â€™Ã¯Â¸ÂÃ¢Å“â€™Ã¯Â¸ÂÃ°Å¸â€ â€ */
 /* =============================
-         ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â¬ TEXT Stuff
-   ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â  Utility: Text Sizes
+         Ã°Å¸â€™Â¬ TEXT Stuff
+   Ã°Å¸â€Â  Utility: Text Sizes
    ============================= */
 .text-xs {
   font-size: 8px !important;
@@ -106,8 +121,8 @@ var(--G-color-1);
 
 /*#region- FONT LOADS  */
 
-/* V1 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“ Pixel font metrics override
-   ÃƒÂ¢Ã…Â¡Ã¢â€žÂ¢ÃƒÂ¯Ã‚Â¸Ã‚Â VALIDATOR: Chromium-based CEF supports these; Safari is irrelevant for CEP. */
+/* V1 Ã¢â‚¬â€œ Pixel font metrics override
+   Ã¢Å¡â„¢Ã¯Â¸Â VALIDATOR: Chromium-based CEF supports these; Safari is irrelevant for CEP. */
 @font-face {
   font-family: "Pixel";
   /* default metrics */
@@ -204,7 +219,7 @@ var(--G-color-1);
   font-display: swap;
 }
 
-/* --- ÃƒÂ°Ã…Â¸Ã¢â‚¬Â Ã¢â‚¬Â¢ Added Fonts --- */
+/* --- Ã°Å¸â€ â€¢ Added Fonts --- */
 
 @font-face {
   font-family: "COURIERO";
@@ -302,7 +317,7 @@ var(--G-color-1);
 
 /*#region - FONT --roots  */
 /* ================================
-   ÃƒÂ°Ã…Â¸Ã…Â½Ã‚Â¨ Global Font Variables
+   Ã°Å¸Å½Â¨ Global Font Variables
    ================================ */
 
 :root {
@@ -319,7 +334,7 @@ var(--G-color-1);
   --f-plank: "PLANK__", sans-serif;
   --f-tycho: "tycho", sans-serif;
 
-  /* ÃƒÂ°Ã…Â¸Ã¢â‚¬Â Ã¢â‚¬Â¢ New Additions */
+  /* Ã°Å¸â€ â€¢ New Additions */
   --f-couriero: "COURIERO", monospace;
   --f-pixboss: "0927____", monospace;
   --f-6809: "6809 Chargen", monospace;
@@ -337,9 +352,9 @@ var(--G-color-1);
 
 /* #endregion */
 
-/*#region - ÃƒÂ°Ã…Â¸Ã‚Â§Ã‚Â© Font Utility Classes Pack */
+/*#region - Ã°Å¸Â§Â© Font Utility Classes Pack */
 /* ================================
-    ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Direct Reference Version
+    Ã¢â‚¬â€ Direct Reference Version
    ================================ */
 
 .f18,
@@ -354,13 +369,13 @@ var(--G-color-1);
   letter-spacing: 0.05em;
 
   display: inline-block;
-  /* Make inlineÃƒÂ¢Ã¢â€šÂ¬Ã‚Âblock so alignment works */
+  /* Make inlineÃ¢â‚¬Âblock so alignment works */
   vertical-align: middle;
   /* baseline / middle alignment of inline box */
   transform: translateY(0.1em);
   /* small translate downward: adjust value as needed */
   line-height: 1;
-  /* avoid altering extra vertical padding from lineÃƒÂ¢Ã¢â€šÂ¬Ã‚Âheight */
+  /* avoid altering extra vertical padding from lineÃ¢â‚¬Âheight */
 }
 
 .f18 {
@@ -484,7 +499,7 @@ var(--G-color-1);
 
 
 /* ===defunkt font utils?==========================
-   ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â¤ Utility: Fonts
+   Ã°Å¸â€Â¤ Utility: Fonts
    ============================= 
 .font-sans { font-family: Arial, sans-serif !important; }
 .font-mono { font-family: ui-monospace, Menlo, Consolas, monospace !important; }
@@ -499,7 +514,7 @@ var(--G-color-1);
 
 /*#endregion*/
 
-/*#region - HEADINGs ÃƒÂ°Ã…Â¸Ã¢â‚¬â€Ã‚Â¼ ============================== */
+/*#region - HEADINGs Ã°Å¸â€”Â¼ ============================== */
 /*____________________________________________________*/
 
 .hdr {
@@ -551,7 +566,7 @@ h4 {
 /*#endregion* font-----------------\----*/
 
 
-/*#region* - ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‹Å“ Utility: Checkbox Labels ============================== */
+/*#region* - Ã°Å¸â€Ëœ Utility: Checkbox Labels ============================== */
 /*____________________________________________________*/
 
 
@@ -619,7 +634,7 @@ h4 {
 /*#region* - Global styles,,? ============================== */
 /*____________________________________________________*/
 /* =============================
-   ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â§ Base Resets & Global Styles
+   Ã°Å¸â€Â§ Base Resets & Global Styles
    ============================= */
 * {
   box-sizing: border-box;
@@ -664,7 +679,7 @@ body {
 /*---------------------------------\-----*/
 /*#endregion global styles,?-------------\----*/
 
-/*#region -ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â³ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â¨QUICK Panel ============================== */
+/*#region -Ã°Å¸â€™Â³Ã°Å¸â€™Â¨QUICK Panel ============================== */
 /*____________________________________________________*/
 
 
@@ -680,12 +695,12 @@ body {
 }
 
 /*---------------------------------\-----*/
-/*#endregion* ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â³ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â¨----------------------\----*/
+/*#endregion* Ã°Å¸â€™Â³Ã°Å¸â€™Â¨----------------------\----*/
 
 
 
 
-/*#region -ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â²ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚ÂªPanels ============================== */
+/*#region -Ã°Å¸â€Â²Ã°Å¸Å¸ÂªPanels ============================== */
 /*____________________________________________________*/
 
 :root {
@@ -713,12 +728,12 @@ body {
 /*#endregion* panels----------------------\----*/
 
 
-/*#region - ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…â€œÃƒÂ°Ã…Â¸Ã…Â½Ã…Â¾ÃƒÂ¯Ã‚Â¸Ã‚Â DROPDOWN MENUS =========================== */
+/*#region - Ã°Å¸â€œÅ“Ã°Å¸Å½Å¾Ã¯Â¸Â DROPDOWN MENUS =========================== */
 /*____________________________________________________*/
 
 
 /* ---------------------------------------------------------
-   ÃƒÂ°Ã…Â¸Ã‚Â§Ã‚Â© Context Menu Layout Normalization ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â V9.6
+   Ã°Å¸Â§Â© Context Menu Layout Normalization Ã¢â‚¬â€ V9.6
    Hidden menus cannot intercept events; active menus do.
 --------------------------------------------------------- */
 
@@ -782,18 +797,18 @@ body {
   color: var(--G-color-1-deepdark-bg);
 }
 
-/*  ÃƒÂ°Ã…Â¸Ã‚Â§Ã‚Â± Context Menu Layout ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“ Extended Utility Set
+/*  Ã°Å¸Â§Â± Context Menu Layout Ã¢â‚¬â€œ Extended Utility Set
    Generic flex layout + right-side button pattern
    ============================= */
 
-/* ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â¹ Flex rows with space for actions (like delete / rename / info) */
+/* Ã°Å¸â€Â¹ Flex rows with space for actions (like delete / rename / info) */
 .context-menu li {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-/* ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â¹ Primary label button (fills width except side buttons) */
+/* Ã°Å¸â€Â¹ Primary label button (fills width except side buttons) */
 .context-menu .menu-main-btn {
   flex: 1;
   text-align: left;
@@ -804,8 +819,8 @@ body {
 
 /* =========SIDE ICONS====================
 
-/* ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â¹ Optional side / icon / delete button */
-/* ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â¹ Override for side buttons (like delete, info, etc.) */
+/* Ã°Å¸â€Â¹ Optional side / icon / delete button */
+/* Ã°Å¸â€Â¹ Override for side buttons (like delete, info, etc.) */
 
 .context-menu .menu-side-btn {
   width: auto !important;
@@ -836,7 +851,7 @@ body {
 
 
 
-/* ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â¹ Variant color helpers (reusable elsewhere) */
+/* Ã°Å¸â€Â¹ Variant color helpers (reusable elsewhere) */
 
 .context-menu .menu-side-btn.danger {
   color: var(--G-color-1-deepdark-bg);
@@ -872,7 +887,7 @@ body {
 
 
 /*
-   ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â¸ Context Menu Divider (Universal)
+   Ã°Å¸â€Â¸ Context Menu Divider (Universal)
    - visually separates groups of menu items
    - plays nice inside flex <li> stacks
    ============================= */
@@ -891,7 +906,7 @@ body {
 /*#endregion* context menus--------\----*/
 
 
-/*#region - ÃƒÂ¢Ã‚ÂÃ‚Â¹ÃƒÂ¯Ã‚Â¸Ã‚ÂÃƒÂ¢Ã‚Â¬Ã¢â‚¬Âº FOREGROUND Panels ============================== */
+/*#region - Ã¢ÂÂ¹Ã¯Â¸ÂÃ¢Â¬â€º FOREGROUND Panels ============================== */
 /*____________________________________________________*/
 
 .foreground-panel-backdrop {
@@ -994,7 +1009,7 @@ body {
 /*#endregion* ----------------------\----*/
 
 
-/*#region - Rows ÃƒÂ°Ã…Â¸Ã¢â‚¬Â¢Ã‚Â³ÃƒÂ¯Ã‚Â¸Ã‚ÂÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â°ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â° ============================== */
+/*#region - Rows Ã°Å¸â€¢Â³Ã¯Â¸ÂÃ°Å¸Å¸Â°Ã°Å¸Å¸Â° ============================== */
 /*____________________________________________________*/
 
 /* Utility: Form Rows */
@@ -1020,8 +1035,8 @@ input {
   background: #1e1e1e;
   color: #e8e8e8;
   border: 1px solid #3b3b3b;
-  border-radius: 0;
-  padding: 2px;
+  border-radius: 4px;
+  padding: 6px;
 }
 
 textarea {
@@ -1033,12 +1048,12 @@ textarea {
 /*#endregion* rows-----------------\----*/
 
 
-/*#region -ÃƒÂ°Ã…Â¸Ã…Â½Ã¢â‚¬ÂºÃƒÂ¯Ã‚Â¸Ã‚Â EXPRESS AREA ÃƒÂ°Ã…Â¸Ã¢â‚¬â€œÃ‚Â¥ÃƒÂ¯Ã‚Â¸Ã‚Â ============================== */
+/*#region -Ã°Å¸Å½â€ºÃ¯Â¸Â EXPRESS AREA Ã°Å¸â€“Â¥Ã¯Â¸Â ============================== */
 /*____________________________________________________*/
 
 
 
-/* ÃƒÂ°Ã…Â¸Ã…Â½Ã‚Â¨ Mode Switch ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“ old visual style, adapted to current HTML */
+/* Ã°Å¸Å½Â¨ Mode Switch Ã¢â‚¬â€œ old visual style, adapted to current HTML */
 .modeSwitchBar {
   display: flex;
   align-items: center;
@@ -1119,7 +1134,7 @@ textarea {
   filter: drop-shadow(0 0 2px var(--G-color-1));
 }*/
 
-/* ÃƒÂ°Ã…Â¸Ã‚Â§Ã‚Â± MasterBox ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“ gives the outer container full styling */
+/* Ã°Å¸Â§Â± MasterBox Ã¢â‚¬â€œ gives the outer container full styling */
 #modePanel {
   background: none;
   border: var(--outer-borders);
@@ -1307,7 +1322,7 @@ textarea {
 
 
 /* ================================
-   REWRITE MODE ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“ NEW UI CLASSES
+   REWRITE MODE Ã¢â‚¬â€œ NEW UI CLASSES
    ================================ */
 
 #modeViewRewrite {
@@ -1317,7 +1332,6 @@ textarea {
   flex-direction: column;
   gap: 0px;
   overflow: visible;
-  height: 97px;
 }
 
 
@@ -1382,7 +1396,7 @@ textarea {
   border-radius: 999px;
   background: none;
   border: none;
-  transform: translateY(67px) translateX(-16.6px) scale(0.7);
+  transform: translateY(-26.4%) translateX(17px) scale(0.7);
   pointer-events: none;
   /* allow editor interactions beneath the wrapper */
   z-index: 6;
@@ -1452,7 +1466,6 @@ textarea {
   flex-direction: column;
   gap: 0px;
   z-index: 1;
-  transform: translateY(-4.900000000000003px);
 }
 
 #rewriteSearchWrapper {
@@ -1461,7 +1474,6 @@ textarea {
 
 #rewriteReplaceWrapper {
   padding: 0px;
-  transform: translateY(-28px);
 }
 
 #rewriteSearchWrapper .text-input,
@@ -1527,14 +1539,14 @@ textarea {
   position: relative;
   left: 0;
   right: 0;
-  height: 1px;
+  height: 2px;
   background: var(--G-color-1-midlight2);
   pointer-events: none;
   gap: 0px;
 }
 
 .rewrite-edge-line-bottom {
-    top: 14.700000000000008px;
+    top: 16px;
 }
 
 .rewrite-edge-line-top {
@@ -1838,7 +1850,7 @@ textarea {
   opacity: .7;
 }
 
-/* ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â¹ Frame color states */
+/* Ã°Å¸â€Â¹ Frame color states */
 .customSearch-textBox-frame.enabled .customSearch-frame-row {
   color: var(--search-enabled-color, var(--G-color-1));
 }
@@ -1952,7 +1964,7 @@ body.editor-maximized #toast {
 
   min-height: 120px;
   min-width: 0;
-  /* ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ allows flex child to shrink */
+  /* Ã¢Å“â€¦ allows flex child to shrink */
   flex: 1 1 auto;
 
 
@@ -1980,7 +1992,7 @@ body.editor-maximized #toast {
   caret-color: #4c7ef3;
 }
 
-/* ÃƒÂ°Ã…Â¸Ã…Â½Ã¢â‚¬ÂºÃƒÂ¯Ã‚Â¸Ã‚Â CodeMirror Scrollbar Styling */
+/* Ã°Å¸Å½â€ºÃ¯Â¸Â CodeMirror Scrollbar Styling */
 
 /* style the scroll container and reduce its thickness */
 #codeEditor .cm-scroller {
@@ -2013,10 +2025,10 @@ body.editor-maximized #toast {
 /*#endregion* express----------------------\----*/
 
 
-/*#region - ÃƒÂ¢Ã…â€œÃ¢â‚¬Å¡ÃƒÂ¯Ã‚Â¸Ã‚ÂÃƒÂ¢Ã…â€œÃ¢â‚¬Å¡ÃƒÂ¯Ã‚Â¸Ã‚ÂÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â°ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â°S N I P P E T S ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â°ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â°ÃƒÂ¢Ã…â€œÃ¢â‚¬Å¡ÃƒÂ¯Ã‚Â¸Ã‚ÂÃƒÂ¢Ã…â€œÃ¢â‚¬Å¡ÃƒÂ¯Ã‚Â¸Ã‚Â ÃƒÂ°Ã…Â¸Ã¢â‚¬â€Ã‚Â¼ ============================== */
+/*#region - Ã¢Å“â€šÃ¯Â¸ÂÃ¢Å“â€šÃ¯Â¸ÂÃ°Å¸Å¸Â°Ã°Å¸Å¸Â°S N I P P E T S Ã°Å¸Å¸Â°Ã°Å¸Å¸Â°Ã¢Å“â€šÃ¯Â¸ÂÃ¢Å“â€šÃ¯Â¸Â Ã°Å¸â€”Â¼ ============================== */
 /*____________________________________________________*/
 
-/*#region BANKÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Â¦ */
+/*#region BANKÃ°Å¸ÂÂ¦ */
 
 #bankHeader {
   display: flex;
@@ -2028,7 +2040,7 @@ body.editor-maximized #toast {
   margin-bottom: 0px;
 }
 
-/* ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Â·ÃƒÂ¯Ã‚Â¸Ã‚Â Static label + editable input share same styling */
+/* Ã°Å¸ÂÂ·Ã¯Â¸Â Static label + editable input share same styling */
 #bankHeader #bankNameLabel,
 #bankHeader input[type="text"] {
   display: inline-block;
@@ -2053,7 +2065,7 @@ body.editor-maximized #toast {
   display: inline-block;
 }
 
-/* ÃƒÂ¢Ã…â€œÃ‚ÂÃƒÂ¯Ã‚Â¸Ã‚Â Focused input gets light accent line */
+/* Ã¢Å“ÂÃ¯Â¸Â Focused input gets light accent line */
 #bankHeader input[type="text"]:focus {
   border-bottom: 1px solid var(--G-color-1);
   background: var(--G-color-1-lowsatdark-bg);
@@ -2062,7 +2074,7 @@ body.editor-maximized #toast {
   /* avoids cutting off tall shadows */
 }
 
-/* ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â§ Context Menu Layout Fix */
+/* Ã°Å¸â€Â§ Context Menu Layout Fix */
 #bankSelectMenu li {
   position: relative;
   /* establishes local coordinate space */
@@ -2076,7 +2088,7 @@ body.editor-maximized #toast {
   width: 100%;
   text-align: left;
   padding-right: 24px;
-  /* space for the delete buttonÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢s visual area */
+  /* space for the delete buttonÃ¢â‚¬â„¢s visual area */
   box-sizing: border-box;
 }
 
@@ -2101,8 +2113,8 @@ body.editor-maximized #toast {
 /*#endregion */
 
 
-/*#region - SNIPPET EditorÃƒÂ°Ã…Â¸Ã…Â½Ã…Â¾ÃƒÂ¯Ã‚Â¸Ã‚ÂÃƒÂ¢Ã…â€œÃ¢â‚¬Å¡ÃƒÂ¯Ã‚Â¸Ã‚Â================================== */
-/*   ÃƒÂ°Ã…Â¸Ã‚Â§Ã‚Â© Snippet Editor (Foreground Panel content)============== */
+/*#region - SNIPPET EditorÃ°Å¸Å½Å¾Ã¯Â¸ÂÃ¢Å“â€šÃ¯Â¸Â================================== */
+/*   Ã°Å¸Â§Â© Snippet Editor (Foreground Panel content)============== */
 
 .snippet-editor-form {
   display: flex;
@@ -2184,11 +2196,11 @@ body.editor-maximized #toast {
 /*#endregion* snips main-----------\----*/
 
 
-/*#region ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â¡ÃƒÂ¢Ã…â€œÃ‚Â¨ÃƒÂ¢Ã…â€œÃ‚Â¨ HOLY GLOW============================= */
+/*#region Ã°Å¸â€™Â¡Ã¢Å“Â¨Ã¢Å“Â¨ HOLY GLOW============================= */
 /*____________________________________________________*/
 
-/* ÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚Â
-   ÃƒÂ°Ã…Â¸Ã…â€™Ã…Â¸ GLOBAL GLOW UTILITY
+/* Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+   Ã°Å¸Å’Å¸ GLOBAL GLOW UTILITY
    - Attach via class .holy-glow or variants
    - Works on any element with position:relative
    - Includes hover animation
@@ -2257,16 +2269,16 @@ body.editor-maximized #toast {
 }
 
 /*---------------------------------\-----*/
-/*#endregion* ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â¡ÃƒÂ¢Ã…â€œÃ‚Â¨ÃƒÂ¢Ã…â€œÃ‚Â¨----------------------\----*/
+/*#endregion* Ã°Å¸â€™Â¡Ã¢Å“Â¨Ã¢Å“Â¨----------------------\----*/
 
 
-/* ÃƒÂ¢Ã¢â‚¬Â¢Ã¢â‚¬ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã¢â‚¬â€ */
-/* ÃƒÂ¢Ã¢â‚¬Â¢Ã…Â¡ÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚Â */
-/*#region - ÃƒÂ¢Ã‚Â¬Ã¢â‚¬ÂºÃƒÂ¢Ã‚Â¬Ã…â€œÃƒÂ¢Ã‚Â¬Ã¢â‚¬Âº   B U T T O N   S T Y L E S   ÃƒÂ¢Ã‚Â¬Ã¢â‚¬ÂºÃƒÂ¢Ã‚Â¬Ã…â€œÃƒÂ¢Ã‚Â¬Ã¢â‚¬Âº ======================= */
+/* Ã¢â€¢â€Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢â€” */
+/* Ã¢â€¢Å¡Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â */
+/*#region - Ã¢Â¬â€ºÃ¢Â¬Å“Ã¢Â¬â€º   B U T T O N   S T Y L E S   Ã¢Â¬â€ºÃ¢Â¬Å“Ã¢Â¬â€º ======================= */
 /*____________________________________________________*/
 
 
-/*#region ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚ÂªÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Âµ M A I N BUTTONS ============================== */
+/*#region Ã°Å¸Å¸ÂªÃ°Å¸â€Âµ M A I N BUTTONS ============================== */
 /*____________________________________________________*/
 
 
@@ -2303,10 +2315,10 @@ button:disabled {
 
 
 /* ==================================================
-   ÃƒÂ°Ã…Â¸Ã‚Â§Ã‚Â© Clear Button (SVG version)
+   Ã°Å¸Â§Â© Clear Button (SVG version)
    ================================================== */
 .btn-clearSVG {
-  /* ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â§ Core sizing controlled by a variable for unified scaling */
+  /* Ã°Å¸â€Â§ Core sizing controlled by a variable for unified scaling */
   --size: 25px;
   --stroke-width: 0.8px;
   --icon-scale: 1;
@@ -2320,7 +2332,7 @@ button:disabled {
   border: none;
   background: none;
   display: inline-flex;
-  /* ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â§ changed from flex to inline-flex so it doesnÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢t stretch rows */
+  /* Ã°Å¸â€Â§ changed from flex to inline-flex so it doesnÃ¢â‚¬â„¢t stretch rows */
   align-items: center;
   justify-content: center;
   padding: 0;
@@ -2378,7 +2390,7 @@ button:disabled {
 }
 
 /* ==================================================
-   ÃƒÂ°Ã…Â¸Ã‚Â§Ã‚Â©ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â€ÃƒÂ¯Ã‚Â¸Ã‚ÂÃƒÂ¢Ã¢â‚¬Â Ã¢â€žÂ¢ÃƒÂ¯Ã‚Â¸Ã‚ÂÃƒÂ¢Ã‚Â¬Ã¢â‚¬Â¡ÃƒÂ¯Ã‚Â¸Ã‚Â Clear Button bespokes
+   Ã°Å¸Â§Â©Ã¢â€ â€”Ã¯Â¸ÂÃ¢â€ â„¢Ã¯Â¸ÂÃ¢Â¬â€¡Ã¯Â¸Â Clear Button bespokes
    ================================================== */
 
 
@@ -2490,8 +2502,8 @@ button.btn-discreet.is-active .icon-collapse {
 /*-----------------------------------\----*/
 /*#endregion* main buttons-----------\----*/
 
-/*#region - ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â©ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â©ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â© GLOBAL BUTTON ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â©LABELS ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°================= */
-/* ÃƒÂ°Ã…Â¸Ã…â€™Ã‚Â GLOBAL BUTTON LABELS */
+/*#region - Ã°Å¸â€œÂ©Ã°Å¸â€œÂ©Ã°Å¸â€œÂ© GLOBAL BUTTON Ã°Å¸â€œÂ©LABELS Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°================= */
+/* Ã°Å¸Å’Â GLOBAL BUTTON LABELS */
 .label {
   font-size: 10px;
   /* default readable size */
@@ -2523,7 +2535,7 @@ button.btn-discreet.is-active .icon-collapse {
 /*#endregion* ----------------------\----*/
 
 
-/*#region ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â§ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â§ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â§ RHOMBUS Button styling ============================== */
+/*#region Ã°Å¸Å¸Â§Ã°Å¸Å¸Â§Ã°Å¸Å¸Â§ RHOMBUS Button styling ============================== */
 /*____________________________________________________*/
 
 
@@ -2612,16 +2624,16 @@ button.btn-discreet.is-active .icon-collapse {
 
 /*#endregion*/
 
-/*#region ÃƒÂ¢Ã‚ÂÃ‚Â¹ÃƒÂ¯Ã‚Â¸Ã‚ÂÃƒÂ¢Ã‚ÂÃ‚Â¹ÃƒÂ¯Ã‚Â¸Ã‚ÂÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â§ RHOMBUS Snippet ÃƒÂ¢Ã…â€œÃ¢â‚¬Å¡ÃƒÂ¯Ã‚Â¸Ã‚Â Buttons ----------*/
+/*#region Ã¢ÂÂ¹Ã¯Â¸ÂÃ¢ÂÂ¹Ã¯Â¸ÂÃ°Å¸Å¸Â§ RHOMBUS Snippet Ã¢Å“â€šÃ¯Â¸Â Buttons ----------*/
 
 /*These two are legacy definitions for snippets in general (not the rhombus 
    itself). They mostly affect padding, color, and hover visuals.
-   You can move these up near the flex block ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â theyÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢re non-conflicting. */
+   You can move these up near the flex block Ã¢â‚¬â€ theyÃ¢â‚¬â„¢re non-conflicting. */
 /* ======================================================================== */
 
 
 /* ======================================================================== */
-/* ÃƒÂ°Ã…Â¸Ã‚Â§Ã‚Â© Snippet Button Strip ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â fixed rhombus layout                           */
+/* Ã°Å¸Â§Â© Snippet Button Strip Ã¢â‚¬â€ fixed rhombus layout                           */
 /* ------------------------------------------------------------------------ */
 
 :root {
@@ -2725,9 +2737,9 @@ button.btn-discreet.is-active .icon-collapse {
 
 /*#region*-_ DropDown time*/
 
-/* ÃƒÂ¢Ã¢â‚¬Â¢Ã¢â‚¬ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã¢â‚¬â€
-   ÃƒÂ¢Ã¢â‚¬Â¢Ã¢â‚¬Ëœ   ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â½ Dropdown Button (Cleaned) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“ V2.0 ÃƒÂ¢Ã¢â‚¬Â¢Ã¢â‚¬Ëœ
-   ÃƒÂ¢Ã¢â‚¬Â¢Ã…Â¡ÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚Â */
+/* Ã¢â€¢â€Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢â€”
+   Ã¢â€¢â€˜   Ã°Å¸â€Â½ Dropdown Button (Cleaned) Ã¢â‚¬â€œ V2.0 Ã¢â€¢â€˜
+   Ã¢â€¢Å¡Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â */
 
 button.Dd-blank {
   background: none;
@@ -2746,7 +2758,7 @@ button.Dd-blank {
   transform: translate(0.7px, 2.2px) scale(1.1);
 }
 
-/* ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â» Dropdown icon positioning */
+/* Ã°Å¸â€Â» Dropdown icon positioning */
 button.Dd-blank .dropdown-icon {
   width: 8px;
   height: 8px;
@@ -2755,7 +2767,7 @@ button.Dd-blank .dropdown-icon {
   transform: translateY(-0.5px) translateX(0.3px);
 }
 
-/* ÃƒÂ¢Ã…â€œÃ‚Â´ÃƒÂ¯Ã‚Â¸Ã‚Â SVG appearance + slight highlight (kept minimal) */
+/* Ã¢Å“Â´Ã¯Â¸Â SVG appearance + slight highlight (kept minimal) */
 .dropdown-icon path {
   stroke: var(--G-color-1);
   fill: var(--G-color-1-mid);
@@ -2784,16 +2796,16 @@ button.Dd-blank:hover .dropdown-icon path {
 /*#endregion*/
 
 
-/*#region - Circle buttons ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Âµ ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°================= */
+/*#region - Circle buttons Ã°Å¸â€Âµ Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°================= */
 /*____________________________________________________*/
 
-/* ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦   ÃƒÂ¢Ã‚Â Ã¢â€šÂ¬ÃƒÂ¢Ã‚Â¢Ã¢â€šÂ¬ÃƒÂ¢Ã‚Â£Ã‚Â¤ÃƒÂ¢Ã‚Â£Ã‚Â¶ÃƒÂ¢Ã‚Â£Ã‚Â¶ÃƒÂ¢Ã‚Â£Ã‚Â¶ÃƒÂ¢Ã‚Â£Ã‚Â¤ÃƒÂ¢Ã‚Â¡Ã¢â€šÂ¬   ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ */
-/* ÃƒÂ¢Ã…â€œÃ‚Â§ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°  ÃƒÂ¢Ã‚Â¢Ã‚Â¸ÃƒÂ¢Ã‚Â£Ã‚Â¿ÃƒÂ¢Ã‚Â£Ã‚Â¿ÃƒÂ¢Ã‚Â£Ã‚Â¿ÃƒÂ¢Ã‚Â£Ã‚Â¿ÃƒÂ¢Ã‚Â£Ã‚Â¿ÃƒÂ¢Ã‚Â£Ã‚Â¿ÃƒÂ¢Ã‚Â¡Ã¢â‚¬Â¡    ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â°ÃƒÂ¢Ã…â€œÃ‚Â§ */
-/* ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦   ÃƒÂ¢Ã‚Â Ã‹â€ ÃƒÂ¢Ã‚Â Ã¢â‚¬ÂºÃƒÂ¢Ã‚Â Ã‚Â¿ÃƒÂ¢Ã‚Â Ã‚Â¿ÃƒÂ¢Ã‚Â Ã‚Â¿ÃƒÂ¢Ã‚Â Ã¢â‚¬ÂºÃƒÂ¢Ã‚Â Ã‚Â   ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ÃƒÂ¢Ã…â€œÃ‚Â¦ */
+/* Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦   Ã¢Â â‚¬Ã¢Â¢â‚¬Ã¢Â£Â¤Ã¢Â£Â¶Ã¢Â£Â¶Ã¢Â£Â¶Ã¢Â£Â¤Ã¢Â¡â‚¬   Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦ */
+/* Ã¢Å“Â§Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°  Ã¢Â¢Â¸Ã¢Â£Â¿Ã¢Â£Â¿Ã¢Â£Â¿Ã¢Â£Â¿Ã¢Â£Â¿Ã¢Â£Â¿Ã¢Â¡â€¡    Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°Ã¢â€”â€°Ã¢Å“Â§ */
+/* Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦   Ã¢Â Ë†Ã¢Â â€ºÃ¢Â Â¿Ã¢Â Â¿Ã¢Â Â¿Ã¢Â â€ºÃ¢Â Â   Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦Ã¢Å“Â¦ */
 /*                  Circle style */
 
 
-/* ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â© Circle Button Label Variant (sibling version) */
+/* Ã°Å¸â€œÂ© Circle Button Label Variant (sibling version) */
 .circle-btn+.label {
   font-size: 1px;
   color: #00ffd9;
@@ -2822,7 +2834,7 @@ button.Dd-blank:hover .dropdown-icon path {
 }
 
 
-/* --------------- Behaviours  ÃƒÂ¢Ã‚Â Ã‚ÂÃƒÂ¢Ã‚Â Ã¢â‚¬ÂºÃƒÂ¢Ã‚Â Ã‚Â¿ÃƒÂ¢Ã‚Â Ã‚Â¿ÃƒÂ¢Ã‚Â Ã‚Â¿ÃƒÂ¢Ã‚Â Ã¢â‚¬ÂºÃƒÂ¢Ã‚Â Ã‚Â  */
+/* --------------- Behaviours  Ã¢Â ÂÃ¢Â â€ºÃ¢Â Â¿Ã¢Â Â¿Ã¢Â Â¿Ã¢Â â€ºÃ¢Â Â  */
 
 .circle-btn:hover {
   border: 1.5px solid #702801 !important;
@@ -2842,7 +2854,7 @@ button.Dd-blank:hover .dropdown-icon path {
 }
 
 
-/*  ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â¦Blue versions */
+/*  Ã°Å¸Å¸Â¦Blue versions */
 .circle-btn.circle-blue:hover {
   border: 1.5px solid #1e40af !important;
   /* dark blue hover */
@@ -2865,13 +2877,13 @@ button.Dd-blank:hover .dropdown-icon path {
 /*---------------------------------\-----*/
 /*#endregion* ----------------------\----*/
 
-/*#region - APPLY ÃƒÂ°Ã…Â¸Ã‚Â§Ã‚Â¼ÃƒÂ°Ã…Â¸Ã…Â½Ã‚Â¯ ============================== */
+/*#region - APPLY Ã°Å¸Â§Â¼Ã°Å¸Å½Â¯ ============================== */
 /*____________________________________________________*/
 
 
 
 /* =============================
-   ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‹Å“ Buttons - Custom Variants
+   Ã°Å¸â€Ëœ Buttons - Custom Variants
    ============================= */
 
 
@@ -2918,21 +2930,21 @@ button.target-btn {
 
 /*-------------------------------\-----*/
 /*#endregion* APPLY -------------\----*/
-/* ÃƒÂ¢Ã¢â‚¬Â¢Ã¢â‚¬ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã¢â‚¬â€ */
-/* ÃƒÂ¢Ã¢â‚¬Â¢Ã…Â¡ÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚Â */
+/* Ã¢â€¢â€Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢â€” */
+/* Ã¢â€¢Å¡Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â */
 /*---------------------------------\-----*/
-/*#endregion* ÃƒÂ¢Ã‚Â¬Ã¢â‚¬ÂºÃƒÂ¢Ã‚Â¬Ã…â€œÃƒÂ¢Ã‚Â¬Ã¢â‚¬Âº BUTTON-------\----*/
+/*#endregion* Ã¢Â¬â€ºÃ¢Â¬Å“Ã¢Â¬â€º BUTTON-------\----*/
 
 
 
 
 
-/*#region - Misc/Dev/Admin ÃƒÂ¢Ã…Â¾Ã¢â‚¬Â¢ÃƒÂ¢Ã…Â¾Ã¢â‚¬Â¢ÃƒÂ¢Ã…Â¾Ã¢â‚¬Â¢ ============================== */
+/*#region - Misc/Dev/Admin Ã¢Å¾â€¢Ã¢Å¾â€¢Ã¢Å¾â€¢ ============================== */
 /*____________________________________________________*/
 
 
 /* =============================
-   ÃƒÂ°Ã…Â¸Ã…Â½Ã‚Â¯ Target / Apply Outputs
+   Ã°Å¸Å½Â¯ Target / Apply Outputs
    ============================= */
 #TargetList,
 #applyOutput {
@@ -2942,7 +2954,7 @@ button.target-btn {
 }
 
 /* =============================
-   ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Â Apply Log button
+   Ã°Å¸â€â€ Apply Log button
    ============================= */
 
 #openApplyLog,
@@ -3028,7 +3040,7 @@ button.target-btn {
   touch-action: none;
 }
 
-/* ÃƒÂ°Ã…Â¸Ã…Â½Ã‚Â¨ HUE SLIDER ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â fully CEP-compatible version */
+/* Ã°Å¸Å½Â¨ HUE SLIDER Ã¢â‚¬â€ fully CEP-compatible version */
 .hue-slider {
   -webkit-appearance: none;
   appearance: none;
@@ -3102,7 +3114,7 @@ button.target-btn {
 }
 
 /* =============================
-   ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Â Toast Notifications
+   Ã°Å¸â€â€ Toast Notifications
    ============================= */
 
 #toast {
@@ -3117,7 +3129,7 @@ button.target-btn {
 }
 
 /* =============================
-   ÃƒÂ¢Ã…Â¾Ã¢â‚¬Â¢ Misc Layout
+   Ã¢Å¾â€¢ Misc Layout
    ============================= */
 .picks {
   display: grid;

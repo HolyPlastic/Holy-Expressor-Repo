@@ -3,6 +3,7 @@ Volume serial number is 0A04-57E4
 C:.
 |   .debug
 |   .gitattributes
+|   2025-11-16 22-42-34.txt
 |   colorpicker.html
 |   electron_entry.js
 |   fulleditor.html
@@ -13,6 +14,7 @@ C:.
 |   
 +---.vscode
 |       extensions.json
+|       launch.json
 |       settings.json
 |       
 +---AGENTS
@@ -34,6 +36,9 @@ C:.
 |       codemirror_styles.css
 |       log.css
 |       styles.css
+|       
++---css-devEx
+|       styles-devEx.css
 |       
 +---CSXS
 |       manifest.xml
@@ -94,14 +99,18 @@ C:.
 |   \---libs
 |           CSInterface.js
 |           
-\---jsx
-    |   host.jsx
-    |   
-    \---Modules
-            host_APPLY.jsx
-            host_DEV.jsx
-            host_FLYO.jsx
-            host_GET.jsx
-            host_MAPS.jsx
-            host_UTILS.jsx
++---jsx
+|   |   host.jsx
+|   |   
+|   \---Modules
+|           host_APPLY.jsx
+|           host_DEV.jsx
+|           host_FLYO.jsx
+|           host_GET.jsx
+|           host_MAPS.jsx
+|           host_UTILS.jsx
+|           
+\---well-known
+    \---appspecific
+            com.chrome.devtools.json
             

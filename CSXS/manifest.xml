@@ -16,7 +16,7 @@
 
   <ExecutionEnvironment>
     <HostList>
-      <Host Name="AEFT" Version="[13.0,99.9]" />
+    <Host Name="AEFT" Version="[17.0,99.0]" />
     </HostList>
 
     <LocaleList>
@@ -36,7 +36,14 @@
     <Extension Id="com.holy.expressor.panel">
       <DispatchInfo>
         <Resources>
+
+          <!--<MainPath>http://127.0.0.1:8000/index.html</MainPath>-->
+
           <MainPath>./index.html</MainPath>
+        <!--<MainPath>file:///C:/Program%20Files%20(x86)/Common%20Files/Adobe/CEP/extensions/_Holy-Expressor-Repo/index.html</MainPath>-->
+
+
+
 
           <CEFCommandLine>
               <Parameter>--enable-nodejs</Parameter>

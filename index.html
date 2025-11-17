@@ -562,12 +562,29 @@ ____________________ -------->
 
 
       <div id="modeViewRewrite" class="he-mode-view panel search-replace-panel is-hidden" role="tabpanel" aria-labelledby="modeRewriteBtn" hidden>
-        <div id="rewriteUnderlay" aria-hidden="true">
+      <!--  <div id="rewriteUnderlay" aria-hidden="true">
           <div class="rewrite-underlay-line"></div>
           <div class="rewrite-underlay-line"></div>
           <div class="rewrite-underlay-line"></div>
         </div>
+-->
 
+        <div id="rewriteSearchWrapper">
+          <label for="searchField" class="text-sm block-label">Search</label>
+          <input type="text" id="searchField" class="text-input" />
+          <div class="rewrite-edge-line-top" aria-hidden="true"></div>
+          <div class="rewrite-gradient-down" aria-hidden="true"></div>
+          <span class="rewrite-label-search" aria-hidden="true">SEARCH</span>
+        </div>
+
+        <div id="rewriteReplaceWrapper">
+          <span class="rewrite-label-replace" aria-hidden="true">REPLACE</span>
+          <div class="rewrite-edge-line-bottom" aria-hidden="true"></div>
+          <div class="rewrite-gradient-up" aria-hidden="true"></div>
+          <label for="replaceField" class="text-sm block-label">Replace</label>
+          <input type="text" id="replaceField" class="text-input" />
+                   <div class="rewrite-gradient-down" aria-hidden="true"></div>
+        </div>
         <div id="rewriteOverlay">
           <div class="rewrite-checkbox-block">
             <div class="row search-options">
@@ -634,25 +651,7 @@ ____________________ -------->
           </button>
         </div>
 
-        <div id="rewriteSearchWrapper">
-          <label for="searchField" class="text-sm block-label">Search</label>
-          <input type="text" id="searchField" class="text-input" />
-          <div class="rewrite-edge-line-bottom" aria-hidden="true"></div>
-          <div class="rewrite-gradient-down" aria-hidden="true"></div>
-          <span class="rewrite-label-search" aria-hidden="true">SEARCH</span>
-        </div>
 
-        <div id="rewriteReplaceWrapper">
-          <span class="rewrite-label-replace" aria-hidden="true">REPLACE</span>
-          <div class="rewrite-edge-line-top" aria-hidden="true"></div>
-          <div class="rewrite-gradient-up" aria-hidden="true"></div>
-          <label for="replaceField" class="text-sm block-label">Replace</label>
-          <input type="text" id="replaceField" class="text-input" />
-        </div>
-
-        <div class="row">
-          <button id="runSearchReplace" class="rewrite-action-button" type="button">Apply</button>
-        </div>
       </div>
     </div> <!-- end of modeviews-->
   </section>

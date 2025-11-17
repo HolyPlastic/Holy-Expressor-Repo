@@ -615,6 +615,9 @@ If conflicts arise, assume this file overrides individual code comments.
 
 * 2025-11-04 – gpt-5-codex: no functional change – annotated Section 13 architecture deductions with lowercase tags and subject prefixes for clarity.
 
+* 2025-11-17 – lead-dev: Added CSS dev-exchange watcher workflow notes. Design Intent: document the new DevTools→raw-downloads→hotfile autosync pipeline enabling live CSS iteration inside CEP panels. Risks / Concerns: watcher uses brute-force change detection; monitor for duplicate events on fast file systems.
+
+
 🧱 Verified Architectural Notes (2025-11)
 
 The entire codebase operates under a single global namespace:
