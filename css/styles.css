@@ -2593,17 +2593,6 @@ button.btn-discreet.is-active .icon-collapse {
   pointer-events: none;
 }
 
-.rhombus-left {
-  transform: translateX(01px);
-}
-
-.rhombus-right {
-  transform: translateX(-1px);
-}
-
-
-
-
 /*#endregion*/
 
 /*#region ÃƒÂ¢Ã‚ÂÃ‚Â¹ÃƒÂ¯Ã‚Â¸Ã‚ÂÃƒÂ¢Ã‚ÂÃ‚Â¹ÃƒÂ¯Ã‚Â¸Ã‚ÂÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â§ RHOMBUS Snippet ÃƒÂ¢Ã…â€œÃ¢â‚¬Å¡ÃƒÂ¯Ã‚Â¸Ã‚Â Buttons ----------*/
@@ -2708,6 +2697,20 @@ button.btn-discreet.is-active .icon-collapse {
   width: 100%;
   height: 100%;
   pointer-events: none;
+  transform: var(--rhombus-transform, scaleX(1.1));
+  transform-origin: center;
+}
+
+.rhombus-left {
+  --rhombus-transform: scaleX(1.1) translateX(-4%);
+}
+
+.rhombus-middle {
+  --rhombus-transform: scaleX(1.1);
+}
+
+.rhombus-right {
+  --rhombus-transform: scaleX(1.1) translateX(4%);
 }
 
 /*#endregion*/
