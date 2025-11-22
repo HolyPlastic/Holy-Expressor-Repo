@@ -2550,12 +2550,6 @@ button.btn-discreet.is-active .icon-collapse {
 
 }
 
-.rhombus-middle {
-  transform: scale(1.25) translateY(2px);
-
-}
-
-
 .f21.snippet-btn:nth-child(2) .label {
 
   top: 18px;
@@ -2598,17 +2592,6 @@ button.btn-discreet.is-active .icon-collapse {
   text-transform: uppercase;
   pointer-events: none;
 }
-
-.rhombus-left {
-  transform: translateX(01px);
-}
-
-.rhombus-right {
-  transform: translateX(-1px);
-}
-
-
-
 
 /*#endregion*/
 
@@ -2710,7 +2693,24 @@ button.btn-discreet.is-active .icon-collapse {
 }
 
 .rhombus-icon {
+  display: block;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
+  transform: var(--rhombus-transform, scaleX(1.1));
+  transform-origin: center;
+}
+
+.rhombus-left {
+  --rhombus-transform: scaleX(1.1) translateX(-4%);
+}
+
+.rhombus-middle {
+  --rhombus-transform: scaleX(1.1);
+}
+
+.rhombus-right {
+  --rhombus-transform: scaleX(1.1) translateX(4%);
 }
 
 /*#endregion*/
