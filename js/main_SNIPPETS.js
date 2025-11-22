@@ -417,8 +417,8 @@ Holy.SNIPPETS.banks = [
 </svg>`;
     } else {
       svgMarkup = `
-<svg class="rhombus-icon rhombus-middle" viewBox="0 0 66.92 26.63" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-  <polygon points="0.16 0.13 59.5 0.13 66.75 26.51 7.42 26.51 0.16 0.13" fill="currentColor"/>
+<svg class="rhombus-icon rhombus-middle" viewBox="0 0 58.42 26.63" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+  <polygon points="0.14 0.13 51.94 0.13 58.41 26.51 6.48 26.51 0.14 0.13" fill="currentColor"/>
 </svg>`;
     }
 
