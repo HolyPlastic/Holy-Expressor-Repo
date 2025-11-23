@@ -1510,7 +1510,7 @@ textarea {
   font-size: 11px;
   letter-spacing: 0.32em;
   text-transform: uppercase;
-  color: var(--G-color-1);
+  color: var(--G-color-1-midlight2);
   -webkit-font-smoothing: none;
 }
 
@@ -1526,8 +1526,8 @@ textarea {
 .rewrite-label-replace {
   position: relative;
   margin-left: auto;
-  left: 16.699999999999992px;
-  top: 15.20000000000001px;
+  left: 15.199999999999989px;
+  top: 18.200000000000024px;
   transform: scale(0.65);
   gap: 69;
 }

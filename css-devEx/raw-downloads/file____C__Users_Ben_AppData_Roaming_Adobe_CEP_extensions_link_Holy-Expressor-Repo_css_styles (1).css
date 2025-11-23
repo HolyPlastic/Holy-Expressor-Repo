@@ -1032,8 +1032,7 @@ textarea,
 input {
   background: #1e1e1e;
   color: #e8e8e8;
-  border: 1px solid var(--G-color-1);
-  background: transparent;
+  border: 1px solid #3b3b3b;
   border-radius: 0;
   padding: 2px;
 }
@@ -1396,7 +1395,7 @@ textarea {
   border-radius: 999px;
   background: none;
   border: none;
-  transform: translateY(52px) translateX(38.4px) scale(0.7);
+  transform: translateY(67px) translateX(-16.6px) scale(0.7);
   pointer-events: none;
   /* allow editor interactions beneath the wrapper */
   z-index: 6;
@@ -1475,7 +1474,7 @@ textarea {
 
 #rewriteReplaceWrapper {
   padding: 0px;
-  transform: translateY(-38px);
+  transform: translateY(-28px);
 }
 
 #rewriteSearchWrapper .text-input,
@@ -1495,7 +1494,6 @@ textarea {
   clip: rect(0, 0, 0, 0);
   clip-path: inset(50%);
   border: 0;
-  background: var(--G-color-1-midlight2);
   transform: translate(6px, 14px);
 }
 
@@ -1510,7 +1508,7 @@ textarea {
   font-size: 11px;
   letter-spacing: 0.32em;
   text-transform: uppercase;
-  color: var(--G-color-1);
+  color: var(--G-color-1-midlight2);
   -webkit-font-smoothing: none;
 }
 
@@ -1526,8 +1524,8 @@ textarea {
 .rewrite-label-replace {
   position: relative;
   margin-left: auto;
-  left: 16.699999999999992px;
-  top: 15.20000000000001px;
+  left: 15.199999999999989px;
+  top: 18.200000000000024px;
   transform: scale(0.65);
   gap: 69;
 }
@@ -1542,11 +1540,10 @@ textarea {
   position: relative;
   left: 0;
   right: 0;
-  height: 0;
+  height: 1px;
   background: var(--G-color-1-midlight2);
   pointer-events: none;
   gap: 0px;
-  opacity: 0.5;
 }
 
 .rewrite-edge-line-bottom {
@@ -1576,7 +1573,7 @@ textarea {
 .rewrite-gradient-down {top: 0;height: 11px;background: linear-gradient(180deg, rgba(var(--G-colour-1-RGB), 0.32) 0%, rgba(var(--G-colour-1-RGB), 0) 100%);}
 
 .rewrite-gradient-up {
-  top: -38px;
+  top: 0px;
   background: linear-gradient(180deg, rgba(var(--G-colour-1-RGB), 0) 0%, rgba(var(--G-colour-1-RGB), 0.32) 100%);
 }
  
@@ -2568,15 +2565,10 @@ button.btn-discreet.is-active .icon-collapse {
 
 }
 
-/*
 .f21.snippet-btn:nth-child(2) .label {
 
 top: 14px;
- 
-}  /* or 3px if you want a bit more drop */
-
-.midsnip {
-  transform: translateY(10px);
+  /* or 3px if you want a bit more drop */
 }
 
 .btn-rhombus:hover {

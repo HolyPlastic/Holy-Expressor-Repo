@@ -400,7 +400,7 @@ Holy.SNIPPETS.banks = [
   function createRhombusButton(labelText, positionIndex) {
     const doc = cy_resolveDoc();
     const btn = doc.createElement("button");
-    btn.className = "f21 snippet-btn";
+    btn.className = "f69 snippet-btn";
 
     const pos = typeof positionIndex === "number" ? positionIndex : 1;
     let svgMarkup = "";
@@ -417,7 +417,7 @@ Holy.SNIPPETS.banks = [
 </svg>`;
     } else {
       svgMarkup = `
-<svg class="rhombus-icon rhombus-middle" viewBox="0 0 58.42 26.63" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+<svg class="rhombus-icon rhombus-middle midsnip" viewBox="0 0 58.42 26.63" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
   <polygon points="0.14 0.13 51.94 0.13 58.41 26.51 6.48 26.51 0.14 0.13" fill="currentColor"/>
 </svg>`;
     }
